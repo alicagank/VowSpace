@@ -3,7 +3,7 @@ An application designed for visualizing vowel spaces. With data acquired from to
 
 I developed this program as a creative diversion while getting one of my phonetics homeworks done. The task involved manually inputting data into Excel and adhering to specific guidelines to construct a scatterplot resembling a vowel space. 
 
-I've provided two different scripts for your convenience. The first script is a standalone Python application enabling you to effortlessly generate a vowel space or compare different vowel spaces by inputting the data. The second program, consisting of a Python interface, facilitates the creation of a .csv document containing the entered data. Subsequently, an R script reads this dataset, generating a comprehensive scatterplot based on the provided information.
+I've provided two different scripts for your convenience. The first script is a standalone Python application enabling you to effortlessly generate a vowel space or compare different vowel spaces by inputting the data. The second program (in the Vsv_Python_R folder), consisting of a Python interface, facilitates the creation of a .csv document containing the entered data. Subsequently, an R script reads this dataset, generating a comprehensive scatterplot based on the provided information.
 
 ## Overview
 
