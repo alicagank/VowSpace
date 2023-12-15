@@ -245,4 +245,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
     # Vowel Space Visualizer V.1.0
-    # Ali Çağan Kaya, Under MIT lisence
+    # Ali Çağan Kaya, under the GNU General Public License v3.0
