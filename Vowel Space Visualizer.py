@@ -27,7 +27,7 @@ class ScatterplotVisualizer(QWidget):
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
         self.update_input_fields()
-        self.setWindowTitle("Vowel Space Visualizer V.1.1")
+        self.setWindowTitle("Vowel Space Visualizer V.1.0")
 
     def create_widgets(self):
         self.label_mode = QLabel('Mode:')
