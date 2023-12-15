@@ -1,6 +1,9 @@
 import sys
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QComboBox, QFileDialog, QMessageBox, QCheckBox
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
+    QGridLayout, QComboBox, QFileDialog, QMessageBox, QCheckBox
+)
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -8,18 +11,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 
+
 class ScatterplotVisualizer(QWidget):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
         # Create widgets
+        self.create_widgets()
+
+        # Set layout
+        self.set_layout()
+
+        # Set initial state
+        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
+        self.update_input_fields()
+        self.setWindowTitle("Vowel Space Visualizer V.1.1")
+
+    def create_widgets(self):
         self.label_mode = QLabel('Mode:')
         self.mode_combobox = QComboBox(self)
-        self.mode_combobox.addItem('Singular')
-        self.mode_combobox.addItem('Multiple')
+        self.mode_combobox.addItems(['Singular', 'Multiple'])
         self.mode_combobox.currentIndexChanged.connect(self.update_input_fields)
 
         self.label_vowel = QLabel('Vowel:')
@@ -41,22 +54,15 @@ class ScatterplotVisualizer(QWidget):
         self.edit_title = QLineEdit()
         self.edit_title.textChanged.connect(self.update_title)
 
-        self.button_add_data = QPushButton('Add Data', self)
-        self.button_add_data.clicked.connect(self.add_data)
-        self.button_add_data.setShortcut(Qt.Key_Return)
-
-        self.button_undo = QPushButton('Undo', self)
-        self.button_undo.clicked.connect(self.undo_last_data)
-
-        self.button_clear_data = QPushButton('Clear Data', self)
-        self.button_clear_data.clicked.connect(self.clear_data)
-
-        self.button_save_scatterplot = QPushButton('Save Scatterplot', self)
-        self.button_save_scatterplot.clicked.connect(self.save_scatterplot)
+        self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
+        self.button_undo = self.create_button('Undo', self.undo_last_data)
+        self.button_clear_data = self.create_button('Clear Data', self.clear_data)
+        self.button_save_scatterplot = self.create_button('Save Scatterplot', self.save_scatterplot)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
 
+    def set_layout(self):
         layout = QVBoxLayout()
 
         mode_layout = QHBoxLayout()
@@ -92,16 +98,16 @@ class ScatterplotVisualizer(QWidget):
         layout.addLayout(buttons_layout)
 
         layout.addWidget(self.checkbox_polygon)
-
         layout.addWidget(self.canvas)
 
         self.setLayout(layout)
 
-        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
-
-        self.update_input_fields()
-
-        self.setWindowTitle("Vowel Space Visualizer V.1.0")
+    def create_button(self, text, function, shortcut=None):
+        button = QPushButton(text, self)
+        button.clicked.connect(function)
+        if shortcut:
+            button.setShortcut(shortcut)
+        return button
 
     def update_input_fields(self):
         mode = self.mode_combobox.currentText()
@@ -117,33 +123,32 @@ class ScatterplotVisualizer(QWidget):
         F1 = float(self.edit_F1.text())
         F2 = float(self.edit_F2.text())
 
-        if mode == 'Singular':
-            source = ''
-        elif mode == 'Multiple':
-            source = self.edit_source.text()
-            self.edit_source.clear()
+        source = self.edit_source.text() if mode == 'Multiple' else ''
 
         new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "source": [source]})
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
+        self.clear_input_fields()
+
+        self.edit_vowel.setFocus()
+        self.update_scatterplot()
+
+    def clear_input_fields(self):
         self.edit_vowel.clear()
         self.edit_F1.clear()
         self.edit_F2.clear()
-
-        self.edit_vowel.setFocus()
-
-        self.update_scatterplot()
+        self.edit_source.clear()
 
     def validate_input_data(self):
-        if not self.edit_vowel.text() or not self.edit_F1.text() or not self.edit_F2.text():
+        if not all([self.edit_vowel.text(), self.edit_F1.text(), self.edit_F2.text()]):
             self.show_error_message("Please fill in all the required fields.")
             return False
 
         try:
-            float(self.edit_F1.text())
-            float(self.edit_F2.text())
+            F1 = float(self.edit_F1.text())
+            F2 = float(self.edit_F2.text())
         except ValueError:
-            self.show_error_message("Nim Chimpsky! Invalid numeric input for F1 or F2.")
+            self.show_error_message("Invalid numeric input for F1 or F2.")
             return False
 
         return True
@@ -151,7 +156,7 @@ class ScatterplotVisualizer(QWidget):
     def show_error_message(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Critical)
-        msg_box.setWindowTitle("Happy Accident")
+        msg_box.setWindowTitle("Error")
         msg_box.setText(message)
         msg_box.exec_()
 
@@ -202,7 +207,7 @@ class ScatterplotVisualizer(QWidget):
         if custom_title:
             self.ax.set_title(custom_title, pad=20)
         else:
-            self.ax.set_title("Vowel Spaces", pad=20)
+            self.ax.set_title("Vowel Space(s)", pad=20)
 
         self.ax.set_xlabel("F2")
         self.ax.set_ylabel("F1")
@@ -224,25 +229,24 @@ class ScatterplotVisualizer(QWidget):
     def save_scatterplot(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", "", "JPEG Files (*.jpg *.jpeg);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", "",
+                                                   "JPEG Files (*.jpg *.jpeg);;All Files (*)", options=options)
 
         if file_name:
-            self.figure.savefig(file_name, format='jpeg', dpi=300)
+            try:
+                self.figure.savefig(file_name, format='jpeg', dpi=300)
+                QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
 
     def update_title(self):
         custom_title = self.edit_title.text()
-        if custom_title:
-            self.ax.set_title(custom_title, pad=20)
-        else:
-            self.ax.set_title("Vowel Spaces", pad=20)
-
+        self.ax.set_title(custom_title if custom_title else "Vowel Spaces", pad=20)
         self.canvas.draw()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     my_app = ScatterplotVisualizer()
     my_app.show()
     sys.exit(app.exec_())
-
-    # Vowel Space Visualizer V.1.0
-    # Ali Çağan Kaya, under the GNU General Public License v3.0
