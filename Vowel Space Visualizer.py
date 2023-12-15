@@ -143,7 +143,7 @@ class ScatterplotVisualizer(QWidget):
             float(self.edit_F1.text())
             float(self.edit_F2.text())
         except ValueError:
-            self.show_error_message("Invalid numeric input for F1 or F2.")
+            self.show_error_message("Nim Chimpsky! Invalid numeric input for F1 or F2.")
             return False
 
         return True
@@ -151,7 +151,7 @@ class ScatterplotVisualizer(QWidget):
     def show_error_message(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Critical)
-        msg_box.setWindowTitle("Error")
+        msg_box.setWindowTitle("Happy Accident")
         msg_box.setText(message)
         msg_box.exec_()
 
