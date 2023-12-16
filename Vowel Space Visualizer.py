@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QComboBox, QFileDialog, QMessageBox, QCheckBox
+    QGridLayout, QComboBox, QFileDialog, QMessageBox, QCheckBox, QMenu, QMenuBar, QAction
 )
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -27,7 +27,48 @@ class ScatterplotVisualizer(QWidget):
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
         self.update_input_fields()
-        self.setWindowTitle("Vowel Space Visualizer V.1.0")
+        self.setWindowTitle("Vowel Space Visualizer V.1.1")
+
+        self.create_menu_bar()
+
+    def create_menu_bar(self):
+        menubar = QMenuBar(self)
+
+        # File menu
+        file_menu = menubar.addMenu('File')
+
+        save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
+        save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+
+        file_menu.addAction(save_action)
+        file_menu.addAction(save_as_action)
+
+        # Edit menu
+        edit_menu = menubar.addMenu('Edit')
+
+        undo_action = self.create_action('Undo', self.undo_last_data, Qt.CTRL + Qt.Key_Z)
+        edit_menu.addAction(undo_action)
+
+        # Settings menu
+        settings_menu = menubar.addMenu('Settings')
+
+        # Visualization Settings submenu
+        visualization_settings_menu = settings_menu.addMenu('Visualization Settings')
+
+        # Connect Data with Polygons action
+        self.connect_data_action = self.create_action('Connect Data with Polygons', self.update_scatterplot,
+                                                      format='png', checkable=True)
+        visualization_settings_menu.addAction(self.connect_data_action)
+
+        self.layout().setMenuBar(menubar)
+
+    def create_action(self, text, function, shortcut=None, format=None, checkable=False):
+        action = QAction(text, self)
+        action.triggered.connect(lambda: function(format) if format else function())
+        action.setCheckable(checkable)
+        if shortcut:
+            action.setShortcut(shortcut)
+        return action
 
     def create_widgets(self):
         self.label_mode = QLabel('Mode:')
@@ -47,17 +88,12 @@ class ScatterplotVisualizer(QWidget):
         self.label_source = QLabel('Source:')
         self.edit_source = QLineEdit()
 
-        self.checkbox_polygon = QCheckBox('Connect Data with Polygon', self)
-        self.checkbox_polygon.stateChanged.connect(self.update_scatterplot)
-
         self.label_title = QLabel('Add Title:')
         self.edit_title = QLineEdit()
         self.edit_title.textChanged.connect(self.update_title)
 
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
-        self.button_undo = self.create_button('Undo', self.undo_last_data)
         self.button_clear_data = self.create_button('Clear Data', self.clear_data)
-        self.button_save_scatterplot = self.create_button('Save Scatterplot', self.save_scatterplot)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -91,13 +127,10 @@ class ScatterplotVisualizer(QWidget):
 
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(self.button_add_data)
-        buttons_layout.addWidget(self.button_undo)
         buttons_layout.addWidget(self.button_clear_data)
-        buttons_layout.addWidget(self.button_save_scatterplot)
 
         layout.addLayout(buttons_layout)
 
-        layout.addWidget(self.checkbox_polygon)
         layout.addWidget(self.canvas)
 
         self.setLayout(layout)
@@ -156,7 +189,7 @@ class ScatterplotVisualizer(QWidget):
     def show_error_message(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Critical)
-        msg_box.setWindowTitle("Error")
+        msg_box.setWindowTitle("Happy Accident!")
         msg_box.setText(message)
         msg_box.exec_()
 
@@ -165,7 +198,7 @@ class ScatterplotVisualizer(QWidget):
             self.data = self.data.iloc[:-1]
             self.update_scatterplot()
 
-    def update_scatterplot(self):
+    def update_scatterplot(self, format=None):
         self.ax.clear()
 
         markers = ['o', 's', '^', 'v', '<', '>', '8', 'p', '*', 'h', '+', 'x', 'D']
@@ -188,7 +221,7 @@ class ScatterplotVisualizer(QWidget):
                 self.ax.annotate(row["vowel"], (row["F2"], row["F1"]), textcoords="offset points", xytext=(0, 5),
                                  ha='center', va='bottom', fontsize=8)
 
-        if self.checkbox_polygon.isChecked() and len(self.data) >= 3:
+        if self.connect_data_action.isChecked() and len(self.data) >= 3:
             for source, group in self.data.groupby("source"):
                 points = np.array([group["F2"], group["F1"]]).T
                 if len(points) >= 3:
@@ -226,15 +259,32 @@ class ScatterplotVisualizer(QWidget):
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
         self.update_scatterplot()
 
+    def save_scatterplot_auto(self):
+        custom_title = self.edit_title.text() or "Vowel Spaces"
+        file_name = f"{custom_title}.jpg"
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", file_name,
+                                                   "JPEG Files (*.jpg *.jpeg);;All Files (*)")
+
+        if file_name:
+            try:
+                self.figure.savefig(file_name, format='jpeg', dpi=800)
+                QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
+
     def save_scatterplot(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", "",
-                                                   "JPEG Files (*.jpg *.jpeg);;All Files (*)", options=options)
+                                                   "JPEG Files (*.jpg *.jpeg);;PNG Files (*.png);;All Files (*)",
+                                                   options=options)
 
         if file_name:
             try:
-                self.figure.savefig(file_name, format='jpeg', dpi=300)
+                # Determine file format based on the selected file extension
+                file_format = 'jpeg' if file_name.lower().endswith(('.jpg', '.jpeg')) else 'png'
+
+                self.figure.savefig(file_name, format=file_format, dpi=800)
                 QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
@@ -250,3 +300,6 @@ if __name__ == '__main__':
     my_app = ScatterplotVisualizer()
     my_app.show()
     sys.exit(app.exec_())
+
+    # Vowel Space Visualizer V.1.1
+    # Ali Çağan Kaya, under the GPL-3.0 license.
