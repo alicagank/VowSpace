@@ -39,9 +39,13 @@ class ScatterplotVisualizer(QWidget):
 
         save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
         save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        save_data_action = self.create_action('Save Data as CSV', self.save_data_to_csv)
+        import_data_action = self.create_action('Import Data from CSV', self.import_data_from_csv)
 
         file_menu.addAction(save_action)
         file_menu.addAction(save_as_action)
+        file_menu.addAction(save_data_action)
+        file_menu.addAction(import_data_action)
 
         # Edit menu
         edit_menu = menubar.addMenu('Edit')
@@ -156,9 +160,11 @@ class ScatterplotVisualizer(QWidget):
         F1 = float(self.edit_F1.text())
         F2 = float(self.edit_F2.text())
 
-        source = self.edit_source.text() if mode == 'Multiple' else ''
+        source = self.edit_source.text() if mode == 'Multiple' and self.edit_source.text() else ''
 
-        new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "source": [source]})
+        new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "source": [source]}) if source else \
+                   pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2]})
+
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
         self.clear_input_fields()
@@ -288,6 +294,51 @@ class ScatterplotVisualizer(QWidget):
                 QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
+
+    def import_data_from_csv(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from CSV", "",
+                                                   "CSV Files (*.csv);;All Files (*)", options=options)
+
+        if file_name:
+            try:
+                # Specify the delimiter and quote character, and skip initial spaces
+                new_data = pd.read_csv(file_name, na_values=['', 'NaN', 'nan', 'N/A', 'NA', 'n/a'],
+                                       delimiter=',', quotechar='"', skipinitialspace=True)
+
+                # Convert 'F1' and 'F2' columns to numeric
+                new_data['F1'] = pd.to_numeric(new_data['F1'], errors='coerce')
+                new_data['F2'] = pd.to_numeric(new_data['F2'], errors='coerce')
+
+                # Set 'source' column to an empty string if it doesn't exist
+                if 'source' not in new_data.columns:
+                    new_data['source'] = ''
+
+                # Replace empty values in 'source' column with a space character
+                new_data['source'] = new_data['source'].fillna('N/A')
+
+                # Drop rows with missing values after conversion
+                new_data = new_data.dropna()
+
+                self.data = pd.concat([self.data, new_data], ignore_index=True)
+                self.update_scatterplot()
+                QMessageBox.information(self, "Success", "Data imported from CSV successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error importing data from CSV: {str(e)}")
+
+    def save_data_to_csv(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as CSV", "",
+                                                   "CSV Files (*.csv);;All Files (*)", options=options)
+
+        if file_name:
+            try:
+                self.data.to_csv(file_name, index=False)
+                QMessageBox.information(self, "Success", "Data saved to CSV successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving data to CSV: {str(e)}")
 
     def update_title(self):
         custom_title = self.edit_title.text()
