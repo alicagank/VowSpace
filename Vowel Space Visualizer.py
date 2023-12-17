@@ -39,8 +39,8 @@ class ScatterplotVisualizer(QWidget):
 
         save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
         save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
-        save_data_action = self.create_action('Save Data as CSV', self.save_data_to_csv)
-        import_data_action = self.create_action('Import Data from CSV', self.import_data_from_csv)
+        save_data_action = self.create_action('Save Data As...', self.save_data_to_excel)
+        import_data_action = self.create_action('Import Data from Excel', self.import_data_from_excel)
 
         file_menu.addAction(save_action)
         file_menu.addAction(save_as_action)
@@ -295,17 +295,33 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
 
-    def import_data_from_csv(self):
+    def save_data_to_excel(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from CSV", "",
-                                                   "CSV Files (*.csv);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as Excel", "",
+                                                   "Excel Files (*.xls *.xlsx);;All Files (*)", options=options)
 
         if file_name:
             try:
-                # Specify the delimiter and quote character, and skip initial spaces
-                new_data = pd.read_csv(file_name, na_values=['', 'NaN', 'nan', 'N/A', 'NA', 'n/a'],
-                                       delimiter=',', quotechar='"', skipinitialspace=True)
+                # Determine file format based on the selected file extension
+                file_format = 'xls' if file_name.lower().endswith('.xls') else 'xlsx'
+
+                self.data.to_excel(file_name, index=False, sheet_name='Sheet1', engine='openpyxl')
+                QMessageBox.information(self, "Success", f"Data saved to {file_format} successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving data to {file_format}: {str(e)}")
+
+    def import_data_from_excel(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from Excel", "",
+                                                   "Excel Files (*.xls *.xlsx);;All Files (*)", options=options)
+
+        if file_name:
+            try:
+                # Specify the sheet name if needed
+                # sheet_name = 'Sheet1'  # Replace with the actual sheet name
+                new_data = pd.read_excel(file_name, na_values=['', 'NaN', 'nan', 'N/A', 'NA', 'n/a'])
 
                 # Convert 'F1' and 'F2' columns to numeric
                 new_data['F1'] = pd.to_numeric(new_data['F1'], errors='coerce')
@@ -323,22 +339,10 @@ class ScatterplotVisualizer(QWidget):
 
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
                 self.update_scatterplot()
-                QMessageBox.information(self, "Success", "Data imported from CSV successfully.")
+                QMessageBox.information(self, "Success", "Data imported from Excel successfully.")
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error importing data from CSV: {str(e)}")
+                QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
-    def save_data_to_csv(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as CSV", "",
-                                                   "CSV Files (*.csv);;All Files (*)", options=options)
-
-        if file_name:
-            try:
-                self.data.to_csv(file_name, index=False)
-                QMessageBox.information(self, "Success", "Data saved to CSV successfully.")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error saving data to CSV: {str(e)}")
 
     def update_title(self):
         custom_title = self.edit_title.text()
