@@ -1,21 +1,23 @@
 import sys
+import numpy as np
 import pandas as pd
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QComboBox, QFileDialog, QMessageBox, QCheckBox, QMenu, QMenuBar, QAction
-)
-from PyQt5.QtCore import Qt
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-import numpy as np
 from scipy.spatial import ConvexHull
-
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
+    QGridLayout, QFileDialog, QMessageBox, QCheckBox, QMenu, QMenuBar, QAction
+)
+from PyQt5.QtCore import Qt, QTimer
 
 class ScatterplotVisualizer(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+
+        self.resize_timer = QTimer()
+        self.resize_timer.timeout.connect(self.delayed_update_scatterplot)
 
     def initUI(self):
         # Create widgets
@@ -280,11 +282,13 @@ class ScatterplotVisualizer(QWidget):
         self.figure.tight_layout()
         self.canvas.draw()
 
-    def custom_resize_event(self, event): # Buraya bak, lag yapıyor.
-        # Call update_scatterplot when the window is resized
-        self.update_scatterplot()
-        # Call the base class resizeEvent to ensure proper functionality
+    def custom_resize_event(self, event):
+        self.resize_timer.start(200)  # Adjust the delay as needed
         super().resizeEvent(event)
+
+    def delayed_update_scatterplot(self):
+        self.resize_timer.stop()  # Stop the timer to ensure it only triggers once
+        self.update_scatterplot()
 
     def clear_data(self):
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])

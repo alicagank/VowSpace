@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Bug fixes.">
+    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Added new functionalities: Show grid, show legend.">
+      <change afterPath="$PROJECT_DIR$/.Vowel Space(s).jpg.icloud" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/example_data.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/example_data.xls" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/new.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Vowel Space(s).jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Vowel Space(s) 2.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mini.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vowel Space Visualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vowel Space Visualizer.py" afterDir="false" />
@@ -18,10 +19,18 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/New Code.py" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Vowel Space Visualizer.py" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -161,7 +170,15 @@
       <option name="project" value="LOCAL" />
       <updated>1702912341988</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Added new functionalities: Show grid, show legend.">
+      <option name="closed" value="true" />
+      <created>1702913627596</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1702913627596</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -174,6 +191,7 @@
     <MESSAGE value="Added &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities." />
     <MESSAGE value="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;." />
     <MESSAGE value="Bug fixes." />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fixes." />
+    <MESSAGE value="Added new functionalities: Show grid, show legend." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added new functionalities: Show grid, show legend." />
   </component>
 </project>
