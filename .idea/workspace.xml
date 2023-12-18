@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Added &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities.">
+    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;.">
       <change afterPath="$PROJECT_DIR$/example_data.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/example_data.xls" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mini.xlsx" afterDir="false" />
@@ -120,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1702847780828</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;.">
+      <option name="closed" value="true" />
+      <created>1702854234977</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1702854234977</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -131,6 +139,7 @@
     <MESSAGE value="Changed the syntax a little." />
     <MESSAGE value="Added menus." />
     <MESSAGE value="Added &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities." />
+    <MESSAGE value="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;." />
   </component>
 </project>

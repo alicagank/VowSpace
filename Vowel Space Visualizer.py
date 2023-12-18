@@ -25,8 +25,7 @@ class ScatterplotVisualizer(QWidget):
         self.set_layout()
 
         # Set initial state
-        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
-        self.update_input_fields()
+        self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
         self.setWindowTitle("Vowel Space Visualizer V.1.1")
 
         self.create_menu_bar()
@@ -64,6 +63,11 @@ class ScatterplotVisualizer(QWidget):
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction(self.connect_data_action)
 
+        # Show labels or not
+        self.checkbox_show_labels = self.create_action('Show Data Lables', self.update_scatterplot,
+                                                      format='png', checkable=True)
+        visualization_settings_menu.addAction(self.checkbox_show_labels)
+
         self.layout().setMenuBar(menubar)
 
     def create_action(self, text, function, shortcut=None, format=None, checkable=False):
@@ -75,13 +79,8 @@ class ScatterplotVisualizer(QWidget):
         return action
 
     def create_widgets(self):
-        self.label_mode = QLabel('Mode:')
-        self.mode_combobox = QComboBox(self)
-        self.mode_combobox.addItems(['Singular', 'Multiple'])
-        self.mode_combobox.currentIndexChanged.connect(self.update_input_fields)
-
-        self.label_vowel = QLabel('Vowel:')
-        self.edit_vowel = QLineEdit()
+        self.label_lexset = QLabel('Vowel/Lexset/Word:')
+        self.edit_lexset = QLineEdit()
 
         self.label_F1 = QLabel('F1 Value:')
         self.edit_F1 = QLineEdit()
@@ -89,8 +88,8 @@ class ScatterplotVisualizer(QWidget):
         self.label_F2 = QLabel('F2 Value:')
         self.edit_F2 = QLineEdit()
 
-        self.label_source = QLabel('Source:')
-        self.edit_source = QLineEdit()
+        self.label_speaker = QLabel('Speaker:')
+        self.edit_speaker = QLineEdit()
 
         self.label_title = QLabel('Add Title:')
         self.edit_title = QLineEdit()
@@ -105,21 +104,15 @@ class ScatterplotVisualizer(QWidget):
     def set_layout(self):
         layout = QVBoxLayout()
 
-        mode_layout = QHBoxLayout()
-        mode_layout.addWidget(self.label_mode)
-        mode_layout.addWidget(self.mode_combobox)
-
-        layout.addLayout(mode_layout)
-
         input_grid_layout = QGridLayout()
-        input_grid_layout.addWidget(self.label_vowel, 0, 0)
-        input_grid_layout.addWidget(self.edit_vowel, 0, 1)
+        input_grid_layout.addWidget(self.label_lexset, 0, 0)
+        input_grid_layout.addWidget(self.edit_lexset, 0, 1)
         input_grid_layout.addWidget(self.label_F1, 1, 0)
         input_grid_layout.addWidget(self.edit_F1, 1, 1)
         input_grid_layout.addWidget(self.label_F2, 2, 0)
         input_grid_layout.addWidget(self.edit_F2, 2, 1)
-        input_grid_layout.addWidget(self.label_source, 3, 0)
-        input_grid_layout.addWidget(self.edit_source, 3, 1)
+        input_grid_layout.addWidget(self.label_speaker, 3, 0)
+        input_grid_layout.addWidget(self.edit_speaker, 3, 1)
 
         layout.addLayout(input_grid_layout)
 
@@ -146,40 +139,33 @@ class ScatterplotVisualizer(QWidget):
             button.setShortcut(shortcut)
         return button
 
-    def update_input_fields(self):
-        mode = self.mode_combobox.currentText()
-        self.label_source.setVisible(mode == 'Multiple')
-        self.edit_source.setVisible(mode == 'Multiple')
-
     def add_data(self):
         if not self.validate_input_data():
             return
 
-        mode = self.mode_combobox.currentText()
-        vowel = self.edit_vowel.text()
+        lexset = self.edit_lexset.text()
         F1 = float(self.edit_F1.text())
         F2 = float(self.edit_F2.text())
+        speaker = self.edit_speaker.text() if self.edit_speaker.text() else ''
 
-        source = self.edit_source.text() if mode == 'Multiple' and self.edit_source.text() else ''
-
-        new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "source": [source]}) if source else \
-                   pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2]})
+        new_data = pd.DataFrame({"lexset": [lexset], "F1": [F1], "F2": [F2], "speaker": [speaker]}) if speaker else \
+                   pd.DataFrame({"lexset": [lexset], "F1": [F1], "F2": [F2]})
 
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
         self.clear_input_fields()
 
-        self.edit_vowel.setFocus()
+        self.edit_lexset.setFocus()
         self.update_scatterplot()
 
     def clear_input_fields(self):
-        self.edit_vowel.clear()
+        self.edit_lexset.clear()
         self.edit_F1.clear()
         self.edit_F2.clear()
-        self.edit_source.clear()
+        self.edit_speaker.clear()
 
     def validate_input_data(self):
-        if not all([self.edit_vowel.text(), self.edit_F1.text(), self.edit_F2.text()]):
+        if not all([self.edit_lexset.text(), self.edit_F1.text(), self.edit_F2.text()]):
             self.show_error_message("Please fill in all the required fields.")
             return False
 
@@ -207,33 +193,36 @@ class ScatterplotVisualizer(QWidget):
     def update_scatterplot(self, format=None):
         self.ax.clear()
 
-        markers = ['o', 's', '^', 'v', '<', '>', '8', 'p', '*', 'h', '+', 'x', 'D']
-        vowel_markers = {v: markers[i % len(markers)] for i, v in enumerate(self.data['vowel'].unique())}
+        markers = '.'  # Use a single marker for all lexsets
+        lexset_markers = {v: markers for i, v in enumerate(self.data['lexset'].unique())}
 
-        source_colors = {source: plt.cm.get_cmap('viridis')(i / len(self.data['source'].unique()))
-                         for i, source in enumerate(self.data['source'].unique())}
+        speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
+                          for i, speaker in enumerate(self.data['speaker'].unique())}
 
-        for v in self.data['vowel'].unique():
-            subset = self.data[self.data['vowel'] == v]
+        show_labels = self.checkbox_show_labels.isChecked()  # Check the state of the checkbox
+
+        for v in self.data['lexset'].unique():
+            subset = self.data[self.data['lexset'] == v]
             self.ax.scatter(
                 subset["F2"], subset["F1"],
-                marker=vowel_markers[v],
-                c=[source_colors[s] for s in subset["source"]],
+                marker=lexset_markers[v],
+                c=[speaker_colors[s] for s in subset["speaker"]],
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
 
-            for index, row in subset.iterrows():
-                self.ax.annotate(row["vowel"], (row["F2"], row["F1"]), textcoords="offset points", xytext=(0, 5),
-                                 ha='center', va='bottom', fontsize=8)
+            if show_labels:
+                for index, row in subset.iterrows():
+                    self.ax.annotate(row["lexset"], (row["F2"], row["F1"]), textcoords="offset points", xytext=(0, 5),
+                                     ha='center', va='bottom', fontsize=8)
 
         if self.connect_data_action.isChecked() and len(self.data) >= 3:
-            for source, group in self.data.groupby("source"):
+            for speaker, group in self.data.groupby("speaker"):
                 points = np.array([group["F2"], group["F1"]]).T
                 if len(points) >= 3:
                     hull = ConvexHull(points)
-                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=source,
-                                          facecolor=source_colors[source])
+                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=speaker,
+                                          facecolor=speaker_colors[speaker])
                     self.ax.add_patch(polygon)
 
         self.ax.yaxis.tick_right()
@@ -262,11 +251,11 @@ class ScatterplotVisualizer(QWidget):
         self.ax.xaxis.set_ticks_position("top")
 
     def clear_data(self):
-        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "source"])
+        self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
         self.update_scatterplot()
 
     def save_scatterplot_auto(self):
-        custom_title = self.edit_title.text() or "Vowel Spaces"
+        custom_title = self.edit_title.text() or "Vowel Space(s)"
         file_name = f"{custom_title}.jpg"
         file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", file_name,
                                                    "JPEG Files (*.jpg *.jpeg);;All Files (*)")
@@ -298,8 +287,13 @@ class ScatterplotVisualizer(QWidget):
     def save_data_to_excel(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as Excel", "",
-                                                   "Excel Files (*.xls *.xlsx);;All Files (*)", options=options)
+
+        # Get the title of the scatterplot
+        custom_title = self.edit_title.text() or "Vowel Space(s)"
+
+        # Prompt user for file name and include the scatterplot title
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as Excel", f"{custom_title}.xlsx",
+                                                   "Excel Files (*.xlsx);;All Files (*)", options=options)
 
         if file_name:
             try:
@@ -327,12 +321,12 @@ class ScatterplotVisualizer(QWidget):
                 new_data['F1'] = pd.to_numeric(new_data['F1'], errors='coerce')
                 new_data['F2'] = pd.to_numeric(new_data['F2'], errors='coerce')
 
-                # Set 'source' column to an empty string if it doesn't exist
-                if 'source' not in new_data.columns:
-                    new_data['source'] = ''
+                # Set 'speaker' column to an empty string if it doesn't exist
+                if 'speaker' not in new_data.columns:
+                    new_data['speaker'] = ''
 
-                # Replace empty values in 'source' column with a space character
-                new_data['source'] = new_data['source'].fillna('N/A')
+                # Replace empty values in 'speaker' column with a space character
+                new_data['speaker'] = new_data['speaker'].fillna('N/A')
 
                 # Drop rows with missing values after conversion
                 new_data = new_data.dropna()
@@ -343,10 +337,9 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
-
     def update_title(self):
         custom_title = self.edit_title.text()
-        self.ax.set_title(custom_title if custom_title else "Vowel Spaces", pad=20)
+        self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=20)
         self.canvas.draw()
 
 
@@ -355,6 +348,3 @@ if __name__ == '__main__':
     my_app = ScatterplotVisualizer()
     my_app.show()
     sys.exit(app.exec_())
-
-    # Vowel Space Visualizer V.1.1
-    # Ali Çağan Kaya, under the GPL-3.0 license.
