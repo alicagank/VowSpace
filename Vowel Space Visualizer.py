@@ -68,6 +68,11 @@ class ScatterplotVisualizer(QWidget):
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction(self.checkbox_show_labels)
 
+        # Show legend or not
+        self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot,
+                                                       format='png', checkable=True)
+        visualization_settings_menu.addAction((self.checkbox_show_legend))
+
         # Show grids or not
         self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot,
                                                       format='png', checkable=True)
@@ -234,11 +239,16 @@ class ScatterplotVisualizer(QWidget):
 
         custom_title = self.edit_title.text()
         if custom_title:
-            self.ax.set_title(custom_title, pad=20)
+            self.ax.set_title(custom_title, pad=30)
         else:
-            self.ax.set_title("Vowel Space(s)", pad=20)
+            self.ax.set_title("Vowel Space(s)", pad=30)
 
-        self.ax.legend() #Buraya bak (sadece "speaker" olacak şekilde)
+        show_legend = self.checkbox_show_legend.isChecked() #Buraya bak (sadece "speaker" olacak şekilde)
+
+        if show_legend:
+            self.ax.legend()
+        else:
+            self.ax.legend().set_visible(False)
 
         show_grid = self.checkbox_show_grids.isChecked() # Buraya bak (Seems to be working fine)
 
@@ -256,14 +266,13 @@ class ScatterplotVisualizer(QWidget):
         plt.gca().invert_xaxis()
         plt.gca().invert_yaxis()
 
-        self.figure.tight_layout()
-        self.canvas.draw()
-
         self.ax.xaxis.set_label_position("bottom")
         self.ax.xaxis.set_ticks_position("top")
         self.ax.yaxis.set_label_position("left")
         self.ax.yaxis.set_ticks_position("right")
 
+        self.figure.tight_layout()
+        self.canvas.draw()
 
     def clear_data(self):
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
