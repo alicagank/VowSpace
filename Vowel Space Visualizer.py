@@ -68,6 +68,11 @@ class ScatterplotVisualizer(QWidget):
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction(self.checkbox_show_labels)
 
+        # Show grids or not
+        self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot,
+                                                      format='png', checkable=True)
+        visualization_settings_menu.addAction((self.checkbox_show_grids))
+
         self.layout().setMenuBar(menubar)
 
     def create_action(self, text, function, shortcut=None, format=None, checkable=False):
@@ -97,6 +102,7 @@ class ScatterplotVisualizer(QWidget):
 
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
         self.button_clear_data = self.create_button('Clear Data', self.clear_data)
+        self.button_update_scatterplot = self.create_button('Update Scatterplot', self.update_scatterplot)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -125,6 +131,7 @@ class ScatterplotVisualizer(QWidget):
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(self.button_add_data)
         buttons_layout.addWidget(self.button_clear_data)
+        buttons_layout.addWidget(self.button_update_scatterplot)
 
         layout.addLayout(buttons_layout)
 
@@ -193,7 +200,7 @@ class ScatterplotVisualizer(QWidget):
     def update_scatterplot(self, format=None):
         self.ax.clear()
 
-        markers = '.'  # Use a single marker for all lexsets
+        markers = '.'  # Use a single marker for all lexsets (.)
         lexset_markers = {v: markers for i, v in enumerate(self.data['lexset'].unique())}
 
         speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
@@ -225,30 +232,38 @@ class ScatterplotVisualizer(QWidget):
                                           facecolor=speaker_colors[speaker])
                     self.ax.add_patch(polygon)
 
-        self.ax.yaxis.tick_right()
-        self.ax.xaxis.tick_top()
-
-        plt.gca().invert_xaxis()
-        plt.gca().invert_yaxis()
-
         custom_title = self.edit_title.text()
         if custom_title:
             self.ax.set_title(custom_title, pad=20)
         else:
             self.ax.set_title("Vowel Space(s)", pad=20)
 
+        self.ax.legend() #Buraya bak (sadece "speaker" olacak şekilde)
+
+        show_grid = self.checkbox_show_grids.isChecked() # Buraya bak (Seems to be working fine)
+
+        if show_grid:
+            self.ax.grid(True)
+        else:
+            self.ax.grid(False)
+
         self.ax.set_xlabel("F2")
         self.ax.set_ylabel("F1")
 
-        self.ax.legend()
+        self.ax.yaxis.tick_right()
+        self.ax.xaxis.tick_top()
+
+        plt.gca().invert_xaxis()
+        plt.gca().invert_yaxis()
 
         self.figure.tight_layout()
         self.canvas.draw()
 
-        self.ax.yaxis.set_label_position("right")
-        self.ax.xaxis.set_label_position("top")
-        self.ax.yaxis.set_ticks_position("right")
+        self.ax.xaxis.set_label_position("bottom")
         self.ax.xaxis.set_ticks_position("top")
+        self.ax.yaxis.set_label_position("left")
+        self.ax.yaxis.set_ticks_position("right")
+
 
     def clear_data(self):
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
@@ -257,8 +272,6 @@ class ScatterplotVisualizer(QWidget):
     def save_scatterplot_auto(self):
         custom_title = self.edit_title.text() or "Vowel Space(s)"
         file_name = f"{custom_title}.jpg"
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", file_name,
-                                                   "JPEG Files (*.jpg *.jpeg);;All Files (*)")
 
         if file_name:
             try:
