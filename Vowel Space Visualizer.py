@@ -348,3 +348,6 @@ if __name__ == '__main__':
     my_app = ScatterplotVisualizer()
     my_app.show()
     sys.exit(app.exec_())
+
+    # Vowel Space Visualizer V.1.1
+    # Ali Çağan Kaya, under the GPL-3.0 license.
