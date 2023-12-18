@@ -30,6 +30,8 @@ class ScatterplotVisualizer(QWidget):
 
         self.create_menu_bar()
 
+        self.resizeEvent = self.custom_resize_event
+
     def create_menu_bar(self):
         menubar = QMenuBar(self)
 
@@ -246,14 +248,18 @@ class ScatterplotVisualizer(QWidget):
         show_legend = self.checkbox_show_legend.isChecked() #Buraya bak (sadece "speaker" olacak şekilde)
 
         if show_legend:
-            self.ax.legend()
+            self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
         else:
             self.ax.legend().set_visible(False)
 
-        show_grid = self.checkbox_show_grids.isChecked() # Buraya bak (Seems to be working fine)
+        show_grid = self.checkbox_show_grids.isChecked()
+
+        # Set zorder value for the scatter plot
+        scatter_zorder = 2
 
         if show_grid:
-            self.ax.grid(True)
+            # Draw grid lines behind the scatter plot by setting zorder
+            self.ax.grid(True, linestyle='--', linewidth=0.5, zorder=scatter_zorder - 1)
         else:
             self.ax.grid(False)
 
@@ -273,6 +279,12 @@ class ScatterplotVisualizer(QWidget):
 
         self.figure.tight_layout()
         self.canvas.draw()
+
+    def custom_resize_event(self, event): # Buraya bak, lag yapıyor.
+        # Call update_scatterplot when the window is resized
+        self.update_scatterplot()
+        # Call the base class resizeEvent to ensure proper functionality
+        super().resizeEvent(event)
 
     def clear_data(self):
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
