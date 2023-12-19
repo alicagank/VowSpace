@@ -4,13 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Added new functionalities: Show grid, show legend.">
-      <change afterPath="$PROJECT_DIR$/.Vowel Space(s).jpg.icloud" afterDir="false" />
+    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag.">
+      <change afterPath="$PROJECT_DIR$/.Vowel Space(s) 2.jpg.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-12 at 10.25.18 PM.png.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 3.09.28 AM.png.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 6.27.28 PM.png.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 8.20.53 PM.png.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-12 at 2.36.26 PM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-13 at 9.43.27 PM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-16 at 11.03.12 PM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.09.51 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.10.16 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.51.40 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.57.39 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.17 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.44 AM.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.54 AM.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/example_data.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/example_data.xls" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/new.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Vowel Space(s) 2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mini.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Vowel Space(s) 3.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/icon.ico" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vowel Space Visualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vowel Space Visualizer.py" afterDir="false" />
     </list>
@@ -178,7 +192,31 @@
       <option name="project" value="LOCAL" />
       <updated>1702913627596</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag.">
+      <option name="closed" value="true" />
+      <created>1702918004689</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1702918004689</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag.">
+      <option name="closed" value="true" />
+      <created>1702922678348</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1702922678348</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag.">
+      <option name="closed" value="true" />
+      <created>1702922775641</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1702922775641</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -192,6 +230,7 @@
     <MESSAGE value="Changed the &quot;Save as .csv&quot; and &quot;Import from .csv&quot; functionalities to &quot;Save as Excel&quot; and &quot;Import from Excel&quot;." />
     <MESSAGE value="Bug fixes." />
     <MESSAGE value="Added new functionalities: Show grid, show legend." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added new functionalities: Show grid, show legend." />
+    <MESSAGE value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag." />
   </component>
 </project>

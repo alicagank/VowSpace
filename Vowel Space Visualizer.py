@@ -209,6 +209,10 @@ class ScatterplotVisualizer(QWidget):
     def update_scatterplot(self, format=None):
         self.ax.clear()
 
+        if self.data.empty: # Handle empty data
+
+            return
+
         markers = '.'  # Use a single marker for all lexsets (.)
         lexset_markers = {v: markers for i, v in enumerate(self.data['lexset'].unique())}
 
