@@ -3,11 +3,11 @@ An application designed for visualizing vowels. With data acquired from tools li
 
 I developed this program as a creative diversion while getting one of my phonetics homeworks done. The task involved manually inputting data into Excel and adhering to specific guidelines to construct a scatterplot resembling a vowel space.
 
-I've provided two different scripts for your convenience. The first script is a standalone Python application enabling you to effortlessly generate a vowel space or compare different vowel spaces by inputting the data. The second program (in the Vsv_Python_R folder), consisting of a Python interface, facilitates the creation of a .csv document containing the entered data. Subsequently, an R script reads this dataset, generating a comprehensive scatterplot based on the provided information.
+I've provided two different scripts for your convenience. The first script is a standalone Python application enabling you to generate a scatterplot or compare different vowel spaces by inputting or importing data. The second program (in the Vsv_Python_R folder), consisting of a Python interface, facilitates the creation of a .csv document containing the entered data. Subsequently, an R script reads this dataset, generating a comprehensive scatterplot based on the provided information.
 
 ## Overview
 
-A Python-based application that offers a user-friendly interface to work on phonetic data effortlessly. Whether you're a linguistics student or a researcher, this tool provides a convenient way to visualize and analyze the formants of vowels.
+A Python-based application that offers a user-friendly interface to work on phonetic data effortlessly. Whether you're a linguistics student or a researcher, this tool provides a convenient way to visualize and analyze the formants of vowels as well as sociolinguistics data.
 
 ## Features
 
@@ -22,6 +22,8 @@ A Python-based application that offers a user-friendly interface to work on phon
 - **Save Data New Data**: Save a dataset that you worked on as a .xlsx file.
 
 - **Start Fresh**: Use the "Clear Data" function to start over and input or import new data.
+
+- **Data Normalization**: You can use the Data Settings to normalize data or convert Hz values to Bark.
 
 ## Usage
 
