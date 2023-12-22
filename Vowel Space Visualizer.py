@@ -68,7 +68,7 @@ class ScatterplotVisualizer(QWidget):
         visualization_settings_menu.addAction(self.connect_data_action)
 
         # Show labels or not
-        self.checkbox_show_labels = self.create_action('Show Data Lables', self.update_scatterplot,
+        self.checkbox_show_labels = self.create_action('Show Data Labels', self.update_scatterplot,
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction(self.checkbox_show_labels)
 
