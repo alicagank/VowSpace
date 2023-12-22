@@ -28,7 +28,7 @@ class ScatterplotVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
-        self.setWindowTitle("Vowel Space Visualizer V.1.1")
+        self.setWindowTitle("Vowel Space Visualizer V.1.2")
 
         self.create_menu_bar()
 
@@ -62,6 +62,9 @@ class ScatterplotVisualizer(QWidget):
         # Visualization Settings submenu
         visualization_settings_menu = settings_menu.addMenu('Visualization Settings')
 
+        # Data Settings submenu
+        data_settings_menu = settings_menu.addMenu('Data Settings')
+
         # Connect Data with Polygons action
         self.connect_data_action = self.create_action('Connect Data with Polygons', self.update_scatterplot,
                                                       format='png', checkable=True)
@@ -81,6 +84,16 @@ class ScatterplotVisualizer(QWidget):
         self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot,
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction((self.checkbox_show_grids))
+
+        # Barkify
+        self.checkbox_barkify = self.create_action('Barkify', self.barkify,
+                                                   format='png', checkable=True)
+        data_settings_menu.addAction((self.checkbox_barkify))
+
+        # Lobanov Normalization
+        self.checkbox_normalize_lobanov = self.create_action('Normalize (Lobanov)', self.lobify,
+                                                        format='png', checkable=True)
+        data_settings_menu.addAction((self.checkbox_normalize_lobanov))
 
         self.layout().setMenuBar(menubar)
 
@@ -217,24 +230,35 @@ class ScatterplotVisualizer(QWidget):
 
         show_labels = self.checkbox_show_labels.isChecked()  # Check the state of the checkbox
 
+        # Use z-score transformed columns as new F1 and F2 if the checkbox is checked
+        if self.checkbox_normalize_lobanov.isChecked():
+            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
+        else:
+            f1_column, f2_column = 'F1', 'F2'
+
         for v in self.data['lexset'].unique():
             subset = self.data[self.data['lexset'] == v]
             self.ax.scatter(
-                subset["F2"], subset["F1"],
+                subset[f2_column], subset[f1_column],  # Use selected F1 and F2 columns
                 marker=lexset_markers[v],
-                c=[speaker_colors[s] for s in subset["speaker"]],
+                c=[speaker_colors[s] for s in subset['speaker']],
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
 
-            if show_labels:
+            if self.checkbox_show_labels.isChecked():  # Check the state of the checkbox
                 for index, row in subset.iterrows():
-                    self.ax.annotate(row["lexset"], (row["F2"], row["F1"]), textcoords="offset points", xytext=(0, 5),
+                    label = row['lexset']
+
+                    # Display selected columns on the scatterplot
+                    label += f"\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+
+                    self.ax.annotate(label, (row[f2_column], row[f1_column]), textcoords="offset points", xytext=(0, 5),
                                      ha='center', va='bottom', fontsize=8)
 
         if self.connect_data_action.isChecked() and len(self.data) >= 3:
             for speaker, group in self.data.groupby("speaker"):
-                points = np.array([group["F2"], group["F1"]]).T
+                points = np.array([group[f2_column], group[f1_column]]).T
                 if len(points) >= 3:
                     hull = ConvexHull(points)
                     polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=speaker,
@@ -281,6 +305,30 @@ class ScatterplotVisualizer(QWidget):
 
         self.figure.tight_layout()
         self.canvas.draw()
+
+    def barkify(self, arg):
+
+        # Convert Hz to Bark using the formula
+        self.data['F1'] = 13 * np.arctan(self.data['F1'] / 1315.8) + 3.5 * np.arctan(self.data['F1'] / 7518.0)
+        self.data['F2'] = 13 * np.arctan(self.data['F2'] / 1315.8) + 3.5 * np.arctan(self.data['F2'] / 7518.0)
+
+        self.update_scatterplot()
+
+    def lobify(self, arg):
+
+        formants = ['F1', 'F2']  # Add more formants if needed
+        group_column = 'speaker' # or lexset couldn't decide
+
+        zscore = lambda x: (x - x.mean()) / x.std()
+
+        for formant in formants:
+            name = f"zsc_{formant}"
+
+            if name not in self.data.columns:  # Check if the column already exists
+                col = self.data.groupby([group_column])[formant].transform(zscore)
+                self.data.insert(len(self.data.columns), name, col)
+
+        self.update_scatterplot()
 
     def custom_resize_event(self, event):
         self.resize_timer.start(200)  # Adjust the delay as needed
@@ -387,5 +435,5 @@ if __name__ == '__main__':
     my_app.show()
     sys.exit(app.exec_())
 
-    # Vowel Space Visualizer V.1.1
+    # Vowel Space Visualizer V.1.2
     # Ali Çağan Kaya, under the GPL-3.0 license.

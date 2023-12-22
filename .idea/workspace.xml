@@ -4,8 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag.">
+    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Fixed a typo.">
       <change afterPath="$PROJECT_DIR$/.Vowel Space(s) 2.jpg.icloud" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/7-Table1-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Book1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Data" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Barkified).jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Lobanov Revised).jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Lobanov).jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Experiment.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Experiment.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Normalization Vowels.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-12 at 10.25.18 PM.png.icloud" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 3.09.28 AM.png.icloud" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 6.27.28 PM.png.icloud" afterDir="false" />
@@ -25,7 +34,6 @@
       <change afterPath="$PROJECT_DIR$/Old/new.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Vowel Space(s) 3.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/icon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/~$mini.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Vowel Space Visualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vowel Space Visualizer.py" afterDir="false" />
     </list>
@@ -233,7 +241,15 @@
       <option name="project" value="LOCAL" />
       <updated>1703022988668</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Fixed a typo.">
+      <option name="closed" value="true" />
+      <created>1703235567781</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1703235567781</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -249,6 +265,7 @@
     <MESSAGE value="Added new functionalities: Show grid, show legend." />
     <MESSAGE value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag. Method for handling empty data." />
     <MESSAGE value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag." />
+    <MESSAGE value="Fixed a typo." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a typo." />
   </component>
 </project>
