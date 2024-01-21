@@ -91,7 +91,7 @@ class ScatterplotVisualizer(QWidget):
         data_settings_menu.addAction((self.checkbox_barkify))
 
         # Lobanov Normalization
-        self.checkbox_normalize_lobanov = self.create_action('Normalize (Lobanov)', self.lobify,
+        self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify,
                                                         format='png', checkable=True)
         data_settings_menu.addAction((self.checkbox_normalize_lobanov))
 
@@ -106,6 +106,8 @@ class ScatterplotVisualizer(QWidget):
         return action
 
     def create_widgets(self):
+
+        # The input boxes
         self.label_lexset = QLabel('Vowel/Lexset/Word:')
         self.edit_lexset = QLineEdit()
 
@@ -122,6 +124,7 @@ class ScatterplotVisualizer(QWidget):
         self.edit_title = QLineEdit()
         self.edit_title.textChanged.connect(self.update_title)
 
+        # The buttons that trigger those actions
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
         self.button_clear_data = self.create_button('Clear Data', self.clear_data)
         self.button_update_scatterplot = self.create_button('Update Scatterplot', self.update_scatterplot)
@@ -132,6 +135,7 @@ class ScatterplotVisualizer(QWidget):
     def set_layout(self):
         layout = QVBoxLayout()
 
+        # The placements of the UI elements
         input_grid_layout = QGridLayout()
         input_grid_layout.addWidget(self.label_lexset, 0, 0)
         input_grid_layout.addWidget(self.edit_lexset, 0, 1)
@@ -168,6 +172,7 @@ class ScatterplotVisualizer(QWidget):
             button.setShortcut(shortcut)
         return button
 
+    # Adding data functionality
     def add_data(self):
         if not self.validate_input_data():
             return
@@ -187,12 +192,14 @@ class ScatterplotVisualizer(QWidget):
         self.edit_lexset.setFocus()
         self.update_scatterplot()
 
+    # Automatically clears the input fields after adding data
     def clear_input_fields(self):
         self.edit_lexset.clear()
         self.edit_F1.clear()
         self.edit_F2.clear()
         self.edit_speaker.clear()
 
+    # Validates the data to be added - or else the program crashes.
     def validate_input_data(self):
         if not all([self.edit_lexset.text(), self.edit_F1.text(), self.edit_F2.text()]):
             self.show_error_message("Please fill in all the required fields.")
@@ -207,6 +214,7 @@ class ScatterplotVisualizer(QWidget):
 
         return True
 
+    # The layout and initiation of the error messages
     def show_error_message(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Critical)
@@ -214,11 +222,13 @@ class ScatterplotVisualizer(QWidget):
         msg_box.setText(message)
         msg_box.exec_()
 
+    # Deletes the last inputted data from the dataframe
     def undo_last_data(self):
         if not self.data.empty:
             self.data = self.data.iloc[:-1]
             self.update_scatterplot()
 
+    # Creates the scatterplot
     def update_scatterplot(self, format=None):
         self.ax.clear()
 
@@ -230,9 +240,15 @@ class ScatterplotVisualizer(QWidget):
 
         show_labels = self.checkbox_show_labels.isChecked()  # Check the state of the checkbox
 
-        # Use z-score transformed columns as new F1 and F2 if the checkbox is checked
-        if self.checkbox_normalize_lobanov.isChecked():
-            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
+        # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
+        if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
+            f1_column, f2_column = 'lob_F1', 'lob_F2'
+        elif self.checkbox_barkify.isChecked() and not self.checkbox_normalize_lobanov.isChecked():
+            f1_column, f2_column = 'bark_F1', 'bark_F2'
+        elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
+            # Shows an error message if both checkboxes are checked
+            self.show_error_message("Cannot apply both Barkify and Lobanov normalizations transformations simultaneously.")
+            return
         else:
             f1_column, f2_column = 'F1', 'F2'
 
@@ -246,17 +262,17 @@ class ScatterplotVisualizer(QWidget):
                 alpha=0.8, edgecolors="w", linewidth=1
             )
 
-            if self.checkbox_show_labels.isChecked():  # Check the state of the checkbox
+            if self.checkbox_show_labels.isChecked():  # Checks the state of the checkbox
                 for index, row in subset.iterrows():
                     label = row['lexset']
 
-                    # Display selected columns on the scatterplot
+                    # Displays selected columns on the scatterplot
                     label += f"\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
 
                     self.ax.annotate(label, (row[f2_column], row[f1_column]), textcoords="offset points", xytext=(0, 5),
                                      ha='center', va='bottom', fontsize=8)
 
-        if self.connect_data_action.isChecked() and len(self.data) >= 3:
+        if self.connect_data_action.isChecked() and len(self.data) >= 3: # Groups each and every data on the scatterplot according to the speaker and connects them with a convex hull polygon
             for speaker, group in self.data.groupby("speaker"):
                 points = np.array([group[f2_column], group[f1_column]]).T
                 if len(points) >= 3:
@@ -265,13 +281,14 @@ class ScatterplotVisualizer(QWidget):
                                           facecolor=speaker_colors[speaker])
                     self.ax.add_patch(polygon)
 
+        # Edits the title according to self.edit_title()
         custom_title = self.edit_title.text()
         if custom_title:
             self.ax.set_title(custom_title, pad=30)
         else:
             self.ax.set_title("Vowel Space(s)", pad=30)
 
-        show_legend = self.checkbox_show_legend.isChecked() #Buraya bak (sadece "speaker" olacak şekilde)
+        show_legend = self.checkbox_show_legend.isChecked() # Checks if self.checkbox_show_legend() is checked and shows the legend accordingly
 
         if show_legend:
             self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
@@ -289,40 +306,59 @@ class ScatterplotVisualizer(QWidget):
         else:
             self.ax.grid(False)
 
+
+        # Sets labels for the axes
         self.ax.set_xlabel("F2")
         self.ax.set_ylabel("F1")
 
+        # Sets the position of the rulers
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
 
+        # Inverts the axes to resemble vowel space
         plt.gca().invert_xaxis()
         plt.gca().invert_yaxis()
 
+        # Positions them
         self.ax.xaxis.set_label_position("bottom")
         self.ax.xaxis.set_ticks_position("top")
         self.ax.yaxis.set_label_position("left")
         self.ax.yaxis.set_ticks_position("right")
 
+        # Uses the tight_layout(), minimizes the gaps between the window and the scatterplot
         self.figure.tight_layout()
         self.canvas.draw()
 
-    def barkify(self, arg):
 
-        # Convert Hz to Bark using the formula
-        self.data['F1'] = 13 * np.arctan(self.data['F1'] / 1315.8) + 3.5 * np.arctan(self.data['F1'] / 7518.0)
-        self.data['F2'] = 13 * np.arctan(self.data['F2'] / 1315.8) + 3.5 * np.arctan(self.data['F2'] / 7518.0)
+    # Bark Difference Metric - Zi = 26.81/(1+1960/Fi) - 0.53 (Traunmüller, 1997)
+    def barkify(self, arg):
+        formants = ['F1', 'F2']
+
+        bark_formula = lambda y: 26.81 / (1 + 1960 / y) - 0.53
+
+        for formant in formants:
+            name = f"bark_{formant}"
+
+            if name not in self.data.columns:  # Check if the column already exists
+                col = self.data[formant].apply(bark_formula)
+                self.data[name] = col
 
         self.update_scatterplot()
 
+    # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
+
+    # Lobanov's method was one of the earlier vowel-extrinsic formulas to appear, but it remains among the best.
+    # Implementation: Following Nearey (1977) and Adank et al. (2004), NORM uses the formula (see the General Note below):
+    # Fn[V]N = (Fn[V] - MEANn)/Sn
     def lobify(self, arg):
 
         formants = ['F1', 'F2']  # Add more formants if needed
-        group_column = 'speaker' # or lexset couldn't decide
+        group_column = 'speaker' # or lexset couldn't decide -- it was speaker.
 
         zscore = lambda x: (x - x.mean()) / x.std()
 
         for formant in formants:
-            name = f"zsc_{formant}"
+            name = f"lob_{formant}"
 
             if name not in self.data.columns:  # Check if the column already exists
                 col = self.data.groupby([group_column])[formant].transform(zscore)
@@ -330,18 +366,24 @@ class ScatterplotVisualizer(QWidget):
 
         self.update_scatterplot()
 
+    # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
+
+    # Takes delay event into account when resizing the app to avoid lag
     def custom_resize_event(self, event):
-        self.resize_timer.start(200)  # Adjust the delay as needed
+        self.resize_timer.start(200)
         super().resizeEvent(event)
 
+    # Takes delay event into account when resizing the scatterplot to avoid lag
     def delayed_update_scatterplot(self):
-        self.resize_timer.stop()  # Stop the timer to ensure it only triggers once
+        self.resize_timer.stop()  # Stops the timer to ensure it only triggers once
         self.update_scatterplot()
 
+    # Clears all the data from the dataframe
     def clear_data(self):
         self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
         self.update_scatterplot()
 
+    # Allows the user to simply save whatever there is on the scatterplot quickly
     def save_scatterplot_auto(self):
         custom_title = self.edit_title.text() or "Vowel Space(s)"
         file_name = f"{custom_title}.jpg"
@@ -353,6 +395,7 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
 
+    # Lets the user to make further changes to the file to be saved
     def save_scatterplot(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -370,14 +413,15 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
 
+    # Saves the current dataframe as an .xlsx file
     def save_data_to_excel(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
 
-        # Get the title of the scatterplot
+        # Gets the title of the scatterplot
         custom_title = self.edit_title.text() or "Vowel Space(s)"
 
-        # Prompt user for file name and include the scatterplot title
+        # Prompts user for file name and include the scatterplot title
         file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as Excel", f"{custom_title}.xlsx",
                                                    "Excel Files (*.xlsx);;All Files (*)", options=options)
 
@@ -391,6 +435,7 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving data to {file_format}: {str(e)}")
 
+    # Imports data from an .xls or .xlsx file. The files should have columns named "lexset", "speaker", "F1" and "F2".
     def import_data_from_excel(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -399,22 +444,21 @@ class ScatterplotVisualizer(QWidget):
 
         if file_name:
             try:
-                # Specify the sheet name if needed
-                # sheet_name = 'Sheet1'  # Replace with the actual sheet name
+                # Leaving the na values as is creates problems
                 new_data = pd.read_excel(file_name, na_values=['', 'NaN', 'nan', 'N/A', 'NA', 'n/a'])
 
-                # Convert 'F1' and 'F2' columns to numeric
+                # Converts 'F1' and 'F2' columns to numeric
                 new_data['F1'] = pd.to_numeric(new_data['F1'], errors='coerce')
                 new_data['F2'] = pd.to_numeric(new_data['F2'], errors='coerce')
 
-                # Set 'speaker' column to an empty string if it doesn't exist
+                # Sets 'speaker' column to an empty string if it doesn't exist
                 if 'speaker' not in new_data.columns:
                     new_data['speaker'] = ''
 
-                # Replace empty values in 'speaker' column with a space character
+                # Replaces empty values in 'speaker' column with a space character
                 new_data['speaker'] = new_data['speaker'].fillna('N/A')
 
-                # Drop rows with missing values after conversion
+                # Drops rows with missing values after conversion
                 new_data = new_data.dropna()
 
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
@@ -423,6 +467,7 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
+    # Updates the title as the self.edit_title() function works
     def update_title(self):
         custom_title = self.edit_title.text()
         self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=20)
