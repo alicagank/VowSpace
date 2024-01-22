@@ -346,7 +346,6 @@ class VowelSpaceVisualizer(QWidget):
         else:
             self.ax.grid(False)
 
-
         # Sets labels for the axes
         self.ax.set_xlabel("F2")
         self.ax.set_ylabel("F1")
