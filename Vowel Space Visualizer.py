@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QTimer
 
-class ScatterplotVisualizer(QWidget):
+class VowelSpaceVisualizer(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -27,8 +27,8 @@ class ScatterplotVisualizer(QWidget):
         self.set_layout()
 
         # Set initial state
-        self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
-        self.setWindowTitle("Vowel Space Visualizer V.1.2")
+        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
+        self.setWindowTitle("VowSpace V.1.2")
 
         self.create_menu_bar()
 
@@ -70,10 +70,26 @@ class ScatterplotVisualizer(QWidget):
                                                       format='png', checkable=True)
         visualization_settings_menu.addAction(self.connect_data_action)
 
-        # Show labels or not
-        self.checkbox_show_labels = self.create_action('Show Data Labels', self.update_scatterplot,
-                                                      format='png', checkable=True)
-        visualization_settings_menu.addAction(self.checkbox_show_labels)
+        # Show labels or not submenu
+        labels_submenu = QMenu('Show Labels', self)
+
+        # Choice 1: Show Labels for F Values
+        self.checkbox_show_labels_f = self.create_action('Show Labels for F Values', self.update_scatterplot,
+                                                              format='png', checkable=True)
+        labels_submenu.addAction(self.checkbox_show_labels_f)
+
+        # Choice 2: Show Labels for Vowels
+        self.checkbox_show_labels_vowel = self.create_action('Show Labels for Vowels', self.update_scatterplot,
+                                                            format='png', checkable=True)
+        labels_submenu.addAction(self.checkbox_show_labels_vowel)
+
+        # Choice 3: Show Labels for Speakers
+        self.checkbox_show_labels_speaker = self.create_action('Show Labels for Speakers', self.update_scatterplot,
+                                                              format='png', checkable=True)
+        labels_submenu.addAction(self.checkbox_show_labels_speaker)
+
+        # Adds another submenu under Show Data Labels
+        visualization_settings_menu.addMenu(labels_submenu)
 
         # Show legend or not
         self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot,
@@ -108,8 +124,8 @@ class ScatterplotVisualizer(QWidget):
     def create_widgets(self):
 
         # The input boxes
-        self.label_lexset = QLabel('Vowel/Lexset/Word:')
-        self.edit_lexset = QLineEdit()
+        self.label_vowel = QLabel('Vowel/Lexset/Word:')
+        self.edit_vowel = QLineEdit()
 
         self.label_F1 = QLabel('F1 Value:')
         self.edit_F1 = QLineEdit()
@@ -137,8 +153,8 @@ class ScatterplotVisualizer(QWidget):
 
         # The placements of the UI elements
         input_grid_layout = QGridLayout()
-        input_grid_layout.addWidget(self.label_lexset, 0, 0)
-        input_grid_layout.addWidget(self.edit_lexset, 0, 1)
+        input_grid_layout.addWidget(self.label_vowel, 0, 0)
+        input_grid_layout.addWidget(self.edit_vowel, 0, 1)
         input_grid_layout.addWidget(self.label_F1, 1, 0)
         input_grid_layout.addWidget(self.edit_F1, 1, 1)
         input_grid_layout.addWidget(self.label_F2, 2, 0)
@@ -177,31 +193,31 @@ class ScatterplotVisualizer(QWidget):
         if not self.validate_input_data():
             return
 
-        lexset = self.edit_lexset.text()
+        vowel = self.edit_vowel.text()
         F1 = float(self.edit_F1.text())
         F2 = float(self.edit_F2.text())
         speaker = self.edit_speaker.text() if self.edit_speaker.text() else ''
 
-        new_data = pd.DataFrame({"lexset": [lexset], "F1": [F1], "F2": [F2], "speaker": [speaker]}) if speaker else \
-                   pd.DataFrame({"lexset": [lexset], "F1": [F1], "F2": [F2]})
+        new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "speaker": [speaker]}) if speaker else \
+                   pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2]})
 
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
         self.clear_input_fields()
 
-        self.edit_lexset.setFocus()
+        self.edit_vowel.setFocus()
         self.update_scatterplot()
 
     # Automatically clears the input fields after adding data
     def clear_input_fields(self):
-        self.edit_lexset.clear()
+        self.edit_vowel.clear()
         self.edit_F1.clear()
         self.edit_F2.clear()
         self.edit_speaker.clear()
 
     # Validates the data to be added - or else the program crashes.
     def validate_input_data(self):
-        if not all([self.edit_lexset.text(), self.edit_F1.text(), self.edit_F2.text()]):
+        if not all([self.edit_vowel.text(), self.edit_F1.text(), self.edit_F2.text()]):
             self.show_error_message("Please fill in all the required fields.")
             return False
 
@@ -232,13 +248,11 @@ class ScatterplotVisualizer(QWidget):
     def update_scatterplot(self, format=None):
         self.ax.clear()
 
-        markers = '.'  # Use a single marker for all lexsets (.)
-        lexset_markers = {v: markers for i, v in enumerate(self.data['lexset'].unique())}
+        markers = '.'  # Use a single marker for all vowels (.)
+        vowel_markers = {v: markers for i, v in enumerate(self.data['vowel'].unique())}
 
         speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
                           for i, speaker in enumerate(self.data['speaker'].unique())}
-
-        show_labels = self.checkbox_show_labels.isChecked()  # Check the state of the checkbox
 
         # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
         if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
@@ -252,25 +266,51 @@ class ScatterplotVisualizer(QWidget):
         else:
             f1_column, f2_column = 'F1', 'F2'
 
-        for v in self.data['lexset'].unique():
-            subset = self.data[self.data['lexset'] == v]
+        for v in self.data['vowel'].unique():
+            subset = self.data[self.data['vowel'] == v]
             self.ax.scatter(
                 subset[f2_column], subset[f1_column],  # Use selected F1 and F2 columns
-                marker=lexset_markers[v],
+                marker=vowel_markers[v],
                 c=[speaker_colors[s] for s in subset['speaker']],
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
 
-            if self.checkbox_show_labels.isChecked():  # Checks the state of the checkbox
+            # Checks the state of the checkboxes for three choices under "Show Labels"
+            show_labels_f = self.checkbox_show_labels_f.isChecked()
+            show_labels_vowel = self.checkbox_show_labels_vowel.isChecked()
+            show_labels_speaker = self.checkbox_show_labels_speaker.isChecked()
+
+            if show_labels_f or show_labels_vowel or show_labels_speaker:  # Checks the state of the checkboxes
                 for index, row in subset.iterrows():
-                    label = row['lexset']
+                    label = ''
 
-                    # Displays selected columns on the scatterplot
-                    label += f"\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+                    if show_labels_f and not show_labels_vowel and not show_labels_speaker: # Logical arguments for how the label system works
+                        label += f"{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
 
-                    self.ax.annotate(label, (row[f2_column], row[f1_column]), textcoords="offset points", xytext=(0, 5),
-                                     ha='center', va='bottom', fontsize=8)
+                    if show_labels_vowel and not show_labels_f and not show_labels_speaker:
+                        label += f"{row['vowel']}"
+
+                    if show_labels_speaker and not show_labels_f and not show_labels_vowel:
+                        label += f"{row['speaker']}"
+
+                    if show_labels_f and show_labels_vowel and not show_labels_speaker:
+                        label += f"{row['vowel']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+
+                    if show_labels_f and show_labels_speaker and not show_labels_vowel:
+                        label += f"{row['speaker']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+
+                    if show_labels_vowel and show_labels_speaker and not show_labels_f:
+                        label += f"{row['vowel']}\n{row['speaker']}"
+
+                    if show_labels_f and show_labels_vowel and show_labels_speaker:
+                        label += f"{row['vowel']}\n{row['speaker']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+
+                    if label:
+                        self.ax.annotate(label, (row[f2_column], row[f1_column]), textcoords="offset points",
+                                         xytext=(0, 5),
+                                         ha='center', va='bottom', fontsize=8)
+
 
         if self.connect_data_action.isChecked() and len(self.data) >= 3: # Groups each and every data on the scatterplot according to the speaker and connects them with a convex hull polygon
             for speaker, group in self.data.groupby("speaker"):
@@ -353,7 +393,7 @@ class ScatterplotVisualizer(QWidget):
     def lobify(self, arg):
 
         formants = ['F1', 'F2']  # Add more formants if needed
-        group_column = 'speaker' # or lexset couldn't decide -- it was speaker.
+        group_column = 'speaker' # or vowel couldn't decide -- it was speaker.
 
         zscore = lambda x: (x - x.mean()) / x.std()
 
@@ -378,9 +418,19 @@ class ScatterplotVisualizer(QWidget):
         self.resize_timer.stop()  # Stops the timer to ensure it only triggers once
         self.update_scatterplot()
 
+    # Updates the title as the self.edit_title() function works
+    def update_title(self):
+        custom_title = self.edit_title.text()
+        self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=20)
+        self.canvas.draw()
+
+        # Uses the timer to avoid lag - will return to that
+        # self.resize_timer.stop()
+        # self.update_scatterplot()
+
     # Clears all the data from the dataframe
     def clear_data(self):
-        self.data = pd.DataFrame(columns=["lexset", "F1", "F2", "speaker"])
+        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
         self.update_scatterplot()
 
     # Allows the user to simply save whatever there is on the scatterplot quickly
@@ -435,7 +485,7 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving data to {file_format}: {str(e)}")
 
-    # Imports data from an .xls or .xlsx file. The files should have columns named "lexset", "speaker", "F1" and "F2".
+    # Imports data from an .xls or .xlsx file. The files should have columns named "vowel", "speaker", "F1" and "F2".
     def import_data_from_excel(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -467,18 +517,12 @@ class ScatterplotVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
-    # Updates the title as the self.edit_title() function works
-    def update_title(self):
-        custom_title = self.edit_title.text()
-        self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=20)
-        self.canvas.draw()
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    my_app = ScatterplotVisualizer()
+    my_app = VowelSpaceVisualizer()
     my_app.show()
     sys.exit(app.exec_())
 
-    # Vowel Space Visualizer V.1.2
+    # VowSpace (Vowel Space Visualizer) V.1.2
     # Ali Çağan Kaya, under the GPL-3.0 license.
