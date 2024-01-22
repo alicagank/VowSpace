@@ -261,7 +261,7 @@ class VowelSpaceVisualizer(QWidget):
             f1_column, f2_column = 'bark_F1', 'bark_F2'
         elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
             # Shows an error message if both checkboxes are checked
-            self.show_error_message("Cannot apply both Barkify and Lobanov normalizations transformations simultaneously.")
+            self.show_error_message("Cannot apply both Barkify and Lobanov normalizations' transformations simultaneously.")
             return
         else:
             f1_column, f2_column = 'F1', 'F2'
