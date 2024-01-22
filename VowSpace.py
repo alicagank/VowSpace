@@ -486,6 +486,8 @@ class VowelSpaceVisualizer(QWidget):
 
     # Imports data from an .xls or .xlsx file. The files should have columns named "vowel", "speaker", "F1" and "F2".
     def import_data_from_excel(self):
+        self.clear_data() # Clears the already existing data on the dataframe before the importing
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from Excel", "",
