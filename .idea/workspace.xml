@@ -4,38 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Fixed a typo.">
-      <change afterPath="$PROJECT_DIR$/.Vowel Space(s) 2.jpg.icloud" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/7-Table1-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Book1.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Barkified).jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Lobanov Revised).jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Experiment (Lobanov).jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Experiment.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Experiment.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Normalization Vowels.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-12 at 10.25.18 PM.png.icloud" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 3.09.28 AM.png.icloud" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 6.27.28 PM.png.icloud" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/.Screenshot 2023-12-16 at 8.20.53 PM.png.icloud" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-12 at 2.36.26 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-13 at 9.43.27 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-16 at 11.03.12 PM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.09.51 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.10.16 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.51.40 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 2.57.39 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.17 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.44 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/Screenshot 2023-12-18 at 3.41.54 AM.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/example_data.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/example_data.xls" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Old/new.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Vowel Space(s) 3.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/icon.ico" afterDir="false" />
+    <list default="true" id="ce86597e-6089-4938-9851-0a22a7494690" name="Changes" comment="Created .gitignore">
+      <change afterPath="$PROJECT_DIR$/Speaking Fundamental Frequency and Vowel Formant Frequencies- Effects on Perception of Gender.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vowel Space Visualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vowel Space Visualizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Example Images/Normalization Experiment.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Example Images/Source.rtf" beforeDir="false" afterPath="$PROJECT_DIR$/Example Images/Source.rtf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Normalization Experiment.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vowel Space Visualizer.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,10 +28,10 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/New Code.py" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Vowel Space Visualizer.py" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/VowSpace.py" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -74,6 +51,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Python.VowSpace.executor&quot;: &quot;Run&quot;,
     &quot;Python.Vowel Space Visualizer.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -249,8 +227,107 @@
       <option name="project" value="LOCAL" />
       <updated>1703235567781</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1703254965753</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1703254965753</updated>
+    </task>
+    <task id="LOCAL-00021" summary="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1703270203077</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1703270203077</updated>
+    </task>
+    <task id="LOCAL-00022" summary="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1703270312360</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1703270312360</updated>
+    </task>
+    <task id="LOCAL-00023" summary="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1703270396996</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1703270396996</updated>
+    </task>
+    <task id="LOCAL-00024" summary="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1703270547113</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1703270547113</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Fixed a bug regarding brakify. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1705872583322</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1705872583322</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Fixed a bug regarding brakify. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1705943503843</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1705943503843</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Fixed a bug regarding brakify. Added more label functionalities. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1705943554451</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1705943554451</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Fixed a bug regarding brakify. Added more label functionalities. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1705944739708</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1705944739708</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Fixed a bug regarding brakify. Added more label functionalities. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005">
+      <option name="closed" value="true" />
+      <created>1705950773059</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1705950773059</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Created .gitignore">
+      <option name="closed" value="true" />
+      <created>1706047312919</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1706047312919</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -266,6 +343,10 @@
     <MESSAGE value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag. Method for handling empty data." />
     <MESSAGE value="Added new functionalities: Show grid, show legend.&#10;Fixed a method that resulted in lag." />
     <MESSAGE value="Fixed a typo." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a typo." />
+    <MESSAGE value="V.1.2: Added normalization functions under Data Settings menu. You can now change the units from Hz into Bark using the Barkify function and normalize the data with Lobanov Normalization. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005" />
+    <MESSAGE value="Fixed a bug regarding brakify. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005" />
+    <MESSAGE value="Fixed a bug regarding brakify. Added more label functionalities. Got help from: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005" />
+    <MESSAGE value="Created .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created .gitignore" />
   </component>
 </project>
