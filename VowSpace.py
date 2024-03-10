@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QFileDialog, QMessageBox, QCheckBox, QMenu, QMenuBar, QAction
+    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction
 )
 from PyQt5.QtCore import Qt, QTimer
 
