@@ -1,3 +1,9 @@
+## This is the development version of VowSpace.
+## There might be bugs.
+## Beware of the bügs, they bite.
+## A büg once bit my sister... No realli!
+## Mynd you, büg bites Kan be pretti nasti...
+
 import os
 import sys
 import numpy as np
