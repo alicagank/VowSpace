@@ -281,7 +281,7 @@ class VowelSpaceVisualizer(QWidget):
 
         # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
         if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
-            f1_column, f2_column = 'lob_F1', 'lob_F2'
+            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
         elif self.checkbox_barkify.isChecked() and not self.checkbox_normalize_lobanov.isChecked():
             f1_column, f2_column = 'bark_F1', 'bark_F2'
         elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
