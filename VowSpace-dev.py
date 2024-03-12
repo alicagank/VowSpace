@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib import colormaps
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -275,7 +276,7 @@ class VowelSpaceVisualizer(QWidget):
         markers = '.'  # Use a single marker for all vowels (.)
         vowel_markers = {v: markers for i, v in enumerate(self.data['vowel'].unique())}
 
-        speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
+        speaker_colors = {speaker: colormaps['viridis'](i / len(self.data['speaker'].unique()))
                           for i, speaker in enumerate(self.data['speaker'].unique())}
 
         # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
