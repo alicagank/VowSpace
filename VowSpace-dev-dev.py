@@ -1,3 +1,9 @@
+## This is the development version of VowSpace.
+## There might be bugs.
+## Beware of the bügs, they bite.
+## A büg once bit my sister... No realli!
+## Mynd you, büg bites Kan be pretti nasti...
+
 import os
 import sys
 import numpy as np
@@ -5,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib import colormaps
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -34,9 +41,6 @@ class VowelSpaceVisualizer(QWidget):
         self.create_menu_bar()
 
         self.resizeEvent = self.custom_resize_event
-
-        self.edit_title.textChanged.connect(self.update_scatterplot)
-        self.checkbox_no_title.stateChanged.connect(self.update_scatterplot)
 
     def create_menu_bar(self):
         menubar = QMenuBar(self)
@@ -155,6 +159,18 @@ class VowelSpaceVisualizer(QWidget):
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
 
+    def update_input_fields_prosodic(self, f1, f2, speaker_name):
+        # Update speaker's name
+        self.edit_speaker.setText(str(speaker_name))
+
+        # Update formant values (convert to string with maximum 3 decimal places)
+        self.edit_F1.setText("{:.3f}".format(f1))
+        self.edit_F2.setText("{:.3f}".format(f2))
+
+        # Activate and bring VowelSpaceVisualizer window to focus
+        self.activateWindow()
+        self.raise_()
+
     def set_layout(self):
         layout = QVBoxLayout()
 
@@ -253,11 +269,6 @@ class VowelSpaceVisualizer(QWidget):
             self.data = self.data.iloc[:-1]
             self.update_scatterplot()
 
-    # Updates the QLineEdit widgets with the formant values
-    def update_formant_values(self, f1_extr, f2_extr):
-        self.edit_F1.setText(str(f1_extr))
-        self.edit_F2.setText(str(f2_extr))
-
     # Creates the scatterplot
     def update_scatterplot(self, format=None):
         self.ax.clear()
@@ -265,12 +276,12 @@ class VowelSpaceVisualizer(QWidget):
         markers = '.'  # Use a single marker for all vowels (.)
         vowel_markers = {v: markers for i, v in enumerate(self.data['vowel'].unique())}
 
-        speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
+        speaker_colors = {speaker: colormaps['viridis'](i / len(self.data['speaker'].unique()))
                           for i, speaker in enumerate(self.data['speaker'].unique())}
 
         # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
         if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
-            f1_column, f2_column = 'lob_F1', 'lob_F2'
+            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
         elif self.checkbox_barkify.isChecked() and not self.checkbox_normalize_lobanov.isChecked():
             f1_column, f2_column = 'bark_F1', 'bark_F2'
         elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
@@ -335,14 +346,12 @@ class VowelSpaceVisualizer(QWidget):
                                           facecolor=speaker_colors[speaker])
                     self.ax.add_patch(polygon)
 
-        # Edits the title
+        # Edits the title according to self.edit_title()
         custom_title = self.edit_title.text()
         if self.checkbox_no_title.isChecked():
-            self.ax.set_title("")  # Set an empty title
-        elif custom_title:
-            self.ax.set_title(custom_title, pad=20)
+            self.ax.set_title("", pad=25)  # Set an empty title if the checkbox is checked
         else:
-            self.ax.set_title("Vowel Space(s)", pad=20)
+            self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
 
         show_legend = self.checkbox_show_legend.isChecked() # Checks if self.checkbox_show_legend() is checked and shows the legend accordingly
 
@@ -631,10 +640,13 @@ class ProsodicAnalysisTool(QWidget):
             f1_freqs = self.formants.get_value_at_time(1, x)
             f2_freqs = self.formants.get_value_at_time(2, x)
 
+            # Audio title
+            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
+
             # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz")
 
             # Update the VowelSpaceVisualizer with the formant values
-            self.vowel_space_visualizer.update_formant_values(f1_freqs, f2_freqs)
+            self.vowel_space_visualizer.update_input_fields_prosodic(f1_freqs, f2_freqs, audio_title)
 
     def toggle_pitch(self):
         self.show_pitch = not self.show_pitch
@@ -645,16 +657,19 @@ class ProsodicAnalysisTool(QWidget):
         self.redraw_plots()
 
     def redraw_plots(self):
-        # Redraw the spectrogram
-        self.draw_spectrogram(self.audio_file)
+        try:
+            # Redraw the spectrogram
+            self.draw_spectrogram(self.audio_file)
 
-        # Redraw pitch if it should be shown
-        if self.show_pitch:
-            self.draw_pitch(self.pitch)
+            # Redraw pitch if it should be shown and pitch data is available
+            if self.show_pitch and self.pitch:
+                self.draw_pitch(self.pitch)
 
-        # Redraw intensity if it should be shown
-        if self.show_intensity:
-            self.draw_intensity(self.intensity)
+            # Redraw intensity if it should be shown and intensity data is available
+            if self.show_intensity and self.intensity:
+                self.draw_intensity(self.intensity)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
 
     def read_audio_file(self):
         options = QFileDialog.Options()
@@ -690,7 +705,7 @@ class ProsodicAnalysisTool(QWidget):
                 # Call redraw_plots after draw_spectrogram
                 self.redraw_plots()
             except Exception as e:
-                print(f"Error reading audio file: {str(e)}")
+                QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
 
     def draw_spectrogram(self, audio_file, spectrogram=None, dynamic_range=70):
         try:
@@ -715,49 +730,80 @@ class ProsodicAnalysisTool(QWidget):
 
             self.canvas.draw()
         except Exception as e:
-            print(f"Error reading audio file: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
 
     def draw_intensity(self, intensity=None):
         try:
-            if intensity is None:
-                intensity = self.intensity
+            if intensity:
+                # Twin the axis for intensity
+                ax_intensity = plt.gca().twinx()
+                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=3, color='white', label='Intensity')
+                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=1, color='black')
+                ax_intensity.set_ylabel("intensity [dB]")
+                ax_intensity.grid(False)
+                ax_intensity.set_ylim(0)
 
-            # Twin the axis for intensity
-            ax_intensity = plt.gca().twinx()
-            ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=3, color='white', label='Intensity')
-            ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=1, color='black')
-            ax_intensity.set_ylabel("intensity [dB]")
-            ax_intensity.grid(False)
-            ax_intensity.set_ylim(0)
-
-            self.canvas.draw()
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Intensity data is not available: {str(e)}")
         except Exception as e:
-            print(f"Error reading audio file: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
 
     def draw_pitch(self, pitch):
         try:
-            # Extract selected pitch contour, and replace unvoiced samples by NaN to not plot
-            pitch_values = pitch.selected_array['frequency']
-            pitch_values[pitch_values == 0] = np.nan
+            if pitch:
+                # Extract selected pitch contour, and replace unvoiced samples by NaN to not plot
+                pitch_values = pitch.selected_array['frequency']
+                pitch_values[pitch_values == 0] = np.nan
 
-            # Twin the axis for pitch
-            ax_pitch = plt.gca().twinx()
-            ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='white', label='Pitch')
-            ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2)
-            ax_pitch.grid(False)
-            ax_pitch.set_ylim(0, pitch.ceiling)
-            ax_pitch.set_ylabel("fundamental frequency [Hz]")
+                # Twin the axis for pitch
+                ax_pitch = plt.gca().twinx()
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='white', label='Pitch')
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2)
+                ax_pitch.grid(False)
+                ax_pitch.set_ylim(0, pitch.ceiling)
+                ax_pitch.set_ylabel("fundamental frequency [Hz]")
 
-            self.canvas.draw()
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Pitch data is not available: {str(e)}")
         except Exception as e:
-            print(f"Error plotting pitch: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Error plotting pitch: {str(e)}")
+
+    def draw_formants(self):
+        try:
+            if not hasattr(self, 'formants'):
+                QMessageBox.critical(self, "Error", "Formant data is not available.")
+                return
+
+            # Clear existing formant plot
+            self.ax.cla()
+
+            # Audio title
+            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
+
+            # Plot formants
+            interval = 0.8
+            times = np.arange(0, self.formants.get_total_duration(), interval)
+            f1_values = [self.formants.get_value_at_time(1, time) for time in times]
+            f2_values = [self.formants.get_value_at_time(2, time) for time in times]
+            self.ax.plot(f1_values, f2_values, 'bo')  # 'bo' means blue color and circle marker
+
+            # Update the VowelSpaceVisualizer with the formant values
+            self.vowel_space_visualizer.update_input_fields_prosodic(None, None, audio_title)
+
+            # Redraw the canvas
+            self.canvas.draw()
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
 
     def extract_fromants(self, formants, x_coordinate):
-        # Extract F1, F2 frequencies at the specified x-coordinate
+        # Extract F1, F2, F3 frequencies at the specified x-coordinate
         f1_freqs = formants.get_value_at_time(1, x_coordinate)
         f2_freqs = formants.get_value_at_time(2, x_coordinate)
 
-        # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz")
+        # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz)
 
 
 if __name__ == '__main__':
