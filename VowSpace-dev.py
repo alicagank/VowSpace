@@ -549,6 +549,7 @@ class ProsodicAnalysisTool(QWidget):
 
         self.show_pitch = False  # Changed default to unchecked
         self.show_intensity = False  # Changed default to unchecked
+        self.show_formants = False  # Changed default to unchecked
 
         # Store the reference to VowelSpaceVisualizer instance
         self.vowel_space_visualizer = vowel_space_visualizer
@@ -618,6 +619,11 @@ class ProsodicAnalysisTool(QWidget):
         self.intensity_action.setChecked(self.show_intensity)
         options_menu.addAction(self.intensity_action)
 
+        # Add formatns toggle as a checkable menu item (unchecked by default)
+        self.formants_action = self.create_action('Show Formants', self.toggle_formants, checkable=True)
+        self.formants_action.setChecked(self.show_formants)
+        options_menu.addAction(self.formants_action)
+
     def create_action(self, text, function, shortcut=None, checkable=False):
         action = QAction(text, self)
         action.triggered.connect(function)
@@ -652,6 +658,10 @@ class ProsodicAnalysisTool(QWidget):
         self.show_pitch = not self.show_pitch
         self.redraw_plots()
 
+    def toggle_formants(self):
+        self.show_formants = not self.show_formants
+        self.redraw_plots()
+
     def toggle_intensity(self):
         self.show_intensity = not self.show_intensity
         self.redraw_plots()
@@ -668,6 +678,10 @@ class ProsodicAnalysisTool(QWidget):
             # Redraw intensity if it should be shown and intensity data is available
             if self.show_intensity and self.intensity:
                 self.draw_intensity(self.intensity)
+
+            # Redraw formants if it should be shown and formant data is available
+            if self.show_formants and self.formants:
+                self.draw_formants(self.formants)
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
 
@@ -749,6 +763,19 @@ class ProsodicAnalysisTool(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
 
+    def draw_formants(self, formants=None):
+        # Basically draws the F1 and F2 formants on the plot.
+        plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='w',
+                 markersize=3)
+        plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='b',
+                 markersize=1)
+        plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='w',
+                 markersize=3)
+        plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='c',
+                 markersize=1)
+
+        self.canvas.draw()
+
     def draw_pitch(self, pitch):
         try:
             if pitch:
@@ -769,14 +796,6 @@ class ProsodicAnalysisTool(QWidget):
                 QMessageBox.critical(self, "Error", f"Pitch data is not available: {str(e)}")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error plotting pitch: {str(e)}")
-
-    def extract_fromants(self, formants, x_coordinate):
-        # Extract F1, F2, F3 frequencies at the specified x-coordinate
-        f1_freqs = formants.get_value_at_time(1, x_coordinate)
-        f2_freqs = formants.get_value_at_time(2, x_coordinate)
-
-        # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
