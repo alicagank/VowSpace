@@ -589,7 +589,7 @@ class ProsodicAnalysisTool(QWidget):
         # Set the layout
         self.setLayout(layout)
         self.setWindowTitle("Prosodic Analysis Tools")
-        self.setGeometry(100, 100, 900, 600)
+        self.setGeometry(100, 100, 1200, 600)
 
         # Connect the motion_notify_event to update_cursor_coordinates
         self.canvas.mpl_connect('motion_notify_event', self.update_cursor_coordinates)
@@ -651,7 +651,7 @@ class ProsodicAnalysisTool(QWidget):
 
             # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz")
 
-            # Update the VowelSpaceVisualizer with the formant values
+            # Update VowelSpaceVisualizer with the formant values
             self.vowel_space_visualizer.update_input_fields_prosodic(f1_freqs, f2_freqs, audio_title)
 
     def toggle_pitch(self):
@@ -693,7 +693,7 @@ class ProsodicAnalysisTool(QWidget):
 
         if file_name:
             try:
-                # Store file name for later use
+                # Store file name for later use.
                 self.audio_file = file_name
                 self.audio_title_label.setText(f'Audio Title: {os.path.basename(file_name)}')  # Update QLabel
 
@@ -737,7 +737,7 @@ class ProsodicAnalysisTool(QWidget):
 
             X, Y = spectrogram.x_grid(), spectrogram.y_grid()
             sg_db = 10 * np.log10(spectrogram.values)
-            plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='afmhot')
+            plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='binary')
             plt.ylim([spectrogram.ymin, spectrogram.ymax])
             plt.xlabel("time [s]")
             plt.ylabel("frequency [Hz]")
@@ -764,17 +764,23 @@ class ProsodicAnalysisTool(QWidget):
             QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
 
     def draw_formants(self, formants=None):
-        # Basically draws the F1 and F2 formants on the plot.
-        plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='w',
-                 markersize=3)
-        plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='b',
-                 markersize=1)
-        plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='w',
-                 markersize=3)
-        plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='c',
-                 markersize=1)
+        try:
+            if formants:
+                # Basically draws the F1 and F2 formants on the plot.
+                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='w',
+                    markersize=3)
+                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='b',
+                    markersize=1)
+                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='w',
+                    markersize=3)
+                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='c',
+                    markersize=1)
 
-        self.canvas.draw()
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Formant data is not available: {str(e)}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
 
     def draw_pitch(self, pitch):
         try:
@@ -785,8 +791,8 @@ class ProsodicAnalysisTool(QWidget):
 
                 # Twin the axis for pitch
                 ax_pitch = plt.gca().twinx()
-                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='white', label='Pitch')
-                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2)
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2, color='white', label='Pitch')
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=1)
                 ax_pitch.grid(False)
                 ax_pitch.set_ylim(0, pitch.ceiling)
                 ax_pitch.set_ylabel("fundamental frequency [Hz]")
