@@ -15,7 +15,7 @@ from matplotlib import colormaps
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction, QCheckBox
+    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox
 )
 from PyQt5.QtCore import Qt, QTimer
 
@@ -36,7 +36,7 @@ class VowelSpaceVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
-        self.setWindowTitle("VowSpace V.1.2")
+        self.setWindowTitle("VowSpace V.1.3.0")
 
         self.create_menu_bar()
 
@@ -155,6 +155,8 @@ class VowelSpaceVisualizer(QWidget):
         self.button_update_scatterplot = self.create_button('Update Scatterplot', self.update_scatterplot)
         # Prosodic Analysis Tools class
         self.button_prosodic_analysis_tools = self.create_button('Prosodic Analysis Tools', self.prosodic_analysis_tools)
+        # IPA keyboard button
+        self.button_IPA = self.create_button('Show IPA', self.show_IPA)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -199,6 +201,7 @@ class VowelSpaceVisualizer(QWidget):
         buttons_layout.addWidget(self.button_clear_data)
         buttons_layout.addWidget(self.button_update_scatterplot)
         buttons_layout.addWidget(self.button_prosodic_analysis_tools)
+        buttons_layout.addWidget(self.button_IPA)
 
         layout.addLayout(buttons_layout)
 
@@ -537,11 +540,51 @@ class VowelSpaceVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
+    # Shows an IPA keyboard
+    def show_IPA(self):
+        self.ipa_window = IPAWindow(self)
+        self.ipa_window.exec_()
+
     # Opens Prosodic Analysis Tools window.
     def prosodic_analysis_tools(self):
         # Create a new instance of ProsodicAnalysisToolsWindow if not open
         self.prosodic_tools_window = ProsodicAnalysisTool()
         self.prosodic_tools_window.show()
+
+class IPAWindow(QDialog):
+    def __init__(self, parent=None):
+        super(IPAWindow, self).__init__(parent)
+        self.setWindowTitle('IPA Keyboard')
+
+        layout = QVBoxLayout()
+
+        grid_layout = QGridLayout()
+
+        # Define the groups of letters and their corresponding labels
+        letter_groups = [('ɑæɐ', 'A'), ('əɚɵ', 'E'), ('ɛɜɝ', 'ɜ'),
+                         ('ɪɨ', 'I'), ('ɔœɒ', 'O'), ('ø', 'Ö'),
+                         ('ʊʉ', 'U'), ('ʕʔ', '2')] #('ː̃̈ʰʲʷ', 'microns')] will get back to that.
+
+        # Add buttons and group boxes for each letter group
+        for i, (group, label) in enumerate(letter_groups):
+            group_box = QGroupBox(label, self)  # Create a group box for each group with the label
+            group_layout = QHBoxLayout()  # Layout for buttons in this group
+
+            # Add buttons for each letter in the group
+            for letter in group:
+                button = QPushButton(letter, self)
+                button.clicked.connect(lambda checked, l=letter: self.button_clicked(l))
+                group_layout.addWidget(button)
+
+            group_box.setLayout(group_layout)
+            grid_layout.addWidget(group_box, i // 3, i % 3)
+
+        layout.addLayout(grid_layout)
+        self.setLayout(layout)
+
+    def button_clicked(self, letter):
+        self.parent().edit_vowel.setText(letter)
+        self.close() #will get back to that.
 
 class ProsodicAnalysisTool(QWidget):
     def __init__(self):
@@ -806,10 +849,8 @@ class ProsodicAnalysisTool(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    # Create an instance of VowelSpaceVisualizer
     vowel_space_visualizer = VowelSpaceVisualizer()
 
-    # Create an instance of ProsodicAnalysisTool
     prosodic_analysis_tool = ProsodicAnalysisTool()
 
     vowel_space_visualizer.show()
