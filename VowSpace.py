@@ -1,12 +1,21 @@
+## This is the development version of VowSpace.
+## There might be bugs.
+## Beware of the bügs, they bite.
+## A büg once bit my sister... No realli!
+## Mynd you, büg bites Kan be pretti nasti...
+
+import os
 import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib import colormaps
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction
+    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox
 )
 from PyQt5.QtCore import Qt, QTimer
 
@@ -27,7 +36,7 @@ class VowelSpaceVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
-        self.setWindowTitle("VowSpace V.1.2")
+        self.setWindowTitle("VowSpace V.1.3.0")
 
         self.create_menu_bar()
 
@@ -93,22 +102,22 @@ class VowelSpaceVisualizer(QWidget):
         # Show legend or not
         self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot,
                                                        format='png', checkable=True)
-        visualization_settings_menu.addAction((self.checkbox_show_legend))
+        visualization_settings_menu.addAction(self.checkbox_show_legend)
 
         # Show grids or not
         self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot,
                                                       format='png', checkable=True)
-        visualization_settings_menu.addAction((self.checkbox_show_grids))
+        visualization_settings_menu.addAction(self.checkbox_show_grids)
 
         # Barkify
         self.checkbox_barkify = self.create_action('Barkify', self.barkify,
                                                    format='png', checkable=True)
-        data_settings_menu.addAction((self.checkbox_barkify))
+        data_settings_menu.addAction(self.checkbox_barkify)
 
         # Lobanov Normalization
         self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify,
                                                         format='png', checkable=True)
-        data_settings_menu.addAction((self.checkbox_normalize_lobanov))
+        data_settings_menu.addAction(self.checkbox_normalize_lobanov)
 
         self.layout().setMenuBar(menubar)
 
@@ -137,15 +146,32 @@ class VowelSpaceVisualizer(QWidget):
 
         self.label_title = QLabel('Add Title:')
         self.edit_title = QLineEdit()
-        self.edit_title.textChanged.connect(self.update_title)
+
+        self.checkbox_no_title = QCheckBox('No Title')
 
         # The buttons that trigger those actions
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
         self.button_clear_data = self.create_button('Clear Data', self.clear_data)
         self.button_update_scatterplot = self.create_button('Update Scatterplot', self.update_scatterplot)
+        # Audio Analysis Tools class
+        self.button_audio_analysis_tools = self.create_button('Audio Analysis Tools', self.audio_analysis_tools)
+        # IPA keyboard button
+        self.button_IPA = self.create_button('Show IPA', self.show_IPA)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
+
+    def update_input_fields_audio(self, f1, f2, speaker_name):
+        # Update speaker's name
+        self.edit_speaker.setText(str(speaker_name))
+
+        # Update formant values (convert to string with maximum 3 decimal places)
+        self.edit_F1.setText("{:.3f}".format(f1))
+        self.edit_F2.setText("{:.3f}".format(f2))
+
+        # Activate and bring VowelSpaceVisualizer window to focus
+        self.activateWindow()
+        self.raise_()
 
     def set_layout(self):
         layout = QVBoxLayout()
@@ -166,6 +192,7 @@ class VowelSpaceVisualizer(QWidget):
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.label_title)
         title_layout.addWidget(self.edit_title)
+        title_layout.addWidget(self.checkbox_no_title)
 
         layout.addLayout(title_layout)
 
@@ -173,6 +200,8 @@ class VowelSpaceVisualizer(QWidget):
         buttons_layout.addWidget(self.button_add_data)
         buttons_layout.addWidget(self.button_clear_data)
         buttons_layout.addWidget(self.button_update_scatterplot)
+        buttons_layout.addWidget(self.button_audio_analysis_tools)
+        buttons_layout.addWidget(self.button_IPA)
 
         layout.addLayout(buttons_layout)
 
@@ -250,12 +279,12 @@ class VowelSpaceVisualizer(QWidget):
         markers = '.'  # Use a single marker for all vowels (.)
         vowel_markers = {v: markers for i, v in enumerate(self.data['vowel'].unique())}
 
-        speaker_colors = {speaker: plt.cm.get_cmap('viridis')(i / len(self.data['speaker'].unique()))
+        speaker_colors = {speaker: colormaps['viridis'](i / len(self.data['speaker'].unique()))
                           for i, speaker in enumerate(self.data['speaker'].unique())}
 
         # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
         if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
-            f1_column, f2_column = 'lob_F1', 'lob_F2'
+            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
         elif self.checkbox_barkify.isChecked() and not self.checkbox_normalize_lobanov.isChecked():
             f1_column, f2_column = 'bark_F1', 'bark_F2'
         elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
@@ -322,10 +351,10 @@ class VowelSpaceVisualizer(QWidget):
 
         # Edits the title according to self.edit_title()
         custom_title = self.edit_title.text()
-        if custom_title:
-            self.ax.set_title(custom_title, pad=30)
+        if self.checkbox_no_title.isChecked():
+            self.ax.set_title("", pad=25)  # Set an empty title if the checkbox is checked
         else:
-            self.ax.set_title("Vowel Space(s)", pad=30)
+            self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
 
         show_legend = self.checkbox_show_legend.isChecked() # Checks if self.checkbox_show_legend() is checked and shows the legend accordingly
 
@@ -396,7 +425,7 @@ class VowelSpaceVisualizer(QWidget):
         zscore = lambda x: (x - x.mean()) / x.std()
 
         for formant in formants:
-            name = f"lob_{formant}"
+            name = f"zsc_{formant}"
 
             if name not in self.data.columns:  # Check if the column already exists
                 col = self.data.groupby([group_column])[formant].transform(zscore)
@@ -413,14 +442,9 @@ class VowelSpaceVisualizer(QWidget):
 
     # Takes delay event into account when resizing the scatterplot to avoid lag
     def delayed_update_scatterplot(self):
-        self.resize_timer.stop()  # Stops the timer to ensure it only triggers once
+        self.resize_timer.stop()  # Stops the timer to ensure it only triggers o
+        # nce
         self.update_scatterplot()
-
-    # Updates the title as the self.edit_title() function works
-    def update_title(self):
-        custom_title = self.edit_title.text()
-        self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=20)
-        self.canvas.draw()
 
         # Uses the timer to avoid lag - will return to that
         # self.resize_timer.stop()
@@ -517,12 +541,322 @@ class VowelSpaceVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
 
+    # Shows an IPA keyboard
+    def show_IPA(self):
+        self.ipa_window = IPAWindow(self)
+        self.ipa_window.exec_()
+
+    # Opens Audio Analysis Tools window.
+    def audio_analysis_tools(self):
+        # Create a new instance of AudioAnalysisToolsWindow if not open
+        self.audio_tools_window = AudioAnalysisTool()
+        self.audio_tools_window.show()
+
+class IPAWindow(QDialog):
+    def __init__(self, parent=None):
+        super(IPAWindow, self).__init__(parent)
+        self.setWindowTitle('IPA Keyboard')
+
+        layout = QVBoxLayout()
+
+        grid_layout = QGridLayout()
+
+        # Define the groups of letters and their corresponding labels
+        letter_groups = [('ɑæɐ', 'A'), ('əɚɵ', 'E'), ('ɛɜɝ', 'ɜ'),
+                         ('ɪɨ', 'I'), ('ɔœɒ', 'O'), ('ø', 'Ö'),
+                         ('ʊʉ', 'U'), ('ʕʔ', '2')] #('ː̃̈ʰʲʷ', 'microns')] will get back to that.
+
+        # Add buttons and group boxes for each letter group
+        for i, (group, label) in enumerate(letter_groups):
+            group_box = QGroupBox(label, self)  # Create a group box for each group with the label
+            group_layout = QHBoxLayout()  # Layout for buttons in this group
+
+            # Add buttons for each letter in the group
+            for letter in group:
+                button = QPushButton(letter, self)
+                button.clicked.connect(lambda checked, l=letter: self.button_clicked(l))
+                group_layout.addWidget(button)
+
+            group_box.setLayout(group_layout)
+            grid_layout.addWidget(group_box, i // 3, i % 3)
+
+        layout.addLayout(grid_layout)
+        self.setLayout(layout)
+
+    def button_clicked(self, letter):
+        self.parent().edit_vowel.setText(letter)
+        self.close() #will get back to that.
+
+class AudioAnalysisTool(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.show_pitch = False  # Changed default to unchecked
+        self.show_intensity = False  # Changed default to unchecked
+        self.show_formants = False  # Changed default to unchecked
+
+        # Store the reference to VowelSpaceVisualizer instance
+        self.vowel_space_visualizer = vowel_space_visualizer
+
+        self.initUI()
+
+    def initUI(self):
+        # Set up the layout for the Audio Analysis Tools window
+        layout = QVBoxLayout()
+
+        # Add the matplotlib canvas
+        self.figure, self.ax = plt.subplots(figsize=(6, 9))
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
+
+        # Create a QHBoxLayout for the labels in the same row
+        labels_layout = QHBoxLayout()
+
+        # Add a QLabel for audio title
+        self.audio_title_label = QLabel()
+        labels_layout.addWidget(self.audio_title_label)
+
+        # Add a QLabel for sampling rate
+        self.sampling_rate_label = QLabel()
+        labels_layout.addWidget(self.sampling_rate_label)
+
+        # Add a QLabel for cursor coordinates
+        self.coordinates_label = QLabel()
+        labels_layout.addWidget(self.coordinates_label)
+
+        # Add the labels layout to the main layout
+        layout.addLayout(labels_layout)
+
+        # Add the "Read from Audio File" action to the menu
+        self.create_menu_bar()
+
+        # Set the layout
+        self.setLayout(layout)
+        self.setWindowTitle("Audio Analysis Tools")
+        self.setGeometry(100, 100, 1200, 600)
+
+        # Connect the motion_notify_event to update_cursor_coordinates
+        self.canvas.mpl_connect('motion_notify_event', self.update_cursor_coordinates)
+        # Connect the button_press_event to handle_click
+        self.canvas.mpl_connect('button_press_event', self.handle_click)
+
+    def create_menu_bar(self):
+        menubar = QMenuBar(self)
+
+        # Create File menu
+        file_menu = menubar.addMenu('File')
+
+        # Add the "Read from Audio File" action to the file menu
+        read_audio_action = self.create_action('Read from Audio File', self.read_audio_file)
+        file_menu.addAction(read_audio_action)
+
+        # Create Options menu
+        options_menu = menubar.addMenu('Options')
+
+        # Add pitch toggle as a checkable menu item (unchecked by default)
+        self.pitch_action = self.create_action('Show Pitch', self.toggle_pitch, checkable=True)
+        self.pitch_action.setChecked(self.show_pitch)
+        options_menu.addAction(self.pitch_action)
+
+        # Add intensity toggle as a checkable menu item (unchecked by default)
+        self.intensity_action = self.create_action('Show Intensity', self.toggle_intensity, checkable=True)
+        self.intensity_action.setChecked(self.show_intensity)
+        options_menu.addAction(self.intensity_action)
+
+        # Add formatns toggle as a checkable menu item (unchecked by default)
+        self.formants_action = self.create_action('Show Formants', self.toggle_formants, checkable=True)
+        self.formants_action.setChecked(self.show_formants)
+        options_menu.addAction(self.formants_action)
+
+    def create_action(self, text, function, shortcut=None, checkable=False):
+        action = QAction(text, self)
+        action.triggered.connect(function)
+        if shortcut:
+            action.setShortcut(shortcut)
+        if checkable:
+            action.setCheckable(True)
+        return action
+
+    def update_cursor_coordinates(self, event):
+        if event.inaxes:
+            x, y = event.xdata, event.ydata
+            self.coordinates_label.setText(f'Cursor Coordinates: x={x:.2f}, y={y:.2f}')
+
+    def handle_click(self, event):
+        x, y = event.xdata, event.ydata
+
+        if event.inaxes and event.button == 3:
+            # Extract formants and print frequencies for the x-coordinate
+            f1_freqs = self.formants.get_value_at_time(1, x)
+            f2_freqs = self.formants.get_value_at_time(2, x)
+
+            # Audio title
+            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
+
+            # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz")
+
+            # Update VowelSpaceVisualizer with the formant values
+            self.vowel_space_visualizer.update_input_fields_audio(f1_freqs, f2_freqs, audio_title)
+
+    def toggle_pitch(self):
+        self.show_pitch = not self.show_pitch
+        self.redraw_plots()
+
+    def toggle_formants(self):
+        self.show_formants = not self.show_formants
+        self.redraw_plots()
+
+    def toggle_intensity(self):
+        self.show_intensity = not self.show_intensity
+        self.redraw_plots()
+
+    def redraw_plots(self):
+        try:
+            # Redraw the spectrogram
+            self.draw_spectrogram(self.audio_file)
+
+            # Redraw pitch if it should be shown and pitch data is available
+            if self.show_pitch and self.pitch:
+                self.draw_pitch(self.pitch)
+
+            # Redraw intensity if it should be shown and intensity data is available
+            if self.show_intensity and self.intensity:
+                self.draw_intensity(self.intensity)
+
+            # Redraw formants if it should be shown and formant data is available
+            if self.show_formants and self.formants:
+                self.draw_formants(self.formants)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
+
+    def read_audio_file(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "",
+                                                   "Audio Files (*.wav *.mp3 *.ogg);;All Files (*)", options=options)
+
+        if file_name:
+            try:
+                # Store file name for later use.
+                self.audio_file = file_name
+                self.audio_title_label.setText(f'Audio Title: {os.path.basename(file_name)}')  # Update QLabel
+
+                # Update the existing plot in the Audio Analysis Tools window
+                self.draw_spectrogram(file_name)
+
+                # Extract pitch information using Parselmouth
+                # This has to stay here or it doesn't work for some fucking reason
+                # Tried to move it to draw_pitch method without success
+                snd = Sound(file_name)
+                self.pitch = snd.to_pitch()
+
+                # Extract intensity information using Parselmouth
+                self.intensity = snd.to_intensity()
+
+                # Extract formants
+                self.formants = snd.to_formant_burg()
+
+                # Display sampling rate information
+                sampling_rate = snd.sampling_frequency
+                self.sampling_rate_label.setText(f'Sampling Rate: {sampling_rate} Hz')
+
+                # Call redraw_plots after draw_spectrogram
+                self.redraw_plots()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
+
+    def draw_spectrogram(self, audio_file, spectrogram=None, dynamic_range=70):
+        try:
+            if spectrogram is None:
+                snd = Sound(audio_file)
+                spectrogram = snd.to_spectrogram()
+
+            # Plot the spectrogram
+            plt.figure(self.figure.number)
+            plt.clf()
+
+            # Plot the audio waveform on top of the spectrogram
+            plt.plot(snd.xs(), snd.values.T, color='black', alpha=0.5)
+            plt.xlim([snd.xmin, snd.xmax])
+
+            X, Y = spectrogram.x_grid(), spectrogram.y_grid()
+            sg_db = 10 * np.log10(spectrogram.values)
+            plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='binary')
+            plt.ylim([spectrogram.ymin, spectrogram.ymax])
+            plt.xlabel("time [s]")
+            plt.ylabel("frequency [Hz]")
+
+            self.canvas.draw()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
+
+    def draw_intensity(self, intensity=None):
+        try:
+            if intensity:
+                # Twin the axis for intensity
+                ax_intensity = plt.gca().twinx()
+                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=3, color='white', label='Intensity')
+                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=1, color='black')
+                ax_intensity.set_ylabel("intensity [dB]")
+                ax_intensity.grid(False)
+                ax_intensity.set_ylim(0)
+
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Intensity data is not available: {str(e)}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
+
+    def draw_formants(self, formants=None):
+        try:
+            if formants:
+                # Basically draws the F1 and F2 formants on the plot.
+                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='w',
+                    markersize=3)
+                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='b',
+                    markersize=1)
+                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='w',
+                    markersize=3)
+                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='c',
+                    markersize=1)
+
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Formant data is not available: {str(e)}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
+
+    def draw_pitch(self, pitch):
+        try:
+            if pitch:
+                # Extract selected pitch contour, and replace unvoiced samples by NaN to not plot
+                pitch_values = pitch.selected_array['frequency']
+                pitch_values[pitch_values == 0] = np.nan
+
+                # Twin the axis for pitch
+                ax_pitch = plt.gca().twinx()
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2, color='white', label='Pitch')
+                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=1)
+                ax_pitch.grid(False)
+                ax_pitch.set_ylim(0, pitch.ceiling)
+                ax_pitch.set_ylabel("fundamental frequency [Hz]")
+
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", f"Pitch data is not available: {str(e)}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting pitch: {str(e)}")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    my_app = VowelSpaceVisualizer()
-    my_app.show()
+
+    vowel_space_visualizer = VowelSpaceVisualizer()
+
+    audio_analysis_tool = AudioAnalysisTool()
+
+    vowel_space_visualizer.show()
+
     sys.exit(app.exec_())
 
-    # VowSpace (Vowel Space Visualizer) V.1.2
+    # VowSpace (Vowel Space Visualizer) v.1.3.0
     # Ali Çağan Kaya, under the GPL-3.0 license.
