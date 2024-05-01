@@ -36,7 +36,7 @@ class VowelSpaceVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
-        self.setWindowTitle("VowSpace V.1.3.0")
+        self.setWindowTitle("VowSpace v1.3.0")
 
         self.create_menu_bar()
 
