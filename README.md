@@ -5,7 +5,7 @@ Using VowSpace, you can visualise a dataset or compare datasets from different s
 
 I developed this program as a creative diversion while getting one of my phonetics homework done. The task involved manually inputting data into Excel and adhering to specific guidelines to construct a scatterplot resembling a vowel space.
 
-I've provided two different scripts. The first script is a standalone Python application enabling you to generate a scatterplot or compare different vowel spaces by inputting or importing data. The second programme (in the Vsv_Python_R folder), consists of a Python interface that allows you to enter data and save the entered data as a .csv document. Subsequently, an R script reads this dataset, generating a scatterplot based on the provided information according to some specifications.
+I've provided two different codes. The first script is a standalone Python application enabling you to generate a scatterplot or compare different vowel spaces by inputting or importing data. The second programme (in the Vsv_Python_R folder), consists of a Python interface that allows you to enter data and save the entered data as a .csv document. Subsequently, an R script reads this dataset, generating a scatterplot based on the provided information according to some specifications.
 
 ## Features
 
@@ -15,9 +15,7 @@ I've provided two different scripts. The first script is a standalone Python app
 
 - **Save Scatterplots**: Save the visualised data as a scatterplot as JPEG or PNG using the "Save Scatterplot" function or the "Ctrl (Command) + S" shortcut.
 
-- **Save Data New Data**: Save a dataset that you worked on as an .xlsx file.
-
-- **Clear Data**: Use the "Clear Data" function to start over and input or import new data.
+- **Saving and Manipulating Data**: Save a dataset that you worked on as an .xlsx file, also edit any dataframe using the DfEditor.
 
 - **Data Normalisation**: You can use the "Data Settings" to normalise the data using various normalisation methods.
 
@@ -27,7 +25,7 @@ I've provided two different scripts. The first script is a standalone Python app
 
 ## Usage
 
-Under the "Release" section, you can download the application in .app format for Macintosh devices.
+Under the "Release" section, you can download the application in .app format for Microsoft Windows and Apple Macintosh devices.
 
 Or
 
