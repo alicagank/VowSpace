@@ -15,7 +15,7 @@ from matplotlib import colormaps
 from scipy.spatial import ConvexHull
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox
+    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QMainWindow, QTableWidgetItem, QComboBox
 )
 from PyQt5.QtCore import Qt, QTimer
 
@@ -35,8 +35,8 @@ class VowelSpaceVisualizer(QWidget):
         self.set_layout()
 
         # Set initial state
-        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
-        self.setWindowTitle("VowSpace v1.3.0")
+        self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "speaker"])
+        self.setWindowTitle("VowSpace v1.4.0")
 
         self.create_menu_bar()
 
@@ -135,11 +135,25 @@ class VowelSpaceVisualizer(QWidget):
         self.label_vowel = QLabel('Vowel/Lexset/Word:')
         self.edit_vowel = QLineEdit()
 
-        self.label_F1 = QLabel('F1 Value:')
-        self.edit_F1 = QLineEdit()
+        self.label_f0 = QLabel('f0 Value:')
+        self.edit_f0 = QLineEdit()
 
-        self.label_F2 = QLabel('F2 Value:')
-        self.edit_F2 = QLineEdit()
+        self.label_f1 = QLabel('f1 Value:')
+        self.edit_f1 = QLineEdit()
+
+        self.label_f2 = QLabel('f2 Value:')
+        self.edit_f2 = QLineEdit()
+
+        self.label_f3 = QLabel('f3 Value:')
+        self.edit_f3 = QLineEdit()
+
+        self.label_f4 = QLabel('f4 Value:')
+        self.edit_f4 = QLineEdit()
+
+        self.checkbox_show_all_formants = QCheckBox('Show all formant input boxes')
+        self.checkbox_show_all_formants.stateChanged.connect(self.toggle_formant_boxes)
+        # Initially hide formant input boxes
+        self.toggle_formant_boxes(self.checkbox_show_all_formants.checkState())
 
         self.label_speaker = QLabel('Speaker:')
         self.edit_speaker = QLineEdit()
@@ -157,17 +171,33 @@ class VowelSpaceVisualizer(QWidget):
         self.button_audio_analysis_tools = self.create_button('Audio Analysis Tools', self.audio_analysis_tools)
         # IPA keyboard button
         self.button_IPA = self.create_button('Show IPA', self.show_IPA)
+        # Dataframe editor button
+        self.button_open_df_editor = self.create_button('DataFrame Editor', self.open_df_editor)
+
+        # Dropdown menus for selecting columns
+        self.label_x_axis = QLabel('X Axis:')
+        self.dropdown_x_axis = QComboBox()
+        self.dropdown_x_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
+        self.dropdown_x_axis.setCurrentText("f1")  # Set default value to F1
+
+        self.label_y_axis = QLabel('Y Axis:')
+        self.dropdown_y_axis = QComboBox()
+        self.dropdown_y_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
+        self.dropdown_y_axis.setCurrentText("f2")  # Set default value to F2
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
 
-    def update_input_fields_audio(self, f1, f2, speaker_name):
+    def update_input_fields_audio(self, f1, f2, f3, f4, speaker_name):
         # Update speaker's name
         self.edit_speaker.setText(str(speaker_name))
 
         # Update formant values (convert to string with maximum 3 decimal places)
-        self.edit_F1.setText("{:.3f}".format(f1))
-        self.edit_F2.setText("{:.3f}".format(f2))
+        #self.edit_F0.setText("{:.3f}".format(f0)) TODO: here.
+        self.edit_f1.setText("{:.3f}".format(f1))
+        self.edit_f2.setText("{:.3f}".format(f2))
+        self.edit_f3.setText("{:.3f}".format(f3))
+        self.edit_f4.setText("{:.3f}".format(f4))
 
         # Activate and bring VowelSpaceVisualizer window to focus
         self.activateWindow()
@@ -180,12 +210,18 @@ class VowelSpaceVisualizer(QWidget):
         input_grid_layout = QGridLayout()
         input_grid_layout.addWidget(self.label_vowel, 0, 0)
         input_grid_layout.addWidget(self.edit_vowel, 0, 1)
-        input_grid_layout.addWidget(self.label_F1, 1, 0)
-        input_grid_layout.addWidget(self.edit_F1, 1, 1)
-        input_grid_layout.addWidget(self.label_F2, 2, 0)
-        input_grid_layout.addWidget(self.edit_F2, 2, 1)
-        input_grid_layout.addWidget(self.label_speaker, 3, 0)
-        input_grid_layout.addWidget(self.edit_speaker, 3, 1)
+        input_grid_layout.addWidget(self.label_f0, 1, 0)
+        input_grid_layout.addWidget(self.edit_f0, 1, 1)
+        input_grid_layout.addWidget(self.label_f1, 2, 0)
+        input_grid_layout.addWidget(self.edit_f1, 2, 1)
+        input_grid_layout.addWidget(self.label_f2, 3, 0)
+        input_grid_layout.addWidget(self.edit_f2, 3, 1)
+        input_grid_layout.addWidget(self.label_f3, 4, 0)
+        input_grid_layout.addWidget(self.edit_f3, 4, 1)
+        input_grid_layout.addWidget(self.label_f4, 5, 0)
+        input_grid_layout.addWidget(self.edit_f4, 5, 1)
+        input_grid_layout.addWidget(self.label_speaker, 6, 0)
+        input_grid_layout.addWidget(self.edit_speaker, 6, 1)
 
         layout.addLayout(input_grid_layout)
 
@@ -202,8 +238,19 @@ class VowelSpaceVisualizer(QWidget):
         buttons_layout.addWidget(self.button_update_scatterplot)
         buttons_layout.addWidget(self.button_audio_analysis_tools)
         buttons_layout.addWidget(self.button_IPA)
+        buttons_layout.addWidget(self.button_open_df_editor)
+
+        axis_layout = QHBoxLayout()
+        axis_layout.addWidget(self.label_x_axis)
+        axis_layout.addWidget(self.dropdown_x_axis)
+        axis_layout.addWidget(self.label_y_axis)
+        axis_layout.addWidget(self.dropdown_y_axis)
+
+        title_layout.addWidget(self.checkbox_show_all_formants)
 
         layout.addLayout(buttons_layout)
+
+        layout.addLayout(axis_layout)
 
         layout.addWidget(self.canvas)
 
@@ -216,18 +263,51 @@ class VowelSpaceVisualizer(QWidget):
             button.setShortcut(shortcut)
         return button
 
+    def toggle_formant_boxes(self, state):
+        if state == Qt.Checked:
+            # Show all formant input boxes
+            self.label_f0.show()
+            self.edit_f0.show()
+            self.label_f3.show()
+            self.edit_f3.show()
+            self.label_f4.show()
+            self.edit_f4.show()
+        else:
+            # Hide all formant input boxes
+            self.label_f0.hide()
+            self.edit_f0.hide()
+            self.label_f3.hide()
+            self.edit_f3.hide()
+            self.label_f4.hide()
+            self.edit_f4.hide()
+
     # Adding data functionality
     def add_data(self):
         if not self.validate_input_data():
             return
 
         vowel = self.edit_vowel.text()
-        F1 = float(self.edit_F1.text())
-        F2 = float(self.edit_F2.text())
+
+        # Convert F0 to float or set to NaN if empty
+        f0 = float(self.edit_f0.text()) if self.edit_f0.text() else np.nan
+
+        # Convert F1 to float or set to NaN if empty
+        f1 = float(self.edit_f1.text()) if self.edit_f1.text() else np.nan
+
+        # Convert F2 to float or set to NaN if empty
+        f2 = float(self.edit_f2.text()) if self.edit_f2.text() else np.nan
+
+        # Convert F3 to float or set to NaN if empty
+        f3 = float(self.edit_f3.text()) if self.edit_f3.text() else np.nan
+
+        # Convert F4 to float or set to NaN if empty
+        f4 = float(self.edit_f4.text()) if self.edit_f4.text() else np.nan
+
         speaker = self.edit_speaker.text() if self.edit_speaker.text() else ''
 
-        new_data = pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2], "speaker": [speaker]}) if speaker else \
-                   pd.DataFrame({"vowel": [vowel], "F1": [F1], "F2": [F2]})
+        new_data = pd.DataFrame(
+            {"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "speaker": [speaker]}) if speaker else \
+            pd.DataFrame({"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4]})
 
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
@@ -239,21 +319,27 @@ class VowelSpaceVisualizer(QWidget):
     # Automatically clears the input fields after adding data
     def clear_input_fields(self):
         self.edit_vowel.clear()
-        self.edit_F1.clear()
-        self.edit_F2.clear()
+        self.edit_f0.clear()
+        self.edit_f1.clear()
+        self.edit_f2.clear()
+        self.edit_f3.clear()
+        self.edit_f4.clear()
         self.edit_speaker.clear()
 
     # Validates the data to be added - or else the program crashes.
     def validate_input_data(self):
-        if not all([self.edit_vowel.text(), self.edit_F1.text(), self.edit_F2.text()]):
-            self.show_error_message("Please fill in all the required fields.")
+        if not self.edit_vowel.text():
+            self.show_error_message("Please enter a vowel.")
             return False
 
         try:
-            F1 = float(self.edit_F1.text())
-            F2 = float(self.edit_F2.text())
+            f0 = float(self.edit_f0.text()) if self.edit_f0.text() else np.nan
+            f1 = float(self.edit_f1.text()) if self.edit_f1.text() else np.nan
+            f2 = float(self.edit_f2.text()) if self.edit_f2.text() else np.nan
+            f3 = float(self.edit_f3.text()) if self.edit_f3.text() else np.nan
+            f4 = float(self.edit_f4.text()) if self.edit_f4.text() else np.nan
         except ValueError:
-            self.show_error_message("Invalid numeric input for F1 or F2.")
+            self.show_error_message("Invalid numeric input for an F value.")
             return False
 
         return True
@@ -277,129 +363,145 @@ class VowelSpaceVisualizer(QWidget):
         self.ax.clear()
 
         markers = '.'  # Use a single marker for all vowels (.)
-        vowel_markers = {v: markers for i, v in enumerate(self.data['vowel'].unique())}
+        vowel_markers = {v: markers for v in self.data['vowel'].unique()}
 
-        speaker_colors = {speaker: colormaps['viridis'](i / len(self.data['speaker'].unique()))
-                          for i, speaker in enumerate(self.data['speaker'].unique())}
+        speaker_colors = {
+            speaker: plt.cm.viridis(i / len(self.data['speaker'].unique()))
+            for i, speaker in enumerate(self.data['speaker'].unique())
+        }
 
-        # Checks if either the Barkify or Lobanov Normalization are checked on the Data Settings submenu and changes the f1_column and f_2 column accordingly
-        if self.checkbox_normalize_lobanov.isChecked() and not self.checkbox_barkify.isChecked():
-            f1_column, f2_column = 'zsc_F1', 'zsc_F2'
-        elif self.checkbox_barkify.isChecked() and not self.checkbox_normalize_lobanov.isChecked():
-            f1_column, f2_column = 'bark_F1', 'bark_F2'
-        elif self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
+        # Drop columns with all NaN values
+        # This doesn't really belong here, but for development purposes, it stays here until I find another solution
+        # Drop columns with all NaN values except 'vowel' and 'speaker'
+
+        # Get selected columns from dropdown menus
+        x_column = self.dropdown_x_axis.currentText()
+        y_column = self.dropdown_y_axis.currentText()
+
+        # Apply transformations if checkboxes are checked
+        if self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
             # Shows an error message if both checkboxes are checked
-            self.show_error_message("Cannot apply both Barkify and Lobanov normalizations' transformations simultaneously.")
+            self.show_error_message(
+                "Cannot apply both Barkify and Lobanov normalizations' transformations simultaneously.")
             return
-        else:
-            f1_column, f2_column = 'F1', 'F2'
+        elif self.checkbox_barkify.isChecked():
+            x_column = f"bark_{x_column}"
+            y_column = f"bark_{y_column}"
+        elif self.checkbox_normalize_lobanov.isChecked():
+            x_column = f"zsc_{x_column}"
+            y_column = f"zsc_{y_column}"
+
+        # Check if selected columns exist in the data
+        if x_column not in self.data.columns or y_column not in self.data.columns:
+            QMessageBox.critical(self, "Error",
+                                 f"Selected column(s) '{x_column}' or '{y_column}' do not exist in the dataset.")
+            return
 
         for v in self.data['vowel'].unique():
             subset = self.data[self.data['vowel'] == v]
+
+            # Check if x_column or y_column exist in subset
+            if x_column not in subset.columns or y_column not in subset.columns:
+                continue
+
             self.ax.scatter(
-                subset[f2_column], subset[f1_column],  # Use selected F1 and F2 columns
+                subset[y_column], subset[x_column],  # Use selected columns
                 marker=vowel_markers[v],
                 c=[speaker_colors[s] for s in subset['speaker']],
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
 
-            # Checks the state of the checkboxes for three choices under "Show Labels"
+            # Show labels based on checkbox states
             show_labels_f = self.checkbox_show_labels_f.isChecked()
             show_labels_vowel = self.checkbox_show_labels_vowel.isChecked()
             show_labels_speaker = self.checkbox_show_labels_speaker.isChecked()
 
-            if show_labels_f or show_labels_vowel or show_labels_speaker:  # Checks the state of the checkboxes
-                for index, row in subset.iterrows():
-                    label = ''
+            for index, row in subset.iterrows():
+                label = ''
 
-                    if show_labels_f and not show_labels_vowel and not show_labels_speaker: # Logical arguments for how the label system works
-                        label += f"{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+                if show_labels_f:
+                    label += f"{x_column}: {row[x_column]:.2f}\n{y_column}: {row[y_column]:.2f}\n"
 
-                    if show_labels_vowel and not show_labels_f and not show_labels_speaker:
-                        label += f"{row['vowel']}"
+                if show_labels_vowel:
+                    label += f"{row['vowel']}\n"
 
-                    if show_labels_speaker and not show_labels_f and not show_labels_vowel:
-                        label += f"{row['speaker']}"
+                if show_labels_speaker:
+                    label += f"{row['speaker']}\n"
 
-                    if show_labels_f and show_labels_vowel and not show_labels_speaker:
-                        label += f"{row['vowel']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
+                # Add label if any information is present
+                if label:
+                    self.ax.annotate(label.strip(), (row[y_column], row[x_column]), textcoords="offset points",
+                                     xytext=(0, 5), ha='center', va='bottom', fontsize=8)
 
-                    if show_labels_f and show_labels_speaker and not show_labels_vowel:
-                        label += f"{row['speaker']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
-
-                    if show_labels_vowel and show_labels_speaker and not show_labels_f:
-                        label += f"{row['vowel']}\n{row['speaker']}"
-
-                    if show_labels_f and show_labels_vowel and show_labels_speaker:
-                        label += f"{row['vowel']}\n{row['speaker']}\n{f1_column}: {row[f1_column]:.2f}\n{f2_column}: {row[f2_column]:.2f}"
-
-                    if label:
-                        self.ax.annotate(label, (row[f2_column], row[f1_column]), textcoords="offset points",
-                                         xytext=(0, 5),
-                                         ha='center', va='bottom', fontsize=8)
-
-
-        if self.connect_data_action.isChecked() and len(self.data) >= 3: # Groups each and every data on the scatterplot according to the speaker and connects them with a convex hull polygon
+        if self.connect_data_action.isChecked() and len(self.data) >= 3:
             for speaker, group in self.data.groupby("speaker"):
-                points = np.array([group[f2_column], group[f1_column]]).T
-                if len(points) >= 3:
+                points = np.array([group[y_column], group[x_column]]).T
+
+                # Check if there are at least 3 points
+                if len(points) < 3:
+                    continue
+
+                # Check if the points are at least 2-dimensional
+                if np.linalg.matrix_rank(points) < 2:
+                    QMessageBox.critical(self, "Error",
+                                         f"The input data for speaker '{speaker}' is less than 2-dimensional.")
+                    continue
+
+                try:
                     hull = ConvexHull(points)
                     polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=speaker,
                                           facecolor=speaker_colors[speaker])
                     self.ax.add_patch(polygon)
+                except QhullError as e:
+                    QMessageBox.critical(self, "Error", f"Qhull error for speaker '{speaker}': {str(e)}")
 
-        # Edits the title according to self.edit_title()
+        # Edit the title according to user input
         custom_title = self.edit_title.text()
         if self.checkbox_no_title.isChecked():
             self.ax.set_title("", pad=25)  # Set an empty title if the checkbox is checked
         else:
             self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
 
-        show_legend = self.checkbox_show_legend.isChecked() # Checks if self.checkbox_show_legend() is checked and shows the legend accordingly
-
+        # Show or hide legend based on checkbox state
+        show_legend = self.checkbox_show_legend.isChecked()
         if show_legend:
             self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
         else:
             self.ax.legend().set_visible(False)
 
+        # Show or hide grid based on checkbox state
         show_grid = self.checkbox_show_grids.isChecked()
-
-        # Set zorder value for the scatter plot
-        scatter_zorder = 2
-
         if show_grid:
-            # Draw grid lines behind the scatter plot by setting zorder
-            self.ax.grid(True, linestyle='--', linewidth=0.5, zorder=scatter_zorder - 1)
+            self.ax.grid(True, linestyle='--', linewidth=0.5)
         else:
             self.ax.grid(False)
 
-        # Sets labels for the axes
-        self.ax.set_xlabel("F2")
-        self.ax.set_ylabel("F1")
+        # Set labels for the axes
+        self.ax.set_xlabel(self.dropdown_x_axis.currentText())
+        self.ax.set_ylabel(self.dropdown_y_axis.currentText())
 
-        # Sets the position of the rulers
+        # Position the rulers
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
 
-        # Inverts the axes to resemble vowel space
+        # Invert axes to resemble vowel space
         plt.gca().invert_xaxis()
         plt.gca().invert_yaxis()
 
-        # Positions them
+        # Position the axes
         self.ax.xaxis.set_label_position("bottom")
         self.ax.xaxis.set_ticks_position("top")
         self.ax.yaxis.set_label_position("left")
         self.ax.yaxis.set_ticks_position("right")
 
-        # Uses the tight_layout(), minimizes the gaps between the window and the scatterplot
+        # Use tight_layout to minimize gaps between the window and the scatterplot
         self.figure.tight_layout()
         self.canvas.draw()
 
-
     # Bark Difference Metric - Zi = 26.81/(1+1960/Fi) - 0.53 (Traunmüller, 1997)
     def barkify(self, arg):
-        formants = ['F1', 'F2']
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
 
         bark_formula = lambda y: 26.81 / (1 + 1960 / y) - 0.53
 
@@ -418,9 +520,9 @@ class VowelSpaceVisualizer(QWidget):
     # Implementation: Following Nearey (1977) and Adank et al. (2004), NORM uses the formula (see the General Note below):
     # Fn[V]N = (Fn[V] - MEANn)/Sn
     def lobify(self, arg):
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
 
-        formants = ['F1', 'F2']  # Add more formants if needed
-        group_column = 'speaker' # or vowel couldn't decide -- it was speaker.
+        group_column = 'speaker'  # Replace with 'vowel' if needed
 
         zscore = lambda x: (x - x.mean()) / x.std()
 
@@ -429,7 +531,7 @@ class VowelSpaceVisualizer(QWidget):
 
             if name not in self.data.columns:  # Check if the column already exists
                 col = self.data.groupby([group_column])[formant].transform(zscore)
-                self.data.insert(len(self.data.columns), name, col)
+                self.data[name] = col
 
         self.update_scatterplot()
 
@@ -452,7 +554,17 @@ class VowelSpaceVisualizer(QWidget):
 
     # Clears all the data from the dataframe
     def clear_data(self):
-        self.data = pd.DataFrame(columns=["vowel", "F1", "F2", "speaker"])
+        # Get a list of all current column names
+        existing_columns = list(self.data.columns)
+
+        # Clear existing data in all columns
+        for column in existing_columns:
+            self.data[column] = pd.Series(dtype=self.data[column].dtype)  # Clear data in each column
+
+        # Reset self.data to an empty DataFrame with original columns
+        self.data = pd.DataFrame(columns=existing_columns)
+
+        # Update the scatterplot after clearing data
         self.update_scatterplot()
 
     # Allows the user to simply save whatever there is on the scatterplot quickly
@@ -499,6 +611,10 @@ class VowelSpaceVisualizer(QWidget):
 
         if file_name:
             try:
+                # Remove columns that have no data
+                columns_to_keep = self.data.columns[self.data.count() > 0]
+                self.data = self.data[columns_to_keep]
+
                 # Determine file format based on the selected file extension
                 file_format = 'xls' if file_name.lower().endswith('.xls') else 'xlsx'
 
@@ -507,9 +623,9 @@ class VowelSpaceVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving data to {file_format}: {str(e)}")
 
-    # Imports data from an .xls or .xlsx file. The files should have columns named "vowel", "speaker", "F1" and "F2".
+    # Imports data from an .xls or .xlsx file. The files should have columns named "vowel", "speaker", and F values.
     def import_data_from_excel(self):
-        self.clear_data() # Clears the already existing data on the dataframe before the importing
+        self.clear_data()  # Clears the already existing data on the dataframe before the importing
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -518,25 +634,36 @@ class VowelSpaceVisualizer(QWidget):
 
         if file_name:
             try:
-                # Leaving the na values as is creates problems
-                new_data = pd.read_excel(file_name, na_values=['', 'NaN', 'nan', 'N/A', 'NA', 'n/a'])
+                # Read Excel file with specific na_values to handle various representations of missing values
+                na_values = ['', 'NaN', 'nan', 'N/A', 'NA', 'n/a']
+                new_data = pd.read_excel(file_name, na_values=na_values)
 
-                # Converts 'F1' and 'F2' columns to numeric
-                new_data['F1'] = pd.to_numeric(new_data['F1'], errors='coerce')
-                new_data['F2'] = pd.to_numeric(new_data['F2'], errors='coerce')
+                # Ensure all formant columns are treated as numeric and handle errors gracefully
+                formant_columns = ['f0', 'f1', 'f2', 'f3', 'f4']
+                for col in formant_columns:
+                    if col in new_data.columns:
+                        new_data[col] = pd.to_numeric(new_data[col], errors='coerce')
 
-                # Sets 'speaker' column to an empty string if it doesn't exist
+                # Set 'speaker' column to an empty string if it doesn't exist
                 if 'speaker' not in new_data.columns:
                     new_data['speaker'] = ''
 
-                # Replaces empty values in 'speaker' column with a space character
+                # Fill missing values in 'speaker' column with 'N/A'
                 new_data['speaker'] = new_data['speaker'].fillna('N/A')
 
-                # Drops rows with missing values after conversion
+                # Drop rows with any missing values after conversion
                 new_data = new_data.dropna()
 
+                # Concatenate new data with existing data
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
+
+                # Update scatterplot after importing data
                 self.update_scatterplot()
+
+                # Open dfEditor window with imported data
+                self.df_editor = dfEditor(self.data)
+                self.df_editor.show()
+
                 QMessageBox.information(self, "Success", "Data imported from Excel successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
@@ -545,6 +672,11 @@ class VowelSpaceVisualizer(QWidget):
     def show_IPA(self):
         self.ipa_window = IPAWindow(self)
         self.ipa_window.exec_()
+
+    # Opens Dataframe editor
+    def open_df_editor(self):
+        self.df_editor = dfEditor(self.data)  # Assuming you pass data to the editor
+        self.df_editor.show()
 
     # Opens Audio Analysis Tools window.
     def audio_analysis_tools(self):
@@ -587,13 +719,61 @@ class IPAWindow(QDialog):
         self.parent().edit_vowel.setText(letter)
         self.close() #will get back to that.
 
+class dfEditor(QDialog):
+    def __init__(self, data, parent=None):
+        super().__init__(parent)
+        self.data = data
+        self.setWindowTitle("DataFrame Editor")
+        self.setGeometry(100, 100, 700, 500)  # 700x500 looks good
+
+        self.initUI()
+
+    def initUI(self):
+        # Creating a QTableWidget to display dataframe
+        self.create_table_widget()
+
+        # Adding a Save button
+        self.save_button = QPushButton('Save Changes', self)
+        self.save_button.clicked.connect(self.save_changes)
+
+        # Layout setup
+        layout = QVBoxLayout()
+        layout.addWidget(self.table_widget)
+        layout.addWidget(self.save_button)
+        self.setLayout(layout)
+
+    def create_table_widget(self):
+        # Creating a QTableWidget and adding data
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(len(self.data.index))
+        self.table_widget.setColumnCount(len(self.data.columns))
+        self.table_widget.setHorizontalHeaderLabels(self.data.columns)
+
+        for i in range(len(self.data.index)):
+            for j in range(len(self.data.columns)):
+                item = QTableWidgetItem(str(self.data.iloc[i, j]))  # Ensure numeric values are converted to str
+                self.table_widget.setItem(i, j, item)
+
+    def save_changes(self):
+        # Save changes made in the QTableWidget back to the dataframe
+        for i in range(self.table_widget.rowCount()):
+            for j in range(self.table_widget.columnCount()):
+                item = self.table_widget.item(i, j)
+                if item is not None:
+                    try:
+                        # Attempt to convert text back to numeric
+                        value = float(item.text())
+                    except ValueError:
+                        value = item.text()  # Use text as-is if conversion fails
+                    self.data.iat[i, j] = value
+
 class AudioAnalysisTool(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.show_pitch = False  # Changed default to unchecked
-        self.show_intensity = False  # Changed default to unchecked
-        self.show_formants = False  # Changed default to unchecked
+        self.show_pitch = False
+        self.show_intensity = False
+        self.show_formants = False
 
         # Store the reference to VowelSpaceVisualizer instance
         self.vowel_space_visualizer = vowel_space_visualizer
@@ -650,6 +830,10 @@ class AudioAnalysisTool(QWidget):
         read_audio_action = self.create_action('Read from Audio File', self.read_audio_file)
         file_menu.addAction(read_audio_action)
 
+        # Save the graph
+        save_graph_action = self.create_action('Save Graph', self.save_graph)
+        file_menu.addAction(save_graph_action)
+
         # Create Options menu
         options_menu = menubar.addMenu('Options')
 
@@ -663,10 +847,24 @@ class AudioAnalysisTool(QWidget):
         self.intensity_action.setChecked(self.show_intensity)
         options_menu.addAction(self.intensity_action)
 
-        # Add formatns toggle as a checkable menu item (unchecked by default)
-        self.formants_action = self.create_action('Show Formants', self.toggle_formants, checkable=True)
-        self.formants_action.setChecked(self.show_formants)
-        options_menu.addAction(self.formants_action)
+        # Create a submenu for formants under Options menu
+        formants_submenu = QMenu('Show Formants', self)
+
+        # Add actions for F1, F2, F3, F4 under the formants submenu
+        self.formant_f1_action = self.create_action('Show f1', self.toggle_formant_f1, checkable=True)
+        formants_submenu.addAction(self.formant_f1_action)
+
+        self.formant_f2_action = self.create_action('Show f2', self.toggle_formant_f2, checkable=True)
+        formants_submenu.addAction(self.formant_f2_action)
+
+        self.formant_f3_action = self.create_action('Show f3', self.toggle_formant_f3, checkable=True)
+        formants_submenu.addAction(self.formant_f3_action)
+
+        self.formant_f4_action = self.create_action('Show f4', self.toggle_formant_f4, checkable=True)
+        formants_submenu.addAction(self.formant_f4_action)
+
+        # Add the formants submenu to the Options menu
+        options_menu.addMenu(formants_submenu)
 
     def create_action(self, text, function, shortcut=None, checkable=False):
         action = QAction(text, self)
@@ -676,27 +874,6 @@ class AudioAnalysisTool(QWidget):
         if checkable:
             action.setCheckable(True)
         return action
-
-    def update_cursor_coordinates(self, event):
-        if event.inaxes:
-            x, y = event.xdata, event.ydata
-            self.coordinates_label.setText(f'Cursor Coordinates: x={x:.2f}, y={y:.2f}')
-
-    def handle_click(self, event):
-        x, y = event.xdata, event.ydata
-
-        if event.inaxes and event.button == 3:
-            # Extract formants and print frequencies for the x-coordinate
-            f1_freqs = self.formants.get_value_at_time(1, x)
-            f2_freqs = self.formants.get_value_at_time(2, x)
-
-            # Audio title
-            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
-
-            # print(f"F1: {f1_freqs} Hz, F2: {f2_freqs} Hz")
-
-            # Update VowelSpaceVisualizer with the formant values
-            self.vowel_space_visualizer.update_input_fields_audio(f1_freqs, f2_freqs, audio_title)
 
     def toggle_pitch(self):
         self.show_pitch = not self.show_pitch
@@ -723,9 +900,15 @@ class AudioAnalysisTool(QWidget):
             if self.show_intensity and self.intensity:
                 self.draw_intensity(self.intensity)
 
-            # Redraw formants if it should be shown and formant data is available
-            if self.show_formants and self.formants:
-                self.draw_formants(self.formants)
+            # Redraw formants based on checked actions
+            if self.formant_f1_action.isChecked() and self.formants:
+                self.draw_formants(self.formants, 1)
+            if self.formant_f2_action.isChecked() and self.formants:
+                self.draw_formants(self.formants, 2)
+            if self.formant_f3_action.isChecked() and self.formants:
+                self.draw_formants(self.formants, 3)
+            if self.formant_f4_action.isChecked() and self.formants:
+                self.draw_formants(self.formants, 4)
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
 
@@ -745,8 +928,6 @@ class AudioAnalysisTool(QWidget):
                 self.draw_spectrogram(file_name)
 
                 # Extract pitch information using Parselmouth
-                # This has to stay here or it doesn't work for some fucking reason
-                # Tried to move it to draw_pitch method without success
                 snd = Sound(file_name)
                 self.pitch = snd.to_pitch()
 
@@ -764,6 +945,53 @@ class AudioAnalysisTool(QWidget):
                 self.redraw_plots()
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
+
+    def draw_formants(self, formants=None, formant_number=None):
+        try:
+            if formants and formant_number:
+                plt.plot(formants.xs(), [formants.get_value_at_time(formant_number, x) for x in formants.xs()], 'o',
+                         color='w', markersize=3)
+                plt.plot(formants.xs(), [formants.get_value_at_time(formant_number, x) for x in formants.xs()], 'o',
+                         markersize=1)
+                self.canvas.draw()
+            else:
+                QMessageBox.critical(self, "Error", "Formant data or formant number is not available.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
+
+    # Define toggle methods for each formant
+    def toggle_formant_f1(self):
+        self.redraw_plots()
+
+    def toggle_formant_f2(self):
+        self.redraw_plots()
+
+    def toggle_formant_f3(self):
+        self.redraw_plots()
+
+    def toggle_formant_f4(self):
+        self.redraw_plots()
+
+    def update_cursor_coordinates(self, event):
+        if event.inaxes:
+            x, y = event.xdata, event.ydata
+            self.coordinates_label.setText(f'Cursor Coordinates: x={x:.2f}, y={y:.2f}')
+
+    def handle_click(self, event):
+        x, y = event.xdata, event.ydata
+
+        if event.inaxes and event.button == 3:
+            # Extract formants and print frequencies for the x-coordinate
+            f1 = self.formants.get_value_at_time(1, x) if self.formants else None
+            f2 = self.formants.get_value_at_time(2, x) if self.formants else None
+            f3 = self.formants.get_value_at_time(3, x) if self.formants else None
+            f4 = self.formants.get_value_at_time(4, x) if self.formants else None
+
+            # Audio title
+            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
+
+            # Update VowelSpaceVisualizer with the formant values
+            self.vowel_space_visualizer.update_input_fields_audio(f1, f2, f3, f4, audio_title)
 
     def draw_spectrogram(self, audio_file, spectrogram=None, dynamic_range=70):
         try:
@@ -803,28 +1031,9 @@ class AudioAnalysisTool(QWidget):
 
                 self.canvas.draw()
             else:
-                QMessageBox.critical(self, "Error", f"Intensity data is not available: {str(e)}")
+                QMessageBox.critical(self, "Error", "Intensity data is not available.")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
-
-    def draw_formants(self, formants=None):
-        try:
-            if formants:
-                # Basically draws the F1 and F2 formants on the plot.
-                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='w',
-                    markersize=3)
-                plt.plot(formants.xs(), [formants.get_value_at_time(1, x) for x in formants.xs()], 'o', color='b',
-                    markersize=1)
-                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='w',
-                    markersize=3)
-                plt.plot(formants.xs(), [formants.get_value_at_time(2, x) for x in formants.xs()], 'o', color='c',
-                    markersize=1)
-
-                self.canvas.draw()
-            else:
-                QMessageBox.critical(self, "Error", f"Formant data is not available: {str(e)}")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
 
     def draw_pitch(self, pitch):
         try:
@@ -843,9 +1052,23 @@ class AudioAnalysisTool(QWidget):
 
                 self.canvas.draw()
             else:
-                QMessageBox.critical(self, "Error", f"Pitch data is not available: {str(e)}")
+                QMessageBox.critical(self, "Error", "Pitch data is not available.")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error plotting pitch: {str(e)}")
+
+    def save_graph(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Graph", "",
+                                                   "JPEG files (*.jpeg);;All Files (*)", options=options)
+        if file_path:
+            try:
+                # Save the current plot as a .jpeg file with high quality (1400 DPI)
+                self.figure.savefig(file_path, format='jpeg', dpi=1400)
+                QMessageBox.information(self, "Success", "Graph saved successfully!")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving graph: {str(e)}")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
