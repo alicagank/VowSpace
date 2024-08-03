@@ -12,7 +12,10 @@ import matplotlib.pyplot as plt
 from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib import colormaps
+from matplotlib.patches import Ellipse
+import matplotlib.colors as mcolors
 from scipy.spatial import ConvexHull
+from scipy.stats import chi2
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
     QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QMainWindow, QTableWidgetItem, QComboBox
@@ -36,11 +39,14 @@ class VowelSpaceVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "speaker"])
-        self.setWindowTitle("VowSpace v1.4.0")
+        self.setWindowTitle("VowSpace v1.4.1")
 
         self.create_menu_bar()
 
         self.resizeEvent = self.custom_resize_event
+
+        self.resize(800, 800)
+        self.setMinimumSize(800, 800)
 
     def create_menu_bar(self):
         menubar = QMenuBar(self)
@@ -64,60 +70,78 @@ class VowelSpaceVisualizer(QWidget):
         undo_action = self.create_action('Undo', self.undo_last_data, Qt.CTRL + Qt.Key_Z)
         edit_menu.addAction(undo_action)
 
-        # Settings menu
-        settings_menu = menubar.addMenu('Settings')
+        # Options menu
+        options_menu = menubar.addMenu('Options')
 
-        # Visualization Settings submenu
-        visualization_settings_menu = settings_menu.addMenu('Visualization Settings')
+        # Visualization Options submenu
+        visualization_options_menu = options_menu.addMenu('Visualization Options')
 
-        # Data Settings submenu
-        data_settings_menu = settings_menu.addMenu('Data Settings')
+        # Color grouping by speaker or vowel
+        self.group_by_vowel_action = self.create_action('Group by Vowel', self.update_scatterplot, format='png',
+                                                        checkable=True)
+        visualization_options_menu.addAction(self.group_by_vowel_action)
 
-        # Connect Data with Polygons action
-        self.connect_data_action = self.create_action('Connect Data with Polygons', self.update_scatterplot,
+        # Connect submenu under Visualization Options
+        connect_menu = visualization_options_menu.addMenu('Connect')
+
+        # actions to Connect submenu
+        self.connect_ellipse_action = self.create_action('Connect with Ellipse(s)',
+                                                                 self.update_scatterplot, format='png', checkable=True)
+        connect_menu.addAction(self.connect_ellipse_action)
+
+        self.connect_qhull_action = self.create_action('Connect with Qhull(s)', self.update_scatterplot,
                                                       format='png', checkable=True)
-        visualization_settings_menu.addAction(self.connect_data_action)
+        connect_menu.addAction(self.connect_qhull_action)
+
+        self.show_center_info_action = self.create_action('Show Center Label(s)', self.update_scatterplot, format='png',
+                                                          checkable=True)
+        connect_menu.addAction(self.show_center_info_action)
+
+        # Data Options submenu
+        data_options_menu = options_menu.addMenu('Data Options')
 
         # Show labels or not submenu
-        labels_submenu = QMenu('Show Labels', self)
+        labels_submenu = QMenu('Label Options', self)
 
         # Choice 1: Show Labels for F Values
-        self.checkbox_show_labels_f = self.create_action('Show Labels for F Values', self.update_scatterplot,
-                                                              format='png', checkable=True)
+        self.checkbox_show_labels_f = self.create_action('Show Labels for F Value(s)', self.update_scatterplot,
+                                                         format='png', checkable=True)
         labels_submenu.addAction(self.checkbox_show_labels_f)
 
         # Choice 2: Show Labels for Vowels
-        self.checkbox_show_labels_vowel = self.create_action('Show Labels for Vowels', self.update_scatterplot,
-                                                            format='png', checkable=True)
+        self.checkbox_show_labels_vowel = self.create_action('Show Labels for Vowel(s)', self.update_scatterplot,
+                                                             format='png', checkable=True)
         labels_submenu.addAction(self.checkbox_show_labels_vowel)
 
         # Choice 3: Show Labels for Speakers
-        self.checkbox_show_labels_speaker = self.create_action('Show Labels for Speakers', self.update_scatterplot,
-                                                              format='png', checkable=True)
+        self.checkbox_show_labels_speaker = self.create_action('Show Labels for Speaker(s)', self.update_scatterplot,
+                                                               format='png', checkable=True)
         labels_submenu.addAction(self.checkbox_show_labels_speaker)
 
         # Adds another submenu under Show Data Labels
-        visualization_settings_menu.addMenu(labels_submenu)
+        visualization_options_menu.addMenu(labels_submenu)
+
+        # Legend Options submenu
+        legend_options_menu = visualization_options_menu.addMenu('Legend Options')
 
         # Show legend or not
-        self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot,
-                                                       format='png', checkable=True)
-        visualization_settings_menu.addAction(self.checkbox_show_legend)
+        self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot, format='png',
+                                                       checkable=True)
+        legend_options_menu.addAction(self.checkbox_show_legend)
 
         # Show grids or not
-        self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot,
-                                                      format='png', checkable=True)
-        visualization_settings_menu.addAction(self.checkbox_show_grids)
+        self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot, format='png',
+                                                      checkable=True)
+        visualization_options_menu.addAction(self.checkbox_show_grids)
 
         # Barkify
-        self.checkbox_barkify = self.create_action('Barkify', self.barkify,
-                                                   format='png', checkable=True)
-        data_settings_menu.addAction(self.checkbox_barkify)
+        self.checkbox_barkify = self.create_action('Use Bark Scale', self.barkify, format='png', checkable=True)
+        data_options_menu.addAction(self.checkbox_barkify)
 
         # Lobanov Normalization
-        self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify,
-                                                        format='png', checkable=True)
-        data_settings_menu.addAction(self.checkbox_normalize_lobanov)
+        self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify, format='png',
+                                                             checkable=True)
+        data_options_menu.addAction(self.checkbox_normalize_lobanov)
 
         self.layout().setMenuBar(menubar)
 
@@ -162,6 +186,7 @@ class VowelSpaceVisualizer(QWidget):
         self.edit_title = QLineEdit()
 
         self.checkbox_no_title = QCheckBox('No Title')
+        self.checkbox_no_title.setChecked(True) # Thought this would be more efficient
 
         # The buttons that trigger those actions
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
@@ -175,12 +200,12 @@ class VowelSpaceVisualizer(QWidget):
         self.button_open_df_editor = self.create_button('DataFrame Editor', self.open_df_editor)
 
         # Dropdown menus for selecting columns
-        self.label_x_axis = QLabel('X Axis:')
+        self.label_x_axis = QLabel('Y Axis:')
         self.dropdown_x_axis = QComboBox()
         self.dropdown_x_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
         self.dropdown_x_axis.setCurrentText("f1")  # Set default value to F1
 
-        self.label_y_axis = QLabel('Y Axis:')
+        self.label_y_axis = QLabel('X Axis:')
         self.dropdown_y_axis = QComboBox()
         self.dropdown_y_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
         self.dropdown_y_axis.setCurrentText("f2")  # Set default value to F2
@@ -240,17 +265,17 @@ class VowelSpaceVisualizer(QWidget):
         buttons_layout.addWidget(self.button_IPA)
         buttons_layout.addWidget(self.button_open_df_editor)
 
+        layout.addLayout(buttons_layout)
+
         axis_layout = QHBoxLayout()
         axis_layout.addWidget(self.label_x_axis)
         axis_layout.addWidget(self.dropdown_x_axis)
         axis_layout.addWidget(self.label_y_axis)
         axis_layout.addWidget(self.dropdown_y_axis)
 
-        title_layout.addWidget(self.checkbox_show_all_formants)
-
-        layout.addLayout(buttons_layout)
-
         layout.addLayout(axis_layout)
+
+        title_layout.addWidget(self.checkbox_show_all_formants)
 
         layout.addWidget(self.canvas)
 
@@ -365,14 +390,18 @@ class VowelSpaceVisualizer(QWidget):
         markers = '.'  # Use a single marker for all vowels (.)
         vowel_markers = {v: markers for v in self.data['vowel'].unique()}
 
-        speaker_colors = {
-            speaker: plt.cm.viridis(i / len(self.data['speaker'].unique()))
-            for i, speaker in enumerate(self.data['speaker'].unique())
-        }
+        # Determine if we are coloring by speaker or by vowel
+        if self.group_by_vowel_action.isChecked():
+            group_by = 'vowel'
+            unique_values = self.data['vowel'].unique()
+        else:
+            group_by = 'speaker'
+            unique_values = self.data['speaker'].unique()
 
-        # Drop columns with all NaN values
-        # This doesn't really belong here, but for development purposes, it stays here until I find another solution
-        # Drop columns with all NaN values except 'vowel' and 'speaker'
+        colors = {
+            value: plt.cm.viridis(i / len(unique_values))
+            for i, value in enumerate(unique_values)
+        }
 
         # Get selected columns from dropdown menus
         x_column = self.dropdown_x_axis.currentText()
@@ -380,7 +409,6 @@ class VowelSpaceVisualizer(QWidget):
 
         # Apply transformations if checkboxes are checked
         if self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
-            # Shows an error message if both checkboxes are checked
             self.show_error_message(
                 "Cannot apply both Barkify and Lobanov normalizations' transformations simultaneously.")
             return
@@ -404,10 +432,13 @@ class VowelSpaceVisualizer(QWidget):
             if x_column not in subset.columns or y_column not in subset.columns:
                 continue
 
+            # Use the appropriate color mapping based on the selection
+            color = [colors[val] for val in subset[group_by]]
+
             self.ax.scatter(
                 subset[y_column], subset[x_column],  # Use selected columns
                 marker=vowel_markers[v],
-                c=[speaker_colors[s] for s in subset['speaker']],
+                c=color,
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
@@ -434,60 +465,121 @@ class VowelSpaceVisualizer(QWidget):
                     self.ax.annotate(label.strip(), (row[y_column], row[x_column]), textcoords="offset points",
                                      xytext=(0, 5), ha='center', va='bottom', fontsize=8)
 
-        if self.connect_data_action.isChecked() and len(self.data) >= 3:
-            for speaker, group in self.data.groupby("speaker"):
+        if self.connect_ellipse_action.isChecked():
+            if self.group_by_vowel_action.isChecked():
+                group_by = 'vowel'
+            else:
+                group_by = 'speaker'
+
+            for key in self.data[group_by].unique():
+                subset = self.data[self.data[group_by] == key]
+
+                # Ensure the subset has enough data points and variability
+                if len(subset) < 2 or subset[x_column].nunique() < 2 or subset[y_column].nunique() < 2:
+                    continue
+
+                # Calculate the mean and covariance of the data
+                mean = [np.mean(subset[y_column]), np.mean(subset[x_column])]
+                cov = np.cov(subset[y_column], subset[x_column])  # TODO: inverted axes
+
+                # Eigenvalues and eigenvectors of the covariance matrix
+                eigvals, eigvecs = np.linalg.eigh(cov)
+
+                # Sort eigenvalues and corresponding eigenvectors
+                order = eigvals.argsort()[::-1]
+                eigvals, eigvecs = eigvals[order], eigvecs[:, order]
+
+                # Scaling factor for the 67% confidence ellipse
+                # https://joeystanley.com/blog/making-vowel-plots-in-r-part-1/#ellipses
+                scale_factor = np.sqrt(chi2.ppf(0.67, df=2))
+
+                # Calculate width and height of the ellipse
+                width, height = 2 * scale_factor * np.sqrt(eigvals)
+
+                # Calculate the angle of the ellipse
+                angle = np.degrees(np.arctan2(*eigvecs[:, 0][::-1]))
+
+                # Determine the color based on the current grouping
+                ell_color = colors[key]
+
+                # Define transparency
+                alpha = 0.2
+
+                # Create an ellipse
+                ell = Ellipse(xy=(mean[0], mean[1]),
+                              width=width, height=height,
+                              angle=angle,
+                              edgecolor=ell_color, fc=ell_color, lw=1, alpha=alpha)
+                self.ax.add_patch(ell)
+
+                # Add label to the center of the ellipse
+                if self.show_center_info_action.isChecked():
+                    self.ax.text(mean[0], mean[1], key, color='black', ha='center', va='center', fontsize=10)
+
+        if self.connect_qhull_action.isChecked() and len(self.data) >= 3:
+            if self.group_by_vowel_action.isChecked():
+                group_by = 'vowel'
+            else:
+                group_by = 'speaker'
+
+            for key, group in self.data.groupby(group_by):
                 points = np.array([group[y_column], group[x_column]]).T
 
-                # Check if there are at least 3 points
                 if len(points) < 3:
                     continue
 
-                # Check if the points are at least 2-dimensional
                 if np.linalg.matrix_rank(points) < 2:
                     QMessageBox.critical(self, "Error",
-                                         f"The input data for speaker '{speaker}' is less than 2-dimensional.")
+                                         f"The input data for {group_by} '{key}' is less than 2-dimensional.")
                     continue
 
                 try:
                     hull = ConvexHull(points)
-                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=speaker,
-                                          facecolor=speaker_colors[speaker])
+                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=key,
+                                          facecolor=colors[key])
                     self.ax.add_patch(polygon)
-                except QhullError as e:
-                    QMessageBox.critical(self, "Error", f"Qhull error for speaker '{speaker}': {str(e)}")
 
-        # Edit the title according to user input
+                    # Calculate the centroid of the convex hull
+                    centroid = np.mean(points[hull.vertices], axis=0)
+
+                    # Add label to the center of the polygon
+                    if self.show_center_info_action.isChecked():
+                        self.ax.text(centroid[0], centroid[1], key, color='black', ha='center', va='center',
+                                     fontsize=10)
+                except QhullError as e:
+                    QMessageBox.critical(self, "Error", f"Qhull error for {group_by} '{key}': {str(e)}")
+
         custom_title = self.edit_title.text()
         if self.checkbox_no_title.isChecked():
-            self.ax.set_title("", pad=25)  # Set an empty title if the checkbox is checked
+            self.ax.set_title("", pad=25)
         else:
             self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
 
-        # Show or hide legend based on checkbox state
         show_legend = self.checkbox_show_legend.isChecked()
         if show_legend:
             self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
         else:
             self.ax.legend().set_visible(False)
 
-        # Show or hide grid based on checkbox state
         show_grid = self.checkbox_show_grids.isChecked()
         if show_grid:
             self.ax.grid(True, linestyle='--', linewidth=0.5)
         else:
             self.ax.grid(False)
 
-        # Set labels for the axes
-        self.ax.set_xlabel(self.dropdown_x_axis.currentText())
-        self.ax.set_ylabel(self.dropdown_y_axis.currentText())
+        # Set labels for the axes, inverted
+        self.ax.set_xlabel(self.dropdown_y_axis.currentText())
+        self.ax.set_ylabel(self.dropdown_x_axis.currentText())
 
         # Position the rulers
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
 
         # Invert axes to resemble vowel space
-        plt.gca().invert_xaxis()
-        plt.gca().invert_yaxis()
+        # plt.gca().invert_xaxis()
+        # plt.gca().invert_yaxis() this is very buggy and doesn't work consistently for some reason
+        self.ax.invert_xaxis()
+        self.ax.invert_yaxis()
 
         # Position the axes
         self.ax.xaxis.set_label_position("bottom")
@@ -522,7 +614,7 @@ class VowelSpaceVisualizer(QWidget):
     def lobify(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
 
-        group_column = 'speaker'  # Replace with 'vowel' if needed
+        group_column = 'speaker'
 
         zscore = lambda x: (x - x.mean()) / x.std()
 
@@ -574,7 +666,7 @@ class VowelSpaceVisualizer(QWidget):
 
         if file_name:
             try:
-                self.figure.savefig(file_name, format='jpeg', dpi=800)
+                self.figure.savefig(file_name, format='jpeg', dpi=1200)
                 QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
@@ -592,7 +684,7 @@ class VowelSpaceVisualizer(QWidget):
                 # Determine file format based on the selected file extension
                 file_format = 'jpeg' if file_name.lower().endswith(('.jpg', '.jpeg')) else 'png'
 
-                self.figure.savefig(file_name, format=file_format, dpi=800)
+                self.figure.savefig(file_name, format=file_format, dpi=1200)
                 QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
@@ -657,12 +749,12 @@ class VowelSpaceVisualizer(QWidget):
                 # Concatenate new data with existing data
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
 
-                # Update scatterplot after importing data
-                self.update_scatterplot()
-
                 # Open dfEditor window with imported data
                 self.df_editor = dfEditor(self.data)
                 self.df_editor.show()
+
+                # Update scatterplot after importing data
+                self.update_scatterplot()
 
                 QMessageBox.information(self, "Success", "Data imported from Excel successfully.")
             except Exception as e:
@@ -726,6 +818,9 @@ class dfEditor(QDialog):
         self.setWindowTitle("DataFrame Editor")
         self.setGeometry(100, 100, 700, 500)  # 700x500 looks good
 
+        # Store the reference to VowelSpaceVisualizer instance
+        self.vowel_space_visualizer = vowel_space_visualizer
+
         self.initUI()
 
     def initUI(self):
@@ -766,6 +861,7 @@ class dfEditor(QDialog):
                     except ValueError:
                         value = item.text()  # Use text as-is if conversion fails
                     self.data.iat[i, j] = value
+        self.vowel_space_visualizer.update_scatterplot() # Esentially updates the scatteplot upon any change on the df. TODO: a little laggy.
 
 class AudioAnalysisTool(QWidget):
     def __init__(self):
@@ -1081,5 +1177,5 @@ if __name__ == '__main__':
 
     sys.exit(app.exec_())
 
-    # VowSpace (Vowel Space Visualizer) v.1.3.0
+    # VowSpace (Vowel Space Visualizer) v.1.4.1
     # Ali Çağan Kaya, under the GPL-3.0 license.

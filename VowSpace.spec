@@ -32,7 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['/Users/alicagank/Desktop/VowSpace/VowSpace/logo-and-icons/icon-128x128.ico'],
+    icon=['/Users/alicagank/Desktop/VowSpace/VowSpace/logo-and-icons/icon-256x256.ico'],
 )
 coll = COLLECT(
     exe,
@@ -46,6 +46,6 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='VowSpace.app',
-    icon='/Users/alicagank/Desktop/VowSpace/VowSpace/logo-and-icons/icon-128x128.ico',
+    icon='/Users/alicagank/Desktop/VowSpace/VowSpace/logo-and-icons/icon-256x256.ico',
     bundle_identifier=None,
 )
