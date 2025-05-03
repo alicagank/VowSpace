@@ -11,14 +11,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib import colormaps
 from matplotlib.patches import Ellipse
-import matplotlib.colors as mcolors
 from scipy.spatial import ConvexHull
 from scipy.stats import chi2
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QMainWindow, QTableWidgetItem, QComboBox
+    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QTableWidgetItem, QComboBox
 )
 from PyQt5.QtCore import Qt, QTimer
 
@@ -39,7 +37,7 @@ class VowelSpaceVisualizer(QWidget):
 
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "speaker"])
-        self.setWindowTitle("VowSpace v1.4.1")
+        self.setWindowTitle("VowSpace v1.4.2")
 
         self.create_menu_bar()
 
@@ -134,14 +132,41 @@ class VowelSpaceVisualizer(QWidget):
                                                       checkable=True)
         visualization_options_menu.addAction(self.checkbox_show_grids)
 
-        # Barkify
-        self.checkbox_barkify = self.create_action('Use Bark Scale', self.barkify, format='png', checkable=True)
-        data_options_menu.addAction(self.checkbox_barkify)
+        # Bark difference metric
+        self.checkbox_normalize_bark = self.create_action('Bark Diff', self.diffBark, format='png',
+                                                             checkable=True)
+        data_options_menu.addAction(self.checkbox_normalize_bark)
 
         # Lobanov Normalization
         self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify, format='png',
                                                              checkable=True)
         data_options_menu.addAction(self.checkbox_normalize_lobanov)
+
+        # Nearey1 Normalization
+        self.checkbox_normalize_nearey1 = self.create_action('Nearey1 Normalization', self.Nearey1, format='png',
+                                                             checkable=True)
+        data_options_menu.addAction(self.checkbox_normalize_nearey1)
+
+        # Nearey2 Normalization
+        self.checkbox_normalize_nearey2 = self.create_action('Nearey2 Normalization', self.Nearey2, format='png',
+                                                             checkable=True)
+        data_options_menu.addAction(self.checkbox_normalize_nearey2)
+
+        # Use Bark
+        self.checkbox_use_bark = self.create_action('Bark Conversion', self.metricBark, format='png', checkable=True)
+        data_options_menu.addAction(self.checkbox_use_bark)
+
+        # Use Log
+        self.checkbox_use_log = self.create_action('Log Conversion', self.normLog, format='png', checkable=True)
+        data_options_menu.addAction(self.checkbox_use_log)
+
+        # Use Mel
+        self.checkbox_use_mel = self.create_action('Mel Conversion', self.normMel, format='png', checkable=True)
+        data_options_menu.addAction(self.checkbox_use_mel)
+
+        # Use Erb
+        self.checkbox_use_erb = self.create_action('Erb Conversion', self.normErb, format='png', checkable=True)
+        data_options_menu.addAction(self.checkbox_use_erb)
 
         self.layout().setMenuBar(menubar)
 
@@ -408,16 +433,46 @@ class VowelSpaceVisualizer(QWidget):
         y_column = self.dropdown_y_axis.currentText()
 
         # Apply transformations if checkboxes are checked
-        if self.checkbox_barkify.isChecked() and self.checkbox_normalize_lobanov.isChecked():
+        # Check if more than one normalization method is selected
+        if sum([
+            self.checkbox_use_bark.isChecked(),
+            self.checkbox_normalize_bark.isChecked(),
+            self.checkbox_normalize_lobanov.isChecked(),
+            self.checkbox_normalize_nearey1.isChecked(),
+            self.checkbox_normalize_nearey2.isChecked(),
+            self.checkbox_use_log.isChecked(),
+            self.checkbox_use_mel.isChecked(),
+            self.checkbox_use_erb.isChecked(),
+        ]) > 1:
             self.show_error_message(
-                "Cannot apply both Barkify and Lobanov normalizations' transformations simultaneously.")
+                "Cannot apply two normalizations' transformations simultaneously.")
             return
-        elif self.checkbox_barkify.isChecked():
+
+        # Determine which normalization to apply
+        if self.checkbox_use_bark.isChecked():
             x_column = f"bark_{x_column}"
             y_column = f"bark_{y_column}"
+        elif self.checkbox_use_log.isChecked():
+            x_column = f"log_{x_column}"
+            y_column = f"log_{y_column}"
+        elif self.checkbox_use_mel.isChecked():
+            x_column = f"mel_{x_column}"
+            y_column = f"mel_{y_column}"
+        elif self.checkbox_use_erb.isChecked():
+            x_column = f"erb_{x_column}"
+            y_column = f"erb_{y_column}"
+        elif self.checkbox_normalize_bark.isChecked():
+            x_column = f"Z3_minus_Z2"
+            y_column = f"Z3_minus_Z1"
         elif self.checkbox_normalize_lobanov.isChecked():
             x_column = f"zsc_{x_column}"
             y_column = f"zsc_{y_column}"
+        elif self.checkbox_normalize_nearey1.isChecked():
+            x_column = f"logmean_{x_column}"
+            y_column = f"logmean_{y_column}"
+        elif self.checkbox_normalize_nearey2.isChecked():
+            x_column = f"slogmean_{x_column}"
+            y_column = f"slogmean_{y_column}"
 
         # Check if selected columns exist in the data
         if x_column not in self.data.columns or y_column not in self.data.columns:
@@ -546,7 +601,7 @@ class VowelSpaceVisualizer(QWidget):
                     if self.show_center_info_action.isChecked():
                         self.ax.text(centroid[0], centroid[1], key, color='black', ha='center', va='center',
                                      fontsize=10)
-                except QhullError as e:
+                except Exception as e:
                     QMessageBox.critical(self, "Error", f"Qhull error for {group_by} '{key}': {str(e)}")
 
         custom_title = self.edit_title.text()
@@ -568,8 +623,14 @@ class VowelSpaceVisualizer(QWidget):
             self.ax.grid(False)
 
         # Set labels for the axes, inverted
-        self.ax.set_xlabel(self.dropdown_y_axis.currentText())
-        self.ax.set_ylabel(self.dropdown_x_axis.currentText())
+        '''custom_label_x = self.edit_label_x.text()
+        custom_label_y = self.edit_label_y.text()
+        if self.checkbox_custom_labels.isChecked():
+            self.ax.set_xlabel(custom_label_x, pad=25)
+            self.ax.set_ylabel(custom_label_y, pad=25)
+        else:'''
+        self.ax.set_xlabel(y_column)
+        self.ax.set_ylabel(x_column)
 
         # Position the rulers
         self.ax.yaxis.tick_right()
@@ -592,7 +653,7 @@ class VowelSpaceVisualizer(QWidget):
         self.canvas.draw()
 
     # Bark Difference Metric - Zi = 26.81/(1+1960/Fi) - 0.53 (Traunmüller, 1997)
-    def barkify(self, arg):
+    def metricBark(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
 
         bark_formula = lambda y: 26.81 / (1 + 1960 / y) - 0.53
@@ -611,6 +672,35 @@ class VowelSpaceVisualizer(QWidget):
     # Lobanov's method was one of the earlier vowel-extrinsic formulas to appear, but it remains among the best.
     # Implementation: Following Nearey (1977) and Adank et al. (2004), NORM uses the formula (see the General Note below):
     # Fn[V]N = (Fn[V] - MEANn)/Sn
+
+    def diffBark(self, arg):
+        # Define the formants
+        formants = ['f1', 'f2', 'f3']
+
+        # Ensure required columns are present in the DataFrame
+        missing_columns = [formant for formant in formants if formant not in self.data.columns]
+        if missing_columns:
+            self.show_error_message(f"Missing columns: {', '.join(missing_columns)}")
+            return
+
+        # Define Bark conversion function
+        def bark_conversion(f):
+            return 26.81 / (1 + 1960 / f) - 0.53
+
+        # Compute Bark values and add to DataFrame
+        for formant in formants:
+            bark_column_name = f"bark_{formant}"
+            if bark_column_name not in self.data.columns:  # Create the column if it doesn't exist
+                self.data[bark_column_name] = bark_conversion(self.data[formant])
+
+        # Calculate Bark differences
+        self.data['Z3_minus_Z1'] = self.data['bark_f3'] - self.data['bark_f1']
+        self.data['Z3_minus_Z2'] = self.data['bark_f3'] - self.data['bark_f2']
+        self.data['Z2_minus_Z1'] = self.data['bark_f2'] - self.data['bark_f1']
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
+
     def lobify(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
 
@@ -628,6 +718,178 @@ class VowelSpaceVisualizer(QWidget):
         self.update_scatterplot()
 
     # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
+
+
+    # Cite: https://github.com/drammock/phonR/blob/master/R/phonR.R
+    def Nearey1(self, arg, exp=False):
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        group_column = 'speaker'
+
+        def norm_logmean(f, group=None, exp=False):
+            if f.shape[1] < 2:
+                raise ValueError("Normalization method 'norm_logmean' requires at least two columns for formants.")
+
+            if group is None:
+                logmeans = np.log(f) - np.log(f.mean())
+            else:
+                grouped = f.groupby(group)
+                logmeans = pd.DataFrame()
+                for name, group_data in grouped:
+                    group_logmeans = np.log(group_data) - np.log(group_data.mean())
+                    logmeans = pd.concat([logmeans, group_logmeans], axis=0)
+                logmeans = logmeans.sort_index()
+
+            if exp:
+                logmeans = np.exp(logmeans)
+
+            return logmeans
+
+        # Check if selected formants are valid
+        if any(formant not in self.data.columns for formant in formants):
+            raise ValueError("One or more selected formants are not present in the data.")
+
+        # Extract the formant data
+        formant_data = self.data[formants].copy()  # Select only the formant columns
+
+        # Check if the DataFrame is empty
+        if formant_data.empty:
+            # Create columns with NaN values if the DataFrame is empty
+            for formant in formants:
+                name = f"logmean_{formant}"
+                if name not in self.data.columns:
+                    self.data[name] = np.nan  # Create the column with NaN values
+            self.update_scatterplot()
+            return
+
+        # Apply normalization
+        norm_data = norm_logmean(formant_data, group=self.data[group_column], exp=exp)
+
+        # Overwrite existing columns with normalized data
+        for formant in formants:
+            name = f"logmean_{formant}"
+            if name in self.data.columns:
+                self.data[name] = norm_data[formant]  # Update the column
+            else:
+                self.data[name] = norm_data[formant]  # Create the column if it does not exist
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
+
+    def Nearey2(self, exp=False):
+        # Extract formants from dropdowns
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        group_column = 'speaker'
+
+        # Ensure at least two formants are selected
+        if len(formants) < 2:
+            raise ValueError("Normalization method 'Nearey2' requires at least two formants.")
+
+        # Extract the formant data
+        formant_data = self.data[formants]
+
+        # Check if the DataFrame is empty
+        if formant_data.empty:
+            # Create columns with NaN values if the DataFrame is empty
+            for formant in formants:
+                name = f"slogmean_{formant}"
+                if name not in self.data.columns:
+                    self.data[name] = np.nan  # Create the column with NaN values
+            self.update_scatterplot()
+            return
+
+        # Function to calculate shared log-mean normalization
+        def norm_shared_logmean(f, group=None, exp=False):
+            if group is None:
+                # Implement the shared log-mean normalization
+                logmeans = np.log(f) - np.mean(np.log(f), axis=0)
+            else:
+                f = pd.DataFrame(f)
+                groups = f.groupby(group)
+                logmeans = groups.apply(lambda x: np.log(x) - np.mean(np.log(x), axis=0))
+                logmeans = logmeans.reset_index(drop=True)
+
+            if exp:
+                logmeans = np.exp(logmeans)
+            return logmeans
+
+        # Apply normalization
+        norm_data = norm_shared_logmean(formant_data, group=self.data[group_column], exp=exp)
+
+        # Overwrite existing columns with normalized data
+        for i, formant in enumerate(formants):
+            name = f"slogmean_{formant}"
+            self.data[name] = norm_data.iloc[:, i]  # Update create the column
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
+
+    def normLog(self, arg):
+        # Extract formants from dropdowns
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+
+        # Check if selected formants are valid
+        if any(formant not in self.data.columns for formant in formants):
+            raise ValueError("One or more selected formants are not present in the data.")
+
+        # Extract the formant data
+        formant_data = self.data[formants].copy()  # Select only the formant columns
+
+        # Apply normalization
+        for formant in formants:
+            name = f"log_{formant}"
+            if name in self.data.columns:
+                self.data[name] = np.log10(formant_data[formant])
+            else:
+                self.data[name] = np.log10(formant_data[formant])  # Create the column if it does not exist
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
+
+    def normMel(self, arg):
+        # Extract formants from dropdowns
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+
+        # Check if selected formants are valid
+        if any(formant not in self.data.columns for formant in formants):
+            raise ValueError("One or more selected formants are not present in the data.")
+
+        # Extract the formant data
+        formant_data = self.data[formants].copy()  # Select only the formant columns
+
+        # Apply normalization
+        for formant in formants:
+            name = f"mel_{formant}"
+            if name in self.data.columns:
+                self.data[name] = 2595 * np.log10(1 + formant_data[formant] / 700)
+            else:
+                self.data[name] = 2595 * np.log10(
+                    1 + formant_data[formant] / 700)  # Create the column if it does not exist
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
+
+    def normErb(self, arg):
+        # Extract formants from dropdowns
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+
+        # Check if selected formants are valid
+        if any(formant not in self.data.columns for formant in formants):
+            raise ValueError("One or more selected formants are not present in the data.")
+
+        # Extract the formant data
+        formant_data = self.data[formants].copy()  # Select only the formant columns
+
+        # Apply normalization
+        for formant in formants:
+            name = f"erb_{formant}"
+            if name in self.data.columns:
+                self.data[name] = 21.4 * np.log10(1 + 0.00437 * formant_data[formant])
+            else:
+                self.data[name] = 21.4 * np.log10(
+                    1 + 0.00437 * formant_data[formant])  # Create the column if it does not exist
+
+        # Update scatterplot or other UI elements
+        self.update_scatterplot()
 
     # Takes delay event into account when resizing the app to avoid lag
     def custom_resize_event(self, event):
@@ -903,6 +1165,11 @@ class AudioAnalysisTool(QWidget):
         # Add the labels layout to the main layout
         layout.addLayout(labels_layout)
 
+        # Add the Matplotlib toolbar
+        from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        layout.addWidget(self.toolbar)
+
         # Add the "Read from Audio File" action to the menu
         self.create_menu_bar()
 
@@ -1110,6 +1377,7 @@ class AudioAnalysisTool(QWidget):
             plt.xlabel("time [s]")
             plt.ylabel("frequency [Hz]")
 
+            self.figure.tight_layout()
             self.canvas.draw()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
@@ -1177,5 +1445,5 @@ if __name__ == '__main__':
 
     sys.exit(app.exec_())
 
-    # VowSpace (Vowel Space Visualizer) v.1.4.1
+    # VowSpace (Vowel Space Visualizer) v.1.4.2
     # Ali Çağan Kaya, under the GPL-3.0 license.
