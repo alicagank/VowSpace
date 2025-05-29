@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/b208137a-6bef-4864-b701-346f30f90170)![image](https://github.com/user-attachments/assets/bdc2844a-1f82-4ea3-a69c-b8b237f0c7ea)# VowSpace: A Vowel Formant Analysis Application
+# VowSpace: A Vowel Formant Analysis Application
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, and linguistically analyzing vowel sounds from audio files.
 
@@ -76,18 +76,33 @@ F_n[V] = (F_n[V] – MEAN_n) / S_n
 ```
 Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
 ```
-![Norm1](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
-)
+![norm](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
 
-![Norm2](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
+![norm1](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
 
-![Norm3](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
+![norm2](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
 
 ## Audio Analysis Tools
 
 Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies.
 
 In the most current stage of development, the user is able to add the formant frequencies on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
+
+![aat](https://alicagankaya.com/wp-content/uploads/2024/07/a3-2048x943.jpg)
+Intensity
+
+![aat1](https://alicagankaya.com/wp-content/uploads/2024/07/a2-2048x943.jpg)
+Pitch
+
+![aat2](https://alicagankaya.com/wp-content/uploads/2024/07/a4-2048x943.jpg)
+Vowel Formant Frequencies
+
+## DataFrame Editor
+
+DataFrame Editor is a separate window to make small adjustments on the data that you’re working on without relying on any other application. When you use the ‘Save Changes’ function, the scatterplot automatically updates with the latest data. The altered data can also be saved as a separate .csv, .xls, or .xlsx file through the ‘Save Data As…’ action.
+
+![dfeditor](https://alicagankaya.com/wp-content/uploads/2024/07/Screenshot-2024-07-30-at-17.41.33.png)
+DataFrame Editor UI
 
 ## Data Table Format
 
@@ -100,40 +115,12 @@ vowel   f1   f2   speaker
 
 The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. When any data is inputted through the user interface, a dataframe is created with this information. Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported.
 
-## DataFrame Editor
-
-DataFrame Editor is a separate window to make small adjustments on the data that you’re working on without relying on any other application. When you use the ‘Save Changes’ function, the scatterplot automatically updates with the latest data. The altered data can also be saved as a separate .csv, .xls, or .xlsx file through the ‘Save Data As…’ action.
-
-## Examples
-
-### Plotting the Vowel Space of Turkish
-
-With this example, we aim to visualize the data from a great paper on vowels in Turkish to gain a clearer understanding of the vowel space of Turkish.
-
-(Data from: Korkmaz, Y., & Boyaci, A. (2018). Classification of Turkish Vowels Based on Formant Frequencies. 2018 International Conference on Artificial Intelligence and Data Processing (IDAP), 1–4. https://doi.org/10.1109/IDAP.2018.8620877)
-
-The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
-
-When imported to VowSpace with the ‘Show Grids’ and ‘Show Labels for Vowel(s)’ options activated, our data looks like this:
-
-![Vowel Plot Example](https://alicagankaya.com/vowspace/images/plot.png)
-
-To achieve a more conventional, quadrilateral-like view of the vowel space, we use the ‘Connect with Qhull’ action.
-
-![Qhull Plot](https://alicagankaya.com/vowspace/images/qhull.png)
-
-Ellipse logic: The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
-
-```python
-eigvals, eigvecs = np.linalg.eigh(cov)
-```
-
 ---
 
 I am not formally trained as a programmer and am the sole developer of this application, so there may be bugs, and the code might appear amateurish. VowSpace is still in development, and I am continuously adding new features as I learn new methods and techniques. I am doing my best to keep VowSpace updated and actively invite researchers to try it out and provide feedback. However, please double-check the output provided by VowSpace before using it in your research.
 
 ---
 
-For more information and to download the application, visit the [VowSpace page](https://alicagankaya.com/vowspace/).
+For more information, examples, and to download the application, visit the [VowSpace page](https://alicagankaya.com/vowspace/).
 
 You can also find the source code on [GitHub](https://github.com/alicagank/VowSpace).
