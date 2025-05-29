@@ -1,46 +1,139 @@
-# VowSpace (formerly Vowel Space Visualizer)
-VowSpace is an open-source desktop application designed with the aim of acquiring, visualizing, normalizing, and linguistically analyzing vowel sounds from audio files and datasets.
+![image](https://github.com/user-attachments/assets/b208137a-6bef-4864-b701-346f30f90170)![image](https://github.com/user-attachments/assets/bdc2844a-1f82-4ea3-a69c-b8b237f0c7ea)# VowSpace: A Vowel Formant Analysis Application
 
-Using VowSpace, you can visualise a dataset or compare datasets from different sources—whether across languages or individuals (e.g., two different languages, three idiolects).
+VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, and linguistically analyzing vowel sounds from audio files.
 
-I developed this program as a creative diversion while getting one of my phonetics homework done. The task involved manually inputting data into Excel and adhering to specific guidelines to construct a scatterplot resembling a vowel space.
+![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2024/08/Screenshot-2024-08-04-at-04.23.24.png)
 
-I've provided two different codes. The first script is a standalone Python application enabling you to generate a scatterplot or compare different vowel spaces by inputting or importing data. The second programme (in the Vsv_Python_R folder), consists of a Python interface that allows you to enter data and save the entered data as a .csv document. Subsequently, an R script reads this dataset, generating a scatterplot based on the provided information according to some specifications.
+## Version Log
 
-## Features
+### VowSpace v1.4.1 Release Notes:
 
-- **Reading Data from External Sources**: Read data from any .xlsx file.
+**Bug Fixes:**
 
-- **Data Input**: Easily input new data by pressing the "Add Data" button or using the "Enter" key.
+- Fixed a bug that inverts the axes upon importing data.
+- Fixed a bug that made the app crash when the size of the canvas is below 1 pixel.
 
-- **Save Scatterplots**: Save the visualised data as a scatterplot as JPEG or PNG using the "Save Scatterplot" function or the "Ctrl (Command) + S" shortcut.
+**New Features:**
 
-- **Saving and Manipulating Data**: Save a dataset that you worked on as an .xlsx file, also edit any dataframe using the DfEditor.
+- Added Ellipses and Qhulls to connect related data for better readability.
+- Group by Vowel option: Normally the application would connect the data that belonged to the same speaker. With this update, the user can now connect the same vowels for different purposes.
 
-- **Data Normalisation**: You can use the "Data Settings" to normalise the data using various normalisation methods.
+**Improvements:**
 
-- **Scatterplot Settings**: You can edit the visuals on the scatterplot using the "Visualization Settings" menu.
+- Made the canvas bigger for better visualization.
+- Made the default and minimum size of the application 800×800.
+- Changed the default dpi for saving images from 600 to 1200 for better readability.
+- Rearranged the menus for improved navigation.
 
-- **Audio Analysis Tools**: Show pitch, intensity and/or formants of an audio file and add them to the main window.
+### VowSpace v1.4.0 Release Notes:
 
-## Usage
+**Bug Fixes:**
 
-Under the "Release" section, you can download the application in .app format for Microsoft Windows and Apple Macintosh devices.
+- Fixed bug causing program crash when a cell is empty in the dataframe.
+- Fixed bug causing program crash when applying a qhull on 2-dimensional data.
 
-Or
+**New Features:**
 
-1. Clone the repository to your local machine.
+- Added f0 (fundamental freq), f3, and f4 formants for both plotting and acquiring.
+- Added option to choose which formants to plot.
+- Added a dataframe editor to add, edit, and delete data using a UI.
 
-2. If you are importing data from a document, it needs to have columns labelled "F1", "F2" and "speaker".
+**Changes:**
 
-```bash
-git clone https://github.com/alicagank/vowspace.git
+- Updated dataframe methods: `clear_data`, `read`, and `write`.
+- Modified Bark and Lobanov normalization methods to include all formant frequencies.
+
+### VowSpace v1.3.0 Release Notes:
+
+- Added ‘Audio Analysis Tools’, a separate window that the user can open through the VowSpace’s main user interface. Using this window, the user can read an audio file and get useful information about it such as intensity, pitch and formant frequencies.
+- Added an IPA keyboard for convenience.
+- Added the option to exclude a title for the plot.
+
+### VowSpace v1.2.0 Release Notes:
+
+- The initial release for Mac.
+- Fixed a bug regarding the Bark Difference Metric method.
+- Added more labeling options.
+
+## About VowSpace
+
+Vowel plotting and normalization are of utmost importance when dealing with data for many subfields of linguistics, and the absence of a user-friendly application for these specific purposes has led to the emergence of VowSpace as a solution to this gap.
+
+## Vowel Plotting in VowSpace
+
+VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and visualize the data. When plotting vowel formants, VowSpace utilizes a rectangular template with f1 value on the rightmost side and f2 value on the bottommost side of the screen with rulers on the opposite sides of the values. The vowels that belong to different sources are represented with points with different colors.
+
+## Vowel Normalization in VowSpace
+
+VowSpace also provides options for normalizing the vowel formants under the “Normalization Settings” menu. In the latest stage of development, two normalization methods have been implemented to the application. The first method is an implementation of the Lobanov normalization method put forward by Lobanov (1971) by Nearey (1977) and Adank et al. (2004). The second one is the Bark Difference Metric by Traunmüller (1997). Both methods have been implemented to Python by Remirez (2022).
+
+**Lobanov:**
+```
+F_n[V] = (F_n[V] – MEAN_n) / S_n
 ```
 
-## License
+**Bark:**
+```
+Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
+```
+![Norm1](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
+)
 
-GNU General Public License v3.0
+![Norm2](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
 
-## Credits
+![Norm3](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
 
-This application was developed by Ali Çağan Kaya as part of a linguistic project at Hacettepe University, Turkey. If you find this tool useful and decide to modify or publish it, kindly give credit to the original author.
+## Audio Analysis Tools
+
+Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies.
+
+In the most current stage of development, the user is able to add the formant frequencies on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
+
+## Data Table Format
+
+The minimum data table for any data to be read by VowSpace is as follows:
+
+```
+vowel   f1   f2   speaker
+/æ/     123  1234 Markus
+```
+
+The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. When any data is inputted through the user interface, a dataframe is created with this information. Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported.
+
+## DataFrame Editor
+
+DataFrame Editor is a separate window to make small adjustments on the data that you’re working on without relying on any other application. When you use the ‘Save Changes’ function, the scatterplot automatically updates with the latest data. The altered data can also be saved as a separate .csv, .xls, or .xlsx file through the ‘Save Data As…’ action.
+
+## Examples
+
+### Plotting the Vowel Space of Turkish
+
+With this example, we aim to visualize the data from a great paper on vowels in Turkish to gain a clearer understanding of the vowel space of Turkish.
+
+(Data from: Korkmaz, Y., & Boyaci, A. (2018). Classification of Turkish Vowels Based on Formant Frequencies. 2018 International Conference on Artificial Intelligence and Data Processing (IDAP), 1–4. https://doi.org/10.1109/IDAP.2018.8620877)
+
+The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
+
+When imported to VowSpace with the ‘Show Grids’ and ‘Show Labels for Vowel(s)’ options activated, our data looks like this:
+
+![Vowel Plot Example](https://alicagankaya.com/vowspace/images/plot.png)
+
+To achieve a more conventional, quadrilateral-like view of the vowel space, we use the ‘Connect with Qhull’ action.
+
+![Qhull Plot](https://alicagankaya.com/vowspace/images/qhull.png)
+
+Ellipse logic: The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
+
+```python
+eigvals, eigvecs = np.linalg.eigh(cov)
+```
+
+---
+
+I am not formally trained as a programmer and am the sole developer of this application, so there may be bugs, and the code might appear amateurish. VowSpace is still in development, and I am continuously adding new features as I learn new methods and techniques. I am doing my best to keep VowSpace updated and actively invite researchers to try it out and provide feedback. However, please double-check the output provided by VowSpace before using it in your research.
+
+---
+
+For more information and to download the application, visit the [VowSpace page](https://alicagankaya.com/vowspace/).
+
+You can also find the source code on [GitHub](https://github.com/alicagank/VowSpace).
