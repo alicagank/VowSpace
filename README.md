@@ -84,9 +84,9 @@ Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
 
 ## Audio Analysis Tools
 
-Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies.
+Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (f1-f4).
 
-In the most current stage of development, the user is able to add the formant frequencies on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
+In the most current stage of development, the user is able to add the formant frequencies to the main visualizer window on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
 
 ![aat](https://alicagankaya.com/wp-content/uploads/2024/07/a3-2048x943.jpg)
 Intensity
@@ -103,6 +103,12 @@ DataFrame Editor is a separate window to make small adjustments on the data that
 
 ![dfeditor](https://alicagankaya.com/wp-content/uploads/2024/07/Screenshot-2024-07-30-at-17.41.33.png)
 DataFrame Editor UI
+
+## IPA Keyboard
+
+As phoneticians, we love the IPA (International Phonetic Alphabet)! There is a dedicated window to input some vowels on the IPA as well!
+
+![IPAKeyboard](https://alicagankaya.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-02.55.42.png)
 
 ## Data Table Format
 
