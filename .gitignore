@@ -8,6 +8,12 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+.idea/
+*.spec
+*.rtf
+__pycache__/
+*.pyc
+
 # AWS User-specific
 .idea/**/aws.xml
 

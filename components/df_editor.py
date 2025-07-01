@@ -2,7 +2,7 @@
 
 from PyQt5.QtWidgets import QDialog, QTableWidget, QTableWidgetItem, QVBoxLayout, QPushButton
 
-class dfEditor(QDialog):
+class DFEditor(QDialog):
     def __init__(self, data, parent=None, visualizer=None):
         super().__init__(parent)
         self.data = data

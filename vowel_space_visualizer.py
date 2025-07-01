@@ -13,9 +13,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QTimer
 
-from modulation.df_editor import dfEditor
-from modulation.ipa_window import IPAWindow
-from modulation.audio_tool import AudioAnalysisTool
+from components.df_editor import DFEditor
+from components.ipa_window import IPAWindow
+from components.audio_tool import AudioAnalysisTool
 
 from core.normalization import (
     lobanov_normalization,
@@ -821,7 +821,7 @@ class VowelSpaceVisualizer(QWidget):
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
 
                 # import_data_from_excel
-                self.df_editor = dfEditor(self.data, visualizer=self)
+                self.df_editor = DFEditor(self.data, visualizer=self)
                 self.df_editor.show()
 
                 # Update scatterplot after importing data
@@ -838,7 +838,7 @@ class VowelSpaceVisualizer(QWidget):
 
     # Opens Dataframe editor
     def open_df_editor(self):
-        self.df_editor = dfEditor(self.data)  # Assuming you pass data to the editor
+        self.df_editor = DFEditor(self.data)  # Assuming you pass data to the editor
         self.df_editor.show()
 
     # Opens Audio Analysis Tools window.
