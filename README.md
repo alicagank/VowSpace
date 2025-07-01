@@ -167,7 +167,50 @@ The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. 
 
 ## Acknowledgement
 
-I am not formally trained as a programmer and am the sole developer of this application, so there may be bugs, and the code might appear amateurish. VowSpace is still in development, and I am continuously adding new features as I learn new methods and techniques. I am doing my best to keep VowSpace updated and actively invite researchers to try it out and provide feedback. However, please double-check the output provided by VowSpace before using it in your research.
+I am not formally trained as a programmer and am the sole developer of this application, so there may be bugs, and parts of the code might appear amateurish. VowSpace is still in development, and I am continuously adding new features as I learn new methods and techniques. I am doing my best to keep VowSpace updated and actively invite researchers to try it out and provide feedback.
+
+However, please double-check the outputs before using them in research or publications.
+
+I initially developed VowSpace for a research project I worked on as part of a university assignment — specifically to create a vowel plot. Instead of learning R for that purpose, I decided to build something reusable and extensible.
+
+### Disclaimer:
+
+This application is provided "AS IS", without warranty of any kind, express or implied. The developer assumes no responsibility for any errors or inaccuracies in the software or its output. Use at your own risk and play with the code! If you encounter any errors, please open an issue, and I would gladly help you out! :)
+
+### Community Guidelines:
+
+VowSpace is an open-source project developed and maintained by a single researcher. I welcome feedback, suggestions, and contributions from the community to help improve the tool and ensure its usefulness to linguists, phoneticians, forensic scientists and language researchers.
+
+#### 1. Contributing
+
+If you would like to contribute to the development of VowSpace by improving code, fixing bugs, adding features, or enhancing documentation — please follow these steps:
+
+- Fork the repository on GitHub.
+- Create a new branch for your feature or fix.
+- Commit your changes with clear messages.
+- Submit a Pull Request (PR) with a short description of your contribution.
+
+Before contributing, please make sure that your code is readable (the more comments, the better) and follows general Python best practices. If you're unsure whether an idea fits the scope of the project, feel free to open an issue first to discuss it. You can also always write me an email!
+
+#### 2. Reporting Issues or Bugs
+
+If you encounter any bugs or unexpected behavior please:
+
+- Open an [Issue on GitHub](https://github.com/alicagank/VowSpace/issues).
+- Include as much detail as possible (e.g., OS, Python version, error messages, screenshots).
+- Clearly describe what you expected to happen and what actually occurred.
+
+This helps me understand and resolve the issue more efficiently.
+
+#### 3. Seeking Support
+
+If you need help using VowSpace or have questions about specific features:
+
+- Check the [README](./README.md) and the examples on the dedicated page on my website [VowSpace page](https://alicagankaya.com/vowspace/) for usage instructions and examples.
+- Open a GitHub issue with your question or request.
+- You may also reach out to me directly via email.
+
+Please note that I am a solo developer and a full-time student/researcher. I may not respond immediately, but I will do my best to help as soon as possible.
 
 ---
 
@@ -179,6 +222,4 @@ You can cite VowSpace as:
 
 ---
 
-For more information, examples, and to download the application, visit the [VowSpace page](https://alicagankaya.com/vowspace/).
-
-You can also find the source code on [GitHub](https://github.com/alicagank/VowSpace).
+For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub. Alternatively (and I highly encourage to do so!), you may also clone this repository and run the main.py script and experiment with the code itself! You can also find the source code on [GitHub](https://github.com/alicagank/VowSpace).
