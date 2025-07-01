@@ -1,15 +1,8 @@
-## This is the development version of VowSpace.
-## There might be bugs.
-## Beware of the bügs, they bite.
-## A büg once bit my sister... No realli!
-## Mynd you, büg bites Kan be pretti nasti...
+# vowel_space_visualizer.py
 
-import os
-import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from parselmouth import Sound
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import Ellipse
 from scipy.spatial import ConvexHull
@@ -19,6 +12,22 @@ from PyQt5.QtWidgets import (
     QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QTableWidgetItem, QComboBox
 )
 from PyQt5.QtCore import Qt, QTimer
+
+from modulation.df_editor import dfEditor
+from modulation.ipa_window import IPAWindow
+from modulation.audio_tool import AudioAnalysisTool
+
+from core.normalization import (
+    lobanov_normalization,
+    bark_difference,
+    nearey1,
+    nearey2,
+    bark_transform,
+    log_transform,
+    mel_transform,
+    erb_transform
+)
+
 
 class VowelSpaceVisualizer(QWidget):
     def __init__(self):
@@ -652,243 +661,43 @@ class VowelSpaceVisualizer(QWidget):
         self.figure.tight_layout()
         self.canvas.draw()
 
-    # Bark Difference Metric - Zi = 26.81/(1+1960/Fi) - 0.53 (Traunmüller, 1997)
-    def metricBark(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-
-        bark_formula = lambda y: 26.81 / (1 + 1960 / y) - 0.53
-
-        for formant in formants:
-            name = f"bark_{formant}"
-
-            if name not in self.data.columns:  # Check if the column already exists
-                col = self.data[formant].apply(bark_formula)
-                self.data[name] = col
-
-        self.update_scatterplot()
-
-    # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
-
-    # Lobanov's method was one of the earlier vowel-extrinsic formulas to appear, but it remains among the best.
-    # Implementation: Following Nearey (1977) and Adank et al. (2004), NORM uses the formula (see the General Note below):
-    # Fn[V]N = (Fn[V] - MEANn)/Sn
-
-    def diffBark(self, arg):
-        # Define the formants
-        formants = ['f1', 'f2', 'f3']
-
-        # Ensure required columns are present in the DataFrame
-        missing_columns = [formant for formant in formants if formant not in self.data.columns]
-        if missing_columns:
-            self.show_error_message(f"Missing columns: {', '.join(missing_columns)}")
-            return
-
-        # Define Bark conversion function
-        def bark_conversion(f):
-            return 26.81 / (1 + 1960 / f) - 0.53
-
-        # Compute Bark values and add to DataFrame
-        for formant in formants:
-            bark_column_name = f"bark_{formant}"
-            if bark_column_name not in self.data.columns:  # Create the column if it doesn't exist
-                self.data[bark_column_name] = bark_conversion(self.data[formant])
-
-        # Calculate Bark differences
-        self.data['Z3_minus_Z1'] = self.data['bark_f3'] - self.data['bark_f1']
-        self.data['Z3_minus_Z2'] = self.data['bark_f3'] - self.data['bark_f2']
-        self.data['Z2_minus_Z1'] = self.data['bark_f2'] - self.data['bark_f1']
-
-        # Update scatterplot or other UI elements
-        self.update_scatterplot()
-
     def lobify(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-
-        group_column = 'speaker'
-
-        zscore = lambda x: (x - x.mean()) / x.std()
-
-        for formant in formants:
-            name = f"zsc_{formant}"
-
-            if name not in self.data.columns:  # Check if the column already exists
-                col = self.data.groupby([group_column])[formant].transform(zscore)
-                self.data[name] = col
-
+        self.data = lobanov_normalization(self.data, formants)
         self.update_scatterplot()
 
-    # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
+    def diffBark(self, arg):
+        self.data = bark_difference(self.data)
+        self.update_scatterplot()
 
-
-    # Cite: https://github.com/drammock/phonR/blob/master/R/phonR.R
-    def Nearey1(self, arg, exp=False):
+    def Nearey1(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-        group_column = 'speaker'
-
-        def norm_logmean(f, group=None, exp=False):
-            if f.shape[1] < 2:
-                raise ValueError("Normalization method 'norm_logmean' requires at least two columns for formants.")
-
-            if group is None:
-                logmeans = np.log(f) - np.log(f.mean())
-            else:
-                grouped = f.groupby(group)
-                logmeans = pd.DataFrame()
-                for name, group_data in grouped:
-                    group_logmeans = np.log(group_data) - np.log(group_data.mean())
-                    logmeans = pd.concat([logmeans, group_logmeans], axis=0)
-                logmeans = logmeans.sort_index()
-
-            if exp:
-                logmeans = np.exp(logmeans)
-
-            return logmeans
-
-        # Check if selected formants are valid
-        if any(formant not in self.data.columns for formant in formants):
-            raise ValueError("One or more selected formants are not present in the data.")
-
-        # Extract the formant data
-        formant_data = self.data[formants].copy()  # Select only the formant columns
-
-        # Check if the DataFrame is empty
-        if formant_data.empty:
-            # Create columns with NaN values if the DataFrame is empty
-            for formant in formants:
-                name = f"logmean_{formant}"
-                if name not in self.data.columns:
-                    self.data[name] = np.nan  # Create the column with NaN values
-            self.update_scatterplot()
-            return
-
-        # Apply normalization
-        norm_data = norm_logmean(formant_data, group=self.data[group_column], exp=exp)
-
-        # Overwrite existing columns with normalized data
-        for formant in formants:
-            name = f"logmean_{formant}"
-            if name in self.data.columns:
-                self.data[name] = norm_data[formant]  # Update the column
-            else:
-                self.data[name] = norm_data[formant]  # Create the column if it does not exist
-
-        # Update scatterplot or other UI elements
+        self.data = nearey1(self.data, formants)
         self.update_scatterplot()
 
     def Nearey2(self, exp=False):
-        # Extract formants from dropdowns
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-        group_column = 'speaker'
+        self.data = nearey2(self.data, formants)
+        self.update_scatterplot()
 
-        # Ensure at least two formants are selected
-        if len(formants) < 2:
-            raise ValueError("Normalization method 'Nearey2' requires at least two formants.")
-
-        # Extract the formant data
-        formant_data = self.data[formants]
-
-        # Check if the DataFrame is empty
-        if formant_data.empty:
-            # Create columns with NaN values if the DataFrame is empty
-            for formant in formants:
-                name = f"slogmean_{formant}"
-                if name not in self.data.columns:
-                    self.data[name] = np.nan  # Create the column with NaN values
-            self.update_scatterplot()
-            return
-
-        # Function to calculate shared log-mean normalization
-        def norm_shared_logmean(f, group=None, exp=False):
-            if group is None:
-                # Implement the shared log-mean normalization
-                logmeans = np.log(f) - np.mean(np.log(f), axis=0)
-            else:
-                f = pd.DataFrame(f)
-                groups = f.groupby(group)
-                logmeans = groups.apply(lambda x: np.log(x) - np.mean(np.log(x), axis=0))
-                logmeans = logmeans.reset_index(drop=True)
-
-            if exp:
-                logmeans = np.exp(logmeans)
-            return logmeans
-
-        # Apply normalization
-        norm_data = norm_shared_logmean(formant_data, group=self.data[group_column], exp=exp)
-
-        # Overwrite existing columns with normalized data
-        for i, formant in enumerate(formants):
-            name = f"slogmean_{formant}"
-            self.data[name] = norm_data.iloc[:, i]  # Update create the column
-
-        # Update scatterplot or other UI elements
+    def metricBark(self, arg):
+        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        self.data = bark_transform(self.data, formants)
         self.update_scatterplot()
 
     def normLog(self, arg):
-        # Extract formants from dropdowns
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-
-        # Check if selected formants are valid
-        if any(formant not in self.data.columns for formant in formants):
-            raise ValueError("One or more selected formants are not present in the data.")
-
-        # Extract the formant data
-        formant_data = self.data[formants].copy()  # Select only the formant columns
-
-        # Apply normalization
-        for formant in formants:
-            name = f"log_{formant}"
-            if name in self.data.columns:
-                self.data[name] = np.log10(formant_data[formant])
-            else:
-                self.data[name] = np.log10(formant_data[formant])  # Create the column if it does not exist
-
-        # Update scatterplot or other UI elements
+        self.data = log_transform(self.data, formants)
         self.update_scatterplot()
 
     def normMel(self, arg):
-        # Extract formants from dropdowns
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-
-        # Check if selected formants are valid
-        if any(formant not in self.data.columns for formant in formants):
-            raise ValueError("One or more selected formants are not present in the data.")
-
-        # Extract the formant data
-        formant_data = self.data[formants].copy()  # Select only the formant columns
-
-        # Apply normalization
-        for formant in formants:
-            name = f"mel_{formant}"
-            if name in self.data.columns:
-                self.data[name] = 2595 * np.log10(1 + formant_data[formant] / 700)
-            else:
-                self.data[name] = 2595 * np.log10(
-                    1 + formant_data[formant] / 700)  # Create the column if it does not exist
-
-        # Update scatterplot or other UI elements
+        self.data = mel_transform(self.data, formants)
         self.update_scatterplot()
 
     def normErb(self, arg):
-        # Extract formants from dropdowns
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
-
-        # Check if selected formants are valid
-        if any(formant not in self.data.columns for formant in formants):
-            raise ValueError("One or more selected formants are not present in the data.")
-
-        # Extract the formant data
-        formant_data = self.data[formants].copy()  # Select only the formant columns
-
-        # Apply normalization
-        for formant in formants:
-            name = f"erb_{formant}"
-            if name in self.data.columns:
-                self.data[name] = 21.4 * np.log10(1 + 0.00437 * formant_data[formant])
-            else:
-                self.data[name] = 21.4 * np.log10(
-                    1 + 0.00437 * formant_data[formant])  # Create the column if it does not exist
-
-        # Update scatterplot or other UI elements
+        self.data = erb_transform(self.data, formants)
         self.update_scatterplot()
 
     # Takes delay event into account when resizing the app to avoid lag
@@ -1011,8 +820,8 @@ class VowelSpaceVisualizer(QWidget):
                 # Concatenate new data with existing data
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
 
-                # Open dfEditor window with imported data
-                self.df_editor = dfEditor(self.data)
+                # import_data_from_excel
+                self.df_editor = dfEditor(self.data, visualizer=self)
                 self.df_editor.show()
 
                 # Update scatterplot after importing data
@@ -1035,415 +844,5 @@ class VowelSpaceVisualizer(QWidget):
     # Opens Audio Analysis Tools window.
     def audio_analysis_tools(self):
         # Create a new instance of AudioAnalysisToolsWindow if not open
-        self.audio_tools_window = AudioAnalysisTool()
+        self.audio_tools_window = AudioAnalysisTool(visualizer=self)
         self.audio_tools_window.show()
-
-class IPAWindow(QDialog):
-    def __init__(self, parent=None):
-        super(IPAWindow, self).__init__(parent)
-        self.setWindowTitle('IPA Keyboard')
-
-        layout = QVBoxLayout()
-
-        grid_layout = QGridLayout()
-
-        # Define the groups of letters and their corresponding labels
-        letter_groups = [('ɑæɐ', 'A'), ('əɚɵ', 'E'), ('ɛɜɝ', 'ɜ'),
-                         ('ɪɨ', 'I'), ('ɔœɒ', 'O'), ('ø', 'Ö'),
-                         ('ʊʉ', 'U'), ('ʕʔ', '2')] #('ː̃̈ʰʲʷ', 'microns')] will get back to that.
-
-        # Add buttons and group boxes for each letter group
-        for i, (group, label) in enumerate(letter_groups):
-            group_box = QGroupBox(label, self)  # Create a group box for each group with the label
-            group_layout = QHBoxLayout()  # Layout for buttons in this group
-
-            # Add buttons for each letter in the group
-            for letter in group:
-                button = QPushButton(letter, self)
-                button.clicked.connect(lambda checked, l=letter: self.button_clicked(l))
-                group_layout.addWidget(button)
-
-            group_box.setLayout(group_layout)
-            grid_layout.addWidget(group_box, i // 3, i % 3)
-
-        layout.addLayout(grid_layout)
-        self.setLayout(layout)
-
-    def button_clicked(self, letter):
-        self.parent().edit_vowel.setText(letter)
-        self.close() #will get back to that.
-
-class dfEditor(QDialog):
-    def __init__(self, data, parent=None):
-        super().__init__(parent)
-        self.data = data
-        self.setWindowTitle("DataFrame Editor")
-        self.setGeometry(100, 100, 700, 500)  # 700x500 looks good
-
-        # Store the reference to VowelSpaceVisualizer instance
-        self.vowel_space_visualizer = vowel_space_visualizer
-
-        self.initUI()
-
-    def initUI(self):
-        # Creating a QTableWidget to display dataframe
-        self.create_table_widget()
-
-        # Adding a Save button
-        self.save_button = QPushButton('Save Changes', self)
-        self.save_button.clicked.connect(self.save_changes)
-
-        # Layout setup
-        layout = QVBoxLayout()
-        layout.addWidget(self.table_widget)
-        layout.addWidget(self.save_button)
-        self.setLayout(layout)
-
-    def create_table_widget(self):
-        # Creating a QTableWidget and adding data
-        self.table_widget = QTableWidget()
-        self.table_widget.setRowCount(len(self.data.index))
-        self.table_widget.setColumnCount(len(self.data.columns))
-        self.table_widget.setHorizontalHeaderLabels(self.data.columns)
-
-        for i in range(len(self.data.index)):
-            for j in range(len(self.data.columns)):
-                item = QTableWidgetItem(str(self.data.iloc[i, j]))  # Ensure numeric values are converted to str
-                self.table_widget.setItem(i, j, item)
-
-    def save_changes(self):
-        # Save changes made in the QTableWidget back to the dataframe
-        for i in range(self.table_widget.rowCount()):
-            for j in range(self.table_widget.columnCount()):
-                item = self.table_widget.item(i, j)
-                if item is not None:
-                    try:
-                        # Attempt to convert text back to numeric
-                        value = float(item.text())
-                    except ValueError:
-                        value = item.text()  # Use text as-is if conversion fails
-                    self.data.iat[i, j] = value
-        self.vowel_space_visualizer.update_scatterplot() # Esentially updates the scatteplot upon any change on the df. TODO: a little laggy.
-
-class AudioAnalysisTool(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.show_pitch = False
-        self.show_intensity = False
-        self.show_formants = False
-
-        # Store the reference to VowelSpaceVisualizer instance
-        self.vowel_space_visualizer = vowel_space_visualizer
-
-        self.initUI()
-
-    def initUI(self):
-        # Set up the layout for the Audio Analysis Tools window
-        layout = QVBoxLayout()
-
-        # Add the matplotlib canvas
-        self.figure, self.ax = plt.subplots(figsize=(6, 9))
-        self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
-
-        # Create a QHBoxLayout for the labels in the same row
-        labels_layout = QHBoxLayout()
-
-        # Add a QLabel for audio title
-        self.audio_title_label = QLabel()
-        labels_layout.addWidget(self.audio_title_label)
-
-        # Add a QLabel for sampling rate
-        self.sampling_rate_label = QLabel()
-        labels_layout.addWidget(self.sampling_rate_label)
-
-        # Add a QLabel for cursor coordinates
-        self.coordinates_label = QLabel()
-        labels_layout.addWidget(self.coordinates_label)
-
-        # Add the labels layout to the main layout
-        layout.addLayout(labels_layout)
-
-        # Add the Matplotlib toolbar
-        from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        layout.addWidget(self.toolbar)
-
-        # Add the "Read from Audio File" action to the menu
-        self.create_menu_bar()
-
-        # Set the layout
-        self.setLayout(layout)
-        self.setWindowTitle("Audio Analysis Tools")
-        self.setGeometry(100, 100, 1200, 600)
-
-        # Connect the motion_notify_event to update_cursor_coordinates
-        self.canvas.mpl_connect('motion_notify_event', self.update_cursor_coordinates)
-        # Connect the button_press_event to handle_click
-        self.canvas.mpl_connect('button_press_event', self.handle_click)
-
-    def create_menu_bar(self):
-        menubar = QMenuBar(self)
-
-        # Create File menu
-        file_menu = menubar.addMenu('File')
-
-        # Add the "Read from Audio File" action to the file menu
-        read_audio_action = self.create_action('Read from Audio File', self.read_audio_file)
-        file_menu.addAction(read_audio_action)
-
-        # Save the graph
-        save_graph_action = self.create_action('Save Graph', self.save_graph)
-        file_menu.addAction(save_graph_action)
-
-        # Create Options menu
-        options_menu = menubar.addMenu('Options')
-
-        # Add pitch toggle as a checkable menu item (unchecked by default)
-        self.pitch_action = self.create_action('Show Pitch', self.toggle_pitch, checkable=True)
-        self.pitch_action.setChecked(self.show_pitch)
-        options_menu.addAction(self.pitch_action)
-
-        # Add intensity toggle as a checkable menu item (unchecked by default)
-        self.intensity_action = self.create_action('Show Intensity', self.toggle_intensity, checkable=True)
-        self.intensity_action.setChecked(self.show_intensity)
-        options_menu.addAction(self.intensity_action)
-
-        # Create a submenu for formants under Options menu
-        formants_submenu = QMenu('Show Formants', self)
-
-        # Add actions for F1, F2, F3, F4 under the formants submenu
-        self.formant_f1_action = self.create_action('Show f1', self.toggle_formant_f1, checkable=True)
-        formants_submenu.addAction(self.formant_f1_action)
-
-        self.formant_f2_action = self.create_action('Show f2', self.toggle_formant_f2, checkable=True)
-        formants_submenu.addAction(self.formant_f2_action)
-
-        self.formant_f3_action = self.create_action('Show f3', self.toggle_formant_f3, checkable=True)
-        formants_submenu.addAction(self.formant_f3_action)
-
-        self.formant_f4_action = self.create_action('Show f4', self.toggle_formant_f4, checkable=True)
-        formants_submenu.addAction(self.formant_f4_action)
-
-        # Add the formants submenu to the Options menu
-        options_menu.addMenu(formants_submenu)
-
-    def create_action(self, text, function, shortcut=None, checkable=False):
-        action = QAction(text, self)
-        action.triggered.connect(function)
-        if shortcut:
-            action.setShortcut(shortcut)
-        if checkable:
-            action.setCheckable(True)
-        return action
-
-    def toggle_pitch(self):
-        self.show_pitch = not self.show_pitch
-        self.redraw_plots()
-
-    def toggle_formants(self):
-        self.show_formants = not self.show_formants
-        self.redraw_plots()
-
-    def toggle_intensity(self):
-        self.show_intensity = not self.show_intensity
-        self.redraw_plots()
-
-    def redraw_plots(self):
-        try:
-            # Redraw the spectrogram
-            self.draw_spectrogram(self.audio_file)
-
-            # Redraw pitch if it should be shown and pitch data is available
-            if self.show_pitch and self.pitch:
-                self.draw_pitch(self.pitch)
-
-            # Redraw intensity if it should be shown and intensity data is available
-            if self.show_intensity and self.intensity:
-                self.draw_intensity(self.intensity)
-
-            # Redraw formants based on checked actions
-            if self.formant_f1_action.isChecked() and self.formants:
-                self.draw_formants(self.formants, 1)
-            if self.formant_f2_action.isChecked() and self.formants:
-                self.draw_formants(self.formants, 2)
-            if self.formant_f3_action.isChecked() and self.formants:
-                self.draw_formants(self.formants, 3)
-            if self.formant_f4_action.isChecked() and self.formants:
-                self.draw_formants(self.formants, 4)
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
-
-    def read_audio_file(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "",
-                                                   "Audio Files (*.wav *.mp3 *.ogg);;All Files (*)", options=options)
-
-        if file_name:
-            try:
-                # Store file name for later use.
-                self.audio_file = file_name
-                self.audio_title_label.setText(f'Audio Title: {os.path.basename(file_name)}')  # Update QLabel
-
-                # Update the existing plot in the Audio Analysis Tools window
-                self.draw_spectrogram(file_name)
-
-                # Extract pitch information using Parselmouth
-                snd = Sound(file_name)
-                self.pitch = snd.to_pitch()
-
-                # Extract intensity information using Parselmouth
-                self.intensity = snd.to_intensity()
-
-                # Extract formants
-                self.formants = snd.to_formant_burg()
-
-                # Display sampling rate information
-                sampling_rate = snd.sampling_frequency
-                self.sampling_rate_label.setText(f'Sampling Rate: {sampling_rate} Hz')
-
-                # Call redraw_plots after draw_spectrogram
-                self.redraw_plots()
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
-
-    def draw_formants(self, formants=None, formant_number=None):
-        try:
-            if formants and formant_number:
-                plt.plot(formants.xs(), [formants.get_value_at_time(formant_number, x) for x in formants.xs()], 'o',
-                         color='w', markersize=3)
-                plt.plot(formants.xs(), [formants.get_value_at_time(formant_number, x) for x in formants.xs()], 'o',
-                         markersize=1)
-                self.canvas.draw()
-            else:
-                QMessageBox.critical(self, "Error", "Formant data or formant number is not available.")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error plotting formants: {str(e)}")
-
-    # Define toggle methods for each formant
-    def toggle_formant_f1(self):
-        self.redraw_plots()
-
-    def toggle_formant_f2(self):
-        self.redraw_plots()
-
-    def toggle_formant_f3(self):
-        self.redraw_plots()
-
-    def toggle_formant_f4(self):
-        self.redraw_plots()
-
-    def update_cursor_coordinates(self, event):
-        if event.inaxes:
-            x, y = event.xdata, event.ydata
-            self.coordinates_label.setText(f'Cursor Coordinates: x={x:.2f}, y={y:.2f}')
-
-    def handle_click(self, event):
-        x, y = event.xdata, event.ydata
-
-        if event.inaxes and event.button == 3:
-            # Extract formants and print frequencies for the x-coordinate
-            f1 = self.formants.get_value_at_time(1, x) if self.formants else None
-            f2 = self.formants.get_value_at_time(2, x) if self.formants else None
-            f3 = self.formants.get_value_at_time(3, x) if self.formants else None
-            f4 = self.formants.get_value_at_time(4, x) if self.formants else None
-
-            # Audio title
-            audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
-
-            # Update VowelSpaceVisualizer with the formant values
-            self.vowel_space_visualizer.update_input_fields_audio(f1, f2, f3, f4, audio_title)
-
-    def draw_spectrogram(self, audio_file, spectrogram=None, dynamic_range=70):
-        try:
-            if spectrogram is None:
-                snd = Sound(audio_file)
-                spectrogram = snd.to_spectrogram()
-
-            # Plot the spectrogram
-            plt.figure(self.figure.number)
-            plt.clf()
-
-            # Plot the audio waveform on top of the spectrogram
-            plt.plot(snd.xs(), snd.values.T, color='black', alpha=0.5)
-            plt.xlim([snd.xmin, snd.xmax])
-
-            X, Y = spectrogram.x_grid(), spectrogram.y_grid()
-            sg_db = 10 * np.log10(spectrogram.values)
-            plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='binary')
-            plt.ylim([spectrogram.ymin, spectrogram.ymax])
-            plt.xlabel("time [s]")
-            plt.ylabel("frequency [Hz]")
-
-            self.figure.tight_layout()
-            self.canvas.draw()
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error reading audio file: {str(e)}")
-
-    def draw_intensity(self, intensity=None):
-        try:
-            if intensity:
-                # Twin the axis for intensity
-                ax_intensity = plt.gca().twinx()
-                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=3, color='white', label='Intensity')
-                ax_intensity.plot(intensity.xs(), intensity.values.T, linewidth=1, color='black')
-                ax_intensity.set_ylabel("intensity [dB]")
-                ax_intensity.grid(False)
-                ax_intensity.set_ylim(0)
-
-                self.canvas.draw()
-            else:
-                QMessageBox.critical(self, "Error", "Intensity data is not available.")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error plotting intensity: {str(e)}")
-
-    def draw_pitch(self, pitch):
-        try:
-            if pitch:
-                # Extract selected pitch contour, and replace unvoiced samples by NaN to not plot
-                pitch_values = pitch.selected_array['frequency']
-                pitch_values[pitch_values == 0] = np.nan
-
-                # Twin the axis for pitch
-                ax_pitch = plt.gca().twinx()
-                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=2, color='white', label='Pitch')
-                ax_pitch.plot(pitch.xs(), pitch_values, 'o', markersize=1)
-                ax_pitch.grid(False)
-                ax_pitch.set_ylim(0, pitch.ceiling)
-                ax_pitch.set_ylabel("fundamental frequency [Hz]")
-
-                self.canvas.draw()
-            else:
-                QMessageBox.critical(self, "Error", "Pitch data is not available.")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error plotting pitch: {str(e)}")
-
-    def save_graph(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save Graph", "",
-                                                   "JPEG files (*.jpeg);;All Files (*)", options=options)
-        if file_path:
-            try:
-                # Save the current plot as a .jpeg file with high quality (1400 DPI)
-                self.figure.savefig(file_path, format='jpeg', dpi=1400)
-                QMessageBox.information(self, "Success", "Graph saved successfully!")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error saving graph: {str(e)}")
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    vowel_space_visualizer = VowelSpaceVisualizer()
-
-    audio_analysis_tool = AudioAnalysisTool()
-
-    vowel_space_visualizer.show()
-
-    sys.exit(app.exec_())
-
-    # VowSpace (Vowel Space Visualizer) v.1.4.2
-    # Ali Çağan Kaya, under the GPL-3.0 license.
