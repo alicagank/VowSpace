@@ -137,7 +137,7 @@ All normalization methods are implemented in Python based on the work of Remirez
 
 ## Audio Analysis Tools
 
-Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (f1-f4).
+Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (f1-f4). All of this is donw by the Parselmouth library, an awesome interface of Praat for Python!
 
 In the most current stage of development, the user is able to add the formant frequencies to the main visualizer window on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
 
@@ -279,7 +279,7 @@ Please note that I am a solo developer and a full-time student/researcher. I may
 
 You can cite VowSpace as:
 
-- Kaya, A. Ç. (2024). VowSpace: A Vowel Formant Analysis Application [Poster presentation]. 37th National Linguistics Congress, Kocaeli, Türkiye. The Linguistics Association.
+- Kaya, A. Ç. (2024). VowSpace: A vowel formant analysis application [Poster presentation]. *37th National Linguistics Congress, Kocaeli, Türkiye*. The Linguistics Association.
 
 ---
 
