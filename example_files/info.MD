@@ -35,28 +35,28 @@ The dataset includes realizations of the Turkish vowels: `/a/, /e/, /ɯ/, /i/, /
 With this example, we aim to visualize the data from a great paper on vowels in Turkish to gain a clearer understanding of the vowel space of Turkish.
 
 The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
+When imported to VowSpace with the `Show Grids` and `Show Labels for Vowel(s)` options activated, our data looks like this:
 
-When imported to VowSpace with the ‘Show Grids’ and ‘Show Labels for Vowel(s)’ options activated, our data looks like this:
+![Vowel Space with Grids and Labels](images/1.jpg)
 
-[1](https://alicagankaya.com/wp-content/uploads/2024/08/t9-2048x1363.jpg)
+To achieve a more conventional, quadrilateral-like view of the vowel space, we use the `Connect with Qhull` action:
 
-To achieve a more conventional, quadrilateral-like view of the vowel space, we use the ‘Connect with Qhull’ action:
+![Qhull Connection - 1](images/2.jpg)
 
-[2](https://alicagankaya.com/wp-content/uploads/2024/08/t11-2048x1363.jpg)
+![Qhull Connection - 2](images/3.jpg)
 
-[3](https://alicagankaya.com/wp-content/uploads/2024/08/t3-2048x1363.jpg)
+In some cases, we might want to see where individual vowels are articulated. We use the `Group by Vowel` action to take unique phonemes into account rather than the speaker/language:
 
-In some cases, we might want to see where individual vowels are articulated. We use the ‘Group by Vowel’ action to take unique phonemes into account rather than the speaker/language:
-
-[4](https://alicagankaya.com/wp-content/uploads/2024/08/t1-1-2048x1363.jpg)
+![Grouped by Vowel](images/4.jpg)
 
 Using Qhulls, we can see the places of articulation clearer:
 
-[5](https://alicagankaya.com/wp-content/uploads/2024/08/t5-2048x1363.jpg)
+![Qhulls - Places of Articulation](images/5.jpg)
 
 Considering the limited number of data, using ellipses to visualize these may be a better option:
 
-[6](https://alicagankaya.com/wp-content/uploads/2024/08/t6-2048x1363.jpg)
+![Ellipses Visualization](images/6.jpg)
+
 
 ### Ellipse Logic
 
