@@ -45,6 +45,8 @@ In the most current stage of development, the user is able to add the formant fr
 
 ## DataFrame Editor and data table format
 
+DataFrame Editor is a separate window to make small adjustments on the data that you’re working on without relying on any other application. When you use the ‘Save Changes’ function, the scatterplot automatically updates with the latest data. The altered data can also be saved as a separate spreadsheet through the ‘Save Data As…’ action.
+
 The minimum data table for any data to be read by VowSpace is as follows:
 
 ```
