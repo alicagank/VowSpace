@@ -1,10 +1,10 @@
-# Examples!
+# Tutorials!
 
 In this directory, there are two Excel files and two audio files.
 
 ---
 
-## Lobanov Normalization Example
+## #1 Lobanov Normalization Tutorial
 
 In the Excel file titled **"Speaking Fundamental Frequency and Vowel Formant Frequencies: Effects on Perception of Gender"**, you will find perhaps one of the most well-known descriptions of the vowel inventory of Standard American English.
 
@@ -13,15 +13,98 @@ Try and normalize the results using the **Lobanov method** found under the `Norm
 - You'll notice the gender difference is no longer a significant factor (or at least greatly minimized).
 - What remains are the **sociolinguistic differences** between the study participants!
 
-**This data is from:**
+### Step-by-Step Instructions
 
-- Gelfer, M. P., & Bennett, Q. E. (2013). *Speaking fundamental frequency and vowel formant frequencies: Effects on perception of gender*. *Journal of Voice, 27*(5), 556–566.
-- Hillenbrand, J., Getty, L. A., Clark, M. J., & Wheeler, K. (1995). *Acoustic characteristics of American English vowels*. *The Journal of the Acoustical Society of America, 97*(5), 3099–3111.
-- Peterson, G. E., & Barney, H. L. (1952). *Control methods used in a study of the vowels*. *The Journal of the Acoustical Society of America, 24*(2), 175–184.
+1. **Launch VowSpace**.
+
+![Step 1 - Run VowSpace](images/1.png)
+
+2. Under the `File` menu in the menubar, click `Import Data from Spreadsheet`.
+
+![Step 2 - Import the data](images/2.png)
+
+3. Locate the file named: speaking_fundamental_fequency_and_vowel_formant_frequencies_effects_on_perception_of_gender.xlsx
+
+
+4. The **DataFrame Editor** will open. Here you can inspect the data and then close the editor window.
+
+![Step 4 - DataFrame Editor](images/3.png)
+
+5. You will now see the vowels plotted as colored dots. By default, VowSpace groups them by speaker.  
+(You can change this in the settings, but for this tutorial we keep it grouped by speaker.)
+
+![Step 5 - See the dots](images/4.png)
+
+6. For better clarity, use the `Connect with Qhull(s)` option under the `Visualization Options` menu.
+
+![Step 6 - Qhull options](images/5.png)
+
+Now your data should look like this:
+![Qhull enabled](images/6.png)
+
+7. Now enable the legend to show speaker information. Go to:
+
+`Visualization Options → Legend Options → Show Legend`
+
+![Step 7 - Legend options](images/7.png)
+
+Optionally, resize the scatterplot window for better visibility.
+
+![Scatterplot with the Legend](images/8.png)
+
+9. Now the cool part: apply the **Lobanov Normalization**.  
+Go to:
+
+`Data Options → Normalize → Lobanov Normalization`
+
+![Step 8 - Apply normalization](images/9.png)
+
+This will convert all vowel formant values to z-scores per speaker.
+
+Here's your normalized data:
+
+![Normalized data](images/10.png)
+
+10. To give the plot a more structured look, you can also use:
+
+`Visualization Options → Show Grids`
+
+![Step 9](images/11.png)
+
+The scatterplot with the grids enabled:
+![Grids enabled](images/12.png)
+
+11. Now we can save our visualized data!
+
+Use the `File → Save as...` option to save the visaulized data!
+
+![Step 10 - Saving the scatterplot](images/13.png)
+
+AND HERE ARE OUR RESULTS! ⭐️
+
+![Results!](images/14.jpg)
+
+### Goal
+
+This dataset includes 2 male and 2 female speakers from different backgrounds. Our aim here is **not** to highlight biological differences (because we're not sexists, we're linguists), but to showcase **sociophonetic variation**.
+
+**Et voilà!**  
+You now have a publication-ready, normalized vowel plot using the Lobanov method.
 
 ---
 
-## Plotting Turkish Vowels
+### 📚 References
+
+> Gelfer, M. P., & Bennett, Q. E. (2013). *Speaking fundamental frequency and vowel formant frequencies: Effects on perception of gender*. *Journal of Voice, 27*(5), 556–566.
+> 
+> Hillenbrand, J., Getty, L. A., Clark, M. J., & Wheeler, K. (1995). *Acoustic characteristics of American English vowels*. *The Journal of the Acoustical Society of America, 97*(5), 3099–3111.
+> 
+> Peterson, G. E., & Barney, H. L. (1952). *Control methods used in a study of the vowels*. *The Journal of the Acoustical Society of America, 24*(2), 175–184.
+
+
+---
+
+## #2 Plotting Turkish Vowels
 
 We will use the dataset `turkish_vowels.xlsx` for this example.
 
@@ -37,25 +120,25 @@ With this example, we aim to visualize the data from a great paper on vowels in 
 The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
 When imported to VowSpace with the `Show Grids` and `Show Labels for Vowel(s)` options activated, our data looks like this:
 
-![Vowel Space with Grids and Labels](images/1.jpg)
+![Vowel Space with Grids and Labels](images/15.jpg)
 
 To achieve a more conventional, quadrilateral-like view of the vowel space, we use the `Connect with Qhull` action:
 
-![Qhull Connection - 1](images/2.jpg)
+![Qhull Connection - 1](images/16.jpg)
 
-![Qhull Connection - 2](images/3.jpg)
+![Qhull Connection - 2](images/17.jpg)
 
 In some cases, we might want to see where individual vowels are articulated. We use the `Group by Vowel` action to take unique phonemes into account rather than the speaker/language:
 
-![Grouped by Vowel](images/4.jpg)
+![Grouped by Vowel](images/18.jpg)
 
 Using Qhulls, we can see the places of articulation clearer:
 
-![Qhulls - Places of Articulation](images/5.jpg)
+![Qhulls - Places of Articulation](images/19.jpg)
 
 Considering the limited number of data, using ellipses to visualize these may be a better option:
 
-![Ellipses Visualization](images/6.jpg)
+![Ellipses Visualization](images/20.jpg)
 
 
 ### Ellipse Logic
@@ -102,7 +185,7 @@ The chi-squared distribution is used to scale the eigenvalues to create a confid
 scale_factor = chi2.ppf(0.67, df=2)
 ```
 ---
-## Get Formants From My Voice and Plot Them!
+## #3 Get Formants From My Voice and Plot Them!
 
 I am a native Turkish speaker, and in Turkish, we have 8 vowels: /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/, /y/.
 
