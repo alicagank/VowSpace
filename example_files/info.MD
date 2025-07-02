@@ -32,22 +32,31 @@ This data is based on:
 The dataset includes realizations of the Turkish vowels: `/a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/, /y/`  
 (I kept the phonological transcriptions in the dataset as-is.)
 
-### Visualizing in VowSpace
+With this example, we aim to visualize the data from a great paper on vowels in Turkish to gain a clearer understanding of the vowel space of Turkish.
 
-- Open the file in VowSpace.
-- Enable `Show Grids` and `Show Labels for Vowel(s)` to display the basic vowel scatterplot.
+The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
 
-To create a quadrilateral-like layout:
+When imported to VowSpace with the ‘Show Grids’ and ‘Show Labels for Vowel(s)’ options activated, our data looks like this:
 
-- Use the `Connect with Qhull` action in the menu.
+[1](https://alicagankaya.com/wp-content/uploads/2024/08/t9-2048x1363.jpg)
 
-To visualize individual vowel articulation points:
+To achieve a more conventional, quadrilateral-like view of the vowel space, we use the ‘Connect with Qhull’ action:
 
-- Activate the `Group by Vowel` action to group by phoneme rather than speaker or language.
+[2](https://alicagankaya.com/wp-content/uploads/2024/08/t11-2048x1363.jpg)
 
-When the dataset is sparse, ellipses are helpful:
+[3](https://alicagankaya.com/wp-content/uploads/2024/08/t3-2048x1363.jpg)
 
-- Enable the `Connect with Ellipse` action.
+In some cases, we might want to see where individual vowels are articulated. We use the ‘Group by Vowel’ action to take unique phonemes into account rather than the speaker/language:
+
+[4](https://alicagankaya.com/wp-content/uploads/2024/08/t1-1-2048x1363.jpg)
+
+Using Qhulls, we can see the places of articulation clearer:
+
+[5](https://alicagankaya.com/wp-content/uploads/2024/08/t5-2048x1363.jpg)
+
+Considering the limited number of data, using ellipses to visualize these may be a better option:
+
+[6](https://alicagankaya.com/wp-content/uploads/2024/08/t6-2048x1363.jpg)
 
 ### Ellipse Logic
 
@@ -55,7 +64,7 @@ When the dataset is sparse, ellipses are helpful:
 - **Eigenvalues** give the **lengths** of the ellipse axes.
 - **Eigenvectors** give the **directions** of the axes.
 
-Ellipse logic: The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
+The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
 
 I learned this method from:
 Joey Stanley – Making Vowel Plots in R (Part 1). It's an awesome resource if you’re working on vowel visualization!
