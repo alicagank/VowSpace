@@ -621,10 +621,15 @@ class VowelSpaceVisualizer(QWidget):
             self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
 
         show_legend = self.checkbox_show_legend.isChecked()
+        # Remove previous legend if exists
+        legend = self.ax.get_legend()
+        if legend:
+            legend.remove()
+
         if show_legend:
-            self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
-        else:
-            self.ax.legend().set_visible(False)
+            handles, labels = self.ax.get_legend_handles_labels()
+            if handles and labels:
+                self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
 
         show_grid = self.checkbox_show_grids.isChecked()
         if show_grid:
