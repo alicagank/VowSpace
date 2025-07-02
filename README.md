@@ -67,22 +67,71 @@ VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and
 
 ## Vowel Normalization in VowSpace
 
-VowSpace also provides options for normalizing the vowel formants under the “Normalization Settings” menu. In the latest stage of development, two normalization methods have been implemented to the application. The first method is an implementation of the Lobanov normalization method put forward by Lobanov (1971) by Nearey (1977) and Adank et al. (2004). The second one is the Bark Difference Metric by Traunmüller (1997). Both methods have been implemented to Python by Remirez (2022).
+VowSpace provides options for normalizing vowel formants under the “Normalization Settings” menu. In its current version, several normalization and frequency scale conversion methods have been implemented to facilitate cross-speaker comparison and perceptual modeling.
 
-**Lobanov:**
-```
-F_n[V] = (F_n[V] – MEAN_n) / S_n
-```
-
-**Bark:**
-```
-Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
-```
 ![norm](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
 
 ![norm1](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
 
 ![norm2](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
+
+### **Lobanov (Z-score Normalization)**
+An implementation of the Lobanov normalization method originally proposed by Lobanov (1971) and later adopted by Nearey (1977) and Adank et al. (2004). This method removes speaker-dependent anatomical differences by z-scoring the formants.
+
+```
+F_n[V] = (F_n[V] – MEAN_n) / S_n
+```
+
+### **Bark Difference Metric**
+Proposed by Traunmüller (1997), this method transforms formant values to the Bark scale and computes perceptual distance metrics such as Z3–Z1 and Z2–Z1.
+
+```
+Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
+```
+
+### **Nearey1 (Log-Mean Normalization)**
+This vowel-intrinsic, vowel-extrinsic method normalizes each formant by subtracting the log of the speaker-specific mean of all vowels, as described in Nearey (1977).
+
+```
+F_n[V] = log(F_n[V]) – log(mean(F_n_all_vowels))
+```
+
+### **Nearey2 (Shared Log-Mean Normalization)**
+A variation of the Nearey1 method, this approach subtracts a *shared* log-mean across all formants from each log-transformed formant, minimizing intra-speaker variation while maintaining cross-formant coherence.
+
+```
+F_n[V] = log(F_n[V]) – mean(log(F_1, F_2, ..., F_n))
+```
+
+### **Log-Scale Transformation**
+Applies a base-10 logarithmic transformation to raw formant values to account for the logarithmic nature of human auditory perception.
+
+```
+F_log = log10(F)
+```
+
+### **Mel-Scale Transformation**
+Converts formants to the Mel scale, commonly used in speech processing and auditory modeling.
+
+```
+F_mel = 2595 × log10(1 + F / 700)
+```
+
+### **Bark-Scale Transformation**
+Also based on human auditory resolution, the Bark transform maps frequencies to critical bands.
+
+```
+Z = 26.81 / (1 + 1960 / F) – 0.53
+```
+
+### **ERB-Scale Transformation**
+Transforms frequencies to the Equivalent Rectangular Bandwidth (ERB) scale, used in auditory models to simulate cochlear filtering.
+
+```
+F_erb = 21.4 × log10(1 + 0.00437 × F)
+```
+
+All normalization methods are implemented in Python based on the work of Remirez (2022), and adapted using resources such as phonR (Drammock, 2022).
 
 ## Audio Analysis Tools
 
