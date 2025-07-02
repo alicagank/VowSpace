@@ -631,7 +631,7 @@ class VowelSpaceVisualizer(QWidget):
         else:
             self.ax.grid(False)
 
-        # Set labels for the axes, inverted
+        # Set labels for the axes, inverted, that is, if needed...
         '''custom_label_x = self.edit_label_x.text()
         custom_label_y = self.edit_label_y.text()
         if self.checkbox_custom_labels.isChecked():
@@ -641,7 +641,7 @@ class VowelSpaceVisualizer(QWidget):
         self.ax.set_xlabel(y_column)
         self.ax.set_ylabel(x_column)
 
-        # Position the rulers
+        # Position of the rulers
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
 
@@ -661,6 +661,7 @@ class VowelSpaceVisualizer(QWidget):
         self.figure.tight_layout()
         self.canvas.draw()
 
+    # Normalization!
     def lobify(self, arg):
         formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
         self.data = lobanov_normalization(self.data, formants)
@@ -838,11 +839,11 @@ class VowelSpaceVisualizer(QWidget):
 
     # Opens Dataframe editor
     def open_df_editor(self):
-        self.df_editor = DFEditor(self.data)  # Assuming you pass data to the editor
+        self.df_editor = DFEditor(self.data)  # Passinf data to the DFEditor
         self.df_editor.show()
 
     # Opens Audio Analysis Tools window.
     def audio_analysis_tools(self):
-        # Create a new instance of AudioAnalysisToolsWindow if not open
+        # Creates a new instance of AudioAnalysisTools if not open
         self.audio_tools_window = AudioAnalysisTool(visualizer=self)
         self.audio_tools_window.show()
