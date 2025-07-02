@@ -1,4 +1,4 @@
-# modulation/audio_tools.py
+# components/audio_tools.py
 
 import os
 import numpy as np

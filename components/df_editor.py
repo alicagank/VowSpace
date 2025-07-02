@@ -1,4 +1,4 @@
-# modulation/df_editor.py
+# components/df_editor.py
 
 from PyQt5.QtWidgets import QDialog, QTableWidget, QTableWidgetItem, QVBoxLayout, QPushButton
 

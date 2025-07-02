@@ -1,4 +1,5 @@
 # vowel_space_visualizer.py
+# This is where everything else comes together.
 
 import numpy as np
 import pandas as pd
@@ -8,8 +9,8 @@ from matplotlib.patches import Ellipse
 from scipy.spatial import ConvexHull
 from scipy.stats import chi2
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QDialog, QFileDialog, QMessageBox, QGroupBox, QMenu, QMenuBar, QAction, QCheckBox, QTableWidget, QTableWidgetItem, QComboBox
+    QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
+    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction, QCheckBox, QComboBox
 )
 from PyQt5.QtCore import Qt, QTimer
 
