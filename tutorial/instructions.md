@@ -1,6 +1,6 @@
-# 📚 Tutorials!
+# Tutorials!
 
-Welcome! In this directory, you’ll find two Excel files, two audio recordings, and this instruction file. These tutorials are here to help you get started with **VowSpace** and make the most of its core features.
+Welcome! In this directory, you’ll find two Excel files, two audio recordings, and this instruction file. These tutorials are here to help you get started with **VowSpace** and make the most of its core features. (If your have any suggestions or if anything doesn't work as expected, please let me know!)
 
 ---
 
