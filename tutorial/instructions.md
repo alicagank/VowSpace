@@ -1,10 +1,27 @@
-# Tutorials!
+# 📚 Tutorials!
 
-In this directory, there are two Excel files and two audio files.
+Welcome! In this directory, you’ll find two Excel files, two audio recordings, and this instruction file. These tutorials are here to help you get started with **VowSpace** and make the most of its core features.
 
 ---
 
-## #1 Lobanov Normalization Tutorial
+### 🔍 What's Inside?
+
+#### ✅ Tutorial #1: Lobanov normalization tutorial
+Use a classic American English dataset to learn how to normalize vowel formants using the **Lobanov method**. See how normalization minimizes gender-based variation and brings out sociolinguistic patterns. Pretty useful for researchers preparing publishable plots.
+
+#### 🇹🇷 Tutorial #2: Plotting Turkish vowels
+Visualize Turkish vowels from an acoustic study using Qhulls and ellipses. Learn how to group by vowel, interpret articulatory space, and apply ellipse logic using covariance and eigenvalues. A great hands-on example of vowel space visualization techniques.
+
+#### 🎙️ Tutorial #3: Plotting my voice
+Analyze my voice! Load provided recordings (`cagan.mp3`, `ozlem.mp3`) into the **Audio Analysis Tool**, extract formants, and add them to your scatterplot. I guess this is the most fun and interactive way to learn how VowSpace works with real-world audio.
+
+---
+
+I hope these tutorials make using VowSpace intuitive, and maybe even a little fun.
+
+---
+
+## #1 Lobanov normalization tutorial
 
 In the Excel file titled **"Speaking Fundamental Frequency and Vowel Formant Frequencies: Effects on Perception of Gender"**, you will find perhaps one of the most well-known descriptions of the vowel inventory of Standard American English.
 
@@ -104,7 +121,7 @@ You now have a publication-ready, normalized vowel plot using the Lobanov method
 
 ---
 
-## #2 Plotting Turkish Vowels
+## #2 Plotting Turkish vowels
 
 We will use the dataset `turkish_vowels.xlsx` for this example.
 
@@ -185,7 +202,7 @@ The chi-squared distribution is used to scale the eigenvalues to create a confid
 scale_factor = chi2.ppf(0.67, df=2)
 ```
 ---
-## #3 Get Formants From My Voice and Plot Them!
+## #3 Get formants from my voice and plot them!
 
 I am a native Turkish speaker, and in Turkish, we have 8 vowels: /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/, /y/.
 
