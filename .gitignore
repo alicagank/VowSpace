@@ -45,9 +45,6 @@ docs/notes/
 # ========== AUDIO/IMAGE/EXPORTS ==========
 *.mp3
 *.ogg
-*.jpg
-*.jpeg
-*.png
 
 # ========== BACKUPS & TEMP ==========
 *.bak
