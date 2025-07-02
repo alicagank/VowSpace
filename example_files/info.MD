@@ -112,4 +112,4 @@ Once the application has read the audio file:
 
 I’ve also included another file: ozlem.mp3. It contains a similar recording from a female speaker friend of mine. Try the same steps with this file and compare the results!
 
-You may also try and use the file asc-diff.xlsx. It contains the formant frequencies in the cagan.wav and ozlem.wav files along with a third speaker! You can access this file by the 'Read from Excel' on the menu bar!
+You may also try and use the file asc-diff.xlsx. It contains the formant frequencies in the cagan.wav and ozlem.wav files along with a third speaker! You can access this file by the 'Read from Excel' on the menu bar.
