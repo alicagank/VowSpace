@@ -65,7 +65,7 @@ class VowelSpaceVisualizer(QWidget):
         save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
         save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
         save_data_action = self.create_action('Save Data As...', self.save_data_to_excel)
-        import_data_action = self.create_action('Import Data from Spreadsheet', self.import_data_from_excel)
+        import_data_action = self.create_action('Import Data from Dataset', self.import_data_from_excel)
 
         file_menu.addAction(save_action)
         file_menu.addAction(save_as_action)
@@ -799,7 +799,7 @@ class VowelSpaceVisualizer(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from Spreadsheet", "",
+        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from Dataset", "",
                                                    "Excel Files (*.xls *.xlsx);;All Files (*)", options=options)
 
         if file_name:
