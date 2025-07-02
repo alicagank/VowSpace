@@ -2,6 +2,8 @@
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files and/or spreadsheets.
 
+YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](https://github.com/alicagank/VowSpace/blob/main/tutorial/instructions.md)! :)
+
 ![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2024/08/Screenshot-2024-08-04-at-04.23.24.png)
 
 ## Version Log
