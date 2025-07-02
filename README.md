@@ -1,6 +1,6 @@
 # VowSpace: A vowel formant analysis application
 
-VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files.
+VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files and/or spreadsheets.
 
 ![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2024/08/Screenshot-2024-08-04-at-04.23.24.png)
 
