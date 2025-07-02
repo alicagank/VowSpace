@@ -76,7 +76,7 @@ Go to:
 
 ![Step 8 - Apply normalization](images/9.png)
 
-This will convert all vowel formant values to z-scores per speaker.
+This will convert all vowel formant values to z-scores per speaker. You can always goof around with the other normalization methods, too! (You can see the results in numeric form on the DataFrame Editor in real time!)
 
 Here's your normalized data:
 
@@ -110,7 +110,7 @@ You now have a publication-ready, normalized vowel plot using the Lobanov method
 
 ---
 
-### 📚 References
+### References
 
 > Gelfer, M. P., & Bennett, Q. E. (2013). *Speaking fundamental frequency and vowel formant frequencies: Effects on perception of gender*. *Journal of Voice, 27*(5), 556–566.
 > 
