@@ -32,22 +32,31 @@ This data is based on:
 The dataset includes realizations of the Turkish vowels: `/a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/, /y/`  
 (I kept the phonological transcriptions in the dataset as-is.)
 
-### Visualizing in VowSpace
+With this example, we aim to visualize the data from a great paper on vowels in Turkish to gain a clearer understanding of the vowel space of Turkish.
 
-- Open the file in VowSpace.
-- Enable `Show Grids` and `Show Labels for Vowel(s)` to display the basic vowel scatterplot.
+The dataset is composed of different realizations of the vowels /a/, /e/, /ɯ/, /i/, /o/, /œ/, /u/ and /y/ (I kept the phonologic transcriptions in the dataset as is).
+When imported to VowSpace with the `Show Grids` and `Show Labels for Vowel(s)` options activated, our data looks like this:
 
-To create a quadrilateral-like layout:
+![Vowel Space with Grids and Labels](images/1.jpg)
 
-- Use the `Connect with Qhull` action in the menu.
+To achieve a more conventional, quadrilateral-like view of the vowel space, we use the `Connect with Qhull` action:
 
-To visualize individual vowel articulation points:
+![Qhull Connection - 1](images/2.jpg)
 
-- Activate the `Group by Vowel` action to group by phoneme rather than speaker or language.
+![Qhull Connection - 2](images/3.jpg)
 
-When the dataset is sparse, ellipses are helpful:
+In some cases, we might want to see where individual vowels are articulated. We use the `Group by Vowel` action to take unique phonemes into account rather than the speaker/language:
 
-- Enable the `Connect with Ellipse` action.
+![Grouped by Vowel](images/4.jpg)
+
+Using Qhulls, we can see the places of articulation clearer:
+
+![Qhulls - Places of Articulation](images/5.jpg)
+
+Considering the limited number of data, using ellipses to visualize these may be a better option:
+
+![Ellipses Visualization](images/6.jpg)
+
 
 ### Ellipse Logic
 
@@ -55,7 +64,7 @@ When the dataset is sparse, ellipses are helpful:
 - **Eigenvalues** give the **lengths** of the ellipse axes.
 - **Eigenvectors** give the **directions** of the axes.
 
-Ellipse logic: The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
+The covariance matrix captures the variance and covariance of the data points in your subset, the eigenvalues give the length of the principal axes of the ellipse and the eigenvectors give the direction of the principal axes.
 
 I learned this method from:
 Joey Stanley – Making Vowel Plots in R (Part 1). It's an awesome resource if you’re working on vowel visualization!
