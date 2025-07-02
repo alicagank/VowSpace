@@ -232,4 +232,4 @@ You can cite VowSpace as:
 
 ---
 
-For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub. Alternatively (and I highly encourage to do so!), you may also clone this repository and run the main.py script and experiment with the code itself! You can also find the source code on [GitHub](https://github.com/alicagank/VowSpace).
+For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub. Alternatively (and I highly encourage to do so!), you may also clone this repository and run the main.py script and experiment with the code itself! You can find the source code on [GitHub](https://github.com/alicagank/VowSpace).
