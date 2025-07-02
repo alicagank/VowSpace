@@ -110,7 +110,7 @@ You now have a publication-ready, normalized vowel plot using the Lobanov method
 
 ---
 
-### 📚 References
+### References
 
 > Gelfer, M. P., & Bennett, Q. E. (2013). *Speaking fundamental frequency and vowel formant frequencies: Effects on perception of gender*. *Journal of Voice, 27*(5), 556–566.
 > 
