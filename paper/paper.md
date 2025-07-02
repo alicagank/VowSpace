@@ -35,7 +35,7 @@ VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and
 
 ## Vowel normalization in VowSpace
 
-VowSpace provides options for normalizing vowel formants under the “Normalization Settings” menu. In its current version, several normalization and frequency scale conversion methods have been implemented to facilitate cross-speaker comparison and perceptual modeling. All normalization methods are implemented in Python based on the work of Remirez (2022), and adapted using resources such as phonR (Drammock, 2022). 
+VowSpace provides options for normalizing vowel formants under the “Data Settings” menu. In its current version, several normalization and frequency scale conversion methods have been implemented to facilitate cross-speaker comparison and perceptual modeling. All normalization methods are implemented in Python based on the work of Remirez (2022), and adapted using resources such as phonR (Drammock, 2022). 
 
 ## Audio Analysis Tools
 
