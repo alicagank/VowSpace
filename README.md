@@ -55,6 +55,8 @@ VowSpace is an open-source desktop application developed with the aim of acquiri
 - Fixed a bug regarding the Bark Difference Metric method.
 - Added more labeling options.
 
+---
+
 ## About VowSpace
 
 Vowel plotting and normalization are of utmost importance when dealing with data for many subfields of linguistics, and the absence of a user-friendly application for these specific purposes has led to the emergence of VowSpace as a solution to this gap.
@@ -104,13 +106,7 @@ DataFrame Editor is a separate window to make small adjustments on the data that
 ![dfeditor](https://alicagankaya.com/wp-content/uploads/2024/07/Screenshot-2024-07-30-at-17.41.33.png)
 DataFrame Editor UI
 
-## IPA Keyboard
-
-As phoneticians, we love the IPA (International Phonetic Alphabet)! There is a dedicated window to input some vowels on the IPA as well!
-
-![IPAKeyboard](https://alicagankaya.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-02.55.42.png)
-
-## Data Table Format
+### Data Table Format
 
 The minimum data table for any data to be read by VowSpace is as follows:
 
@@ -121,53 +117,11 @@ vowel   f1   f2   speaker
 
 The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. When any data is inputted through the user interface, a dataframe is created with this information. Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported.
 
-## References
+## IPA Keyboard
 
-- Aydın, Ö., & Uzun, İ. P. (2020). Ünlü formant normalizasyonu: R programlama dilinde bir uygulama. In İ. P. Uzun (Ed.), *Kuramsal ve uygulamalı sesbilim* (pp. 297–322). Seçkin Yayıncılık.
+As phoneticians, we love the IPA (International Phonetic Alphabet)! There is a dedicated window to input some vowels on the IPA as well!
 
-- Bladon, R. A. W., Henton, C. G., & Pickering, J. B. (1984). Towards an auditory theory of speaker normalization. *Language & Communication, 4*(1), 59–69. [https://doi.org/10.1016/0271-5309(84)90019-3](https://doi.org/10.1016/0271-5309(84)90019-3)
-
-- Boersma, P. (2001). Praat, a system for doing phonetics by computer. *Glot International, 5*(9/10), 341–345.
-
-- Clopper, C. G. (2009). Computational methods for normalizing acoustic vowel data for talker differences. *Language and Linguistics Compass, 3*(6), 1430–1442. [https://doi.org/10.1111/j.1749-818X.2009.00165.x](https://doi.org/10.1111/j.1749-818X.2009.00165.x)
-
-- Fant, G. (1975). Non-uniform vowel normalization. *Speech Transmission Laboratory Quarterly Progress and Status Report, 16*, 1–19.
-
-- Gelfer, M. P., & Bennett, Q. E. (2013). Speaking Fundamental Frequency and Vowel Formant Frequencies: Effects on Perception of Gender. *Journal of Voice, 27*(5), 556–566. [https://doi.org/10.1016/j.jvoice.2012.11.008](https://doi.org/10.1016/j.jvoice.2012.11.008)
-
-- Harris, C. R., et al. (2020). Array programming with NumPy. *Nature, 585*(7825), 357–362. [https://doi.org/10.1038/s41586-020-2649-2](https://doi.org/10.1038/s41586-020-2649-2)
-
-- Heeringa, W., & Van de Velde, H. (2018). Visible Vowels: a Tool for the Visualization of Vowel Variation. In *Proceedings CLARIN Annual Conference 2018*, Pisa, Italy. CLARIN ERIC.
-
-- Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering, 9*(3), 90–95. [https://doi.org/10.1109/MCSE.2007.55](https://doi.org/10.1109/MCSE.2007.55)
-
-- Jadoul, Y., Thompson, B., & de Boer, B. (2018). Introducing Parselmouth: A Python interface to Praat. *Journal of Phonetics, 71*, 1–15. [https://doi.org/10.1016/j.wocn.2018.07.001](https://doi.org/10.1016/j.wocn.2018.07.001)
-
-- Jones, D. (1917). Speech sounds: Cardinal vowels. *The Gramophone*.
-
-- Joos, M. (1948). Acoustic phonetics. *Language, 23*, 5–136.
-
-- Klatt, D. H. (1989). Review of selected models of speech perception. In W. Marlsen-Wilson (Ed.), *Lexical representation and process* (pp. 169–226). MIT Press.
-
-- Ladefoged, P., & Broadbent, D. E. (1957). Information conveyed by vowels. *The Journal of the Acoustical Society of America, 29*(1), 98–104. [https://doi.org/10.1121/1.1908694](https://doi.org/10.1121/1.1908694)
-
-- Pfitzinger, H. R., & Niebuhr, O. (2011). Historical development of phonetic vowel systems: The last 400 years. *ICPhS XVII*, 160–163.
-
-- R Core Team. (2021). *R: A language and environment for statistical computing* [Software]. R Foundation for Statistical Computing, Vienna, Austria.
-
-- Remirez, E. (2022, October 20). Vowel plotting in Python. In *Linguistics Methods Hub*. Zenodo. [https://doi.org/10.5281/zenodo.7232005](https://doi.org/10.5281/zenodo.7232005)
-
-- Studdert-Kennedy, M. (1964). The perception of speech. In T. A. Sebeok (Ed.), *Current trends in linguistics* (pp. 2349–2385). Mouton.
-
-- Thomas, E. R., & Kendall, T. (2007). NORM: The vowel normalization and plotting suite. [Online Resource](http://ncslaap.lib.ncsu.edu/tools/norm/)
-
-- The pandas development team. (2024). *pandas-dev/pandas: Pandas (v2.2.2)*. Zenodo. [https://doi.org/10.5281/zenodo.10957263](https://doi.org/10.5281/zenodo.10957263)
-
-- Van Rossum, G., & Drake Jr., F. L. (1995). *Python reference manual*. Centrum voor Wiskunde en Informatica Amsterdam.
-
-- Virtanen, P., et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3), 261–272. [https://doi.org/10.1038/s41592-019-0686-2](https://doi.org/10.1038/s41592-019-0686-2)
-
-- Watt, D., Fabricius, A. H., & Kendall, T. (2010). More on vowels: Plotting and normalization. In *Sociophonetics: A Student’s Guide* (pp. 107–118). Routledge.
+![IPAKeyboard](https://alicagankaya.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-02.55.42.png)
 
 ---
 
@@ -217,6 +171,56 @@ If you need help using VowSpace or have questions about specific features:
 - You may also reach out to me directly via email.
 
 Please note that I am a solo developer and a full-time student/researcher. I may not respond immediately, but I will do my best to help as soon as possible.
+
+---
+
+## References
+
+- Aydın, Ö., & Uzun, İ. P. (2020). Ünlü formant normalizasyonu: R programlama dilinde bir uygulama. In İ. P. Uzun (Ed.), *Kuramsal ve uygulamalı sesbilim* (pp. 297–322). Seçkin Yayıncılık.
+
+- Bladon, R. A. W., Henton, C. G., & Pickering, J. B. (1984). Towards an auditory theory of speaker normalization. *Language & Communication, 4*(1), 59–69. [https://doi.org/10.1016/0271-5309(84)90019-3](https://doi.org/10.1016/0271-5309(84)90019-3)
+
+- Boersma, P. (2001). Praat, a system for doing phonetics by computer. *Glot International, 5*(9/10), 341–345.
+
+- Clopper, C. G. (2009). Computational methods for normalizing acoustic vowel data for talker differences. *Language and Linguistics Compass, 3*(6), 1430–1442. [https://doi.org/10.1111/j.1749-818X.2009.00165.x](https://doi.org/10.1111/j.1749-818X.2009.00165.x)
+
+- Fant, G. (1975). Non-uniform vowel normalization. *Speech Transmission Laboratory Quarterly Progress and Status Report, 16*, 1–19.
+
+- Gelfer, M. P., & Bennett, Q. E. (2013). Speaking Fundamental Frequency and Vowel Formant Frequencies: Effects on Perception of Gender. *Journal of Voice, 27*(5), 556–566. [https://doi.org/10.1016/j.jvoice.2012.11.008](https://doi.org/10.1016/j.jvoice.2012.11.008)
+
+- Harris, C. R., et al. (2020). Array programming with NumPy. *Nature, 585*(7825), 357–362. [https://doi.org/10.1038/s41586-020-2649-2](https://doi.org/10.1038/s41586-020-2649-2)
+
+- Heeringa, W., & Van de Velde, H. (2018). Visible Vowels: a Tool for the Visualization of Vowel Variation. In *Proceedings CLARIN Annual Conference 2018*, Pisa, Italy. CLARIN ERIC.
+
+- Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering, 9*(3), 90–95. [https://doi.org/10.1109/MCSE.2007.55](https://doi.org/10.1109/MCSE.2007.55)
+
+- Jadoul, Y., Thompson, B., & de Boer, B. (2018). Introducing Parselmouth: A Python interface to Praat. *Journal of Phonetics, 71*, 1–15. [https://doi.org/10.1016/j.wocn.2018.07.001](https://doi.org/10.1016/j.wocn.2018.07.001)
+
+- Jones, D. (1917). Speech sounds: Cardinal vowels. *The Gramophone*.
+
+- Joos, M. (1948). Acoustic phonetics. *Language, 23*, 5–136.
+
+- Klatt, D. H. (1989). Review of selected models of speech perception. In W. Marlsen-Wilson (Ed.), *Lexical representation and process* (pp. 169–226). MIT Press.
+
+- Ladefoged, P., & Broadbent, D. E. (1957). Information conveyed by vowels. *The Journal of the Acoustical Society of America, 29*(1), 98–104. [https://doi.org/10.1121/1.1908694](https://doi.org/10.1121/1.1908694)
+
+- Pfitzinger, H. R., & Niebuhr, O. (2011). Historical development of phonetic vowel systems: The last 400 years. *ICPhS XVII*, 160–163.
+
+- R Core Team. (2021). *R: A language and environment for statistical computing* [Software]. R Foundation for Statistical Computing, Vienna, Austria.
+
+- Remirez, E. (2022, October 20). Vowel plotting in Python. In *Linguistics Methods Hub*. Zenodo. [https://doi.org/10.5281/zenodo.7232005](https://doi.org/10.5281/zenodo.7232005)
+
+- Studdert-Kennedy, M. (1964). The perception of speech. In T. A. Sebeok (Ed.), *Current trends in linguistics* (pp. 2349–2385). Mouton.
+
+- Thomas, E. R., & Kendall, T. (2007). NORM: The vowel normalization and plotting suite. [Online Resource](http://ncslaap.lib.ncsu.edu/tools/norm/)
+
+- The pandas development team. (2024). *pandas-dev/pandas: Pandas (v2.2.2)*. Zenodo. [https://doi.org/10.5281/zenodo.10957263](https://doi.org/10.5281/zenodo.10957263)
+
+- Van Rossum, G., & Drake Jr., F. L. (1995). *Python reference manual*. Centrum voor Wiskunde en Informatica Amsterdam.
+
+- Virtanen, P., et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3), 261–272. [https://doi.org/10.1038/s41592-019-0686-2](https://doi.org/10.1038/s41592-019-0686-2)
+
+- Watt, D., Fabricius, A. H., & Kendall, T. (2010). More on vowels: Plotting and normalization. In *Sociophonetics: A Student’s Guide* (pp. 107–118). Routledge.
 
 ---
 
