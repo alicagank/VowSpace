@@ -27,11 +27,11 @@ Visualizing vowel formants—typically via F1-F2 scatterplots—is a widely used
 
 # The VowSpace application
 
+![Fig.1 - VowSpace's main user interface](jossimage1.png)
+
 **VowSpace** is an open-source desktop application for acquiring, visualizing, normalizing, comparing and analyzing vowel sounds from audio files and/or spreadsheets. It provides an intuitive graphical interface for exploring vowel spaces across speakers and groups, supporting a variety of normalization methods including the Bark Difference Metric, Lobanov, Nearey 1 and 2, as well as Bark, Log, Mel, and Erb transformations. (cite norm here)
 
 ## Vowel plotting in VowSpace
-
-![Fig.1 - VowSpace's main user interface](jossimage1.png)
 
 VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and visualize the data. When plotting vowel formants, VowSpace utilizes a rectangular template with f1 value on the rightmost side and f2 value on the bottommost side of the screen with rulers on the opposite sides of the values. The vowels that belong to different sources are represented with points with different colors.
 
