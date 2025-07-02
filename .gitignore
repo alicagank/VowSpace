@@ -43,14 +43,11 @@ docs/notes/
 *.log
 
 # ========== AUDIO/IMAGE/EXPORTS ==========
-*.wav
 *.mp3
 *.ogg
 *.jpg
 *.jpeg
 *.png
-*.xls
-*.xlsx
 
 # ========== BACKUPS & TEMP ==========
 *.bak
