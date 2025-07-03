@@ -17,6 +17,13 @@ date: 2025-07-03
 bibliography: paper.bib
 ---
 
+# Summary
+
+VowSpace is a desktop application designed to help researchers, students, and educators analyze and visualize the acoustic properties of vowel sounds. It provides an easy-to-use graphical interface for plotting vowel formant frequencies—key acoustic cues that distinguish different vowel sounds—alongside tools for normalization, audio analysis, and data editing. 
+
+While traditional tools in this domain often require programming knowledge or complex workflows, VowSpace is accessible to users without technical backgrounds. By integrating formant extraction, vowel plotting, normalization techniques, and spreadsheet-based editing in a single platform, VowSpace simplifies phonetic research and teaching. It supports use cases in linguistics, speech science, language education, and even forensic analysis.
+
+
 # Background
 
 Vowel formant frequency varies by vowel and speaker, and plays a crucial role in phonological and sociolinguistic analysis. These frequencies reveal language- and speaker-specific traits. The first and second formants (F1 and F2) relate to vowel height and backness, providing a robust acoustic basis for distinguishing vowel categories [@peterson1952; @ladefoged2014]. Measuring and comparing formant frequencies is key in phonetics, dialectology, sociolinguistics, forensic linguistics, speech technology, and second language acquisition. 
@@ -77,6 +84,14 @@ VowSpace addresses the limitations of manual plotting and high-barrier scripting
 - Vowel normalization using various methods,
 - Exportable figures suitable for publication, 
 - Audio analysis tools for acquiring vowel formants through spectrograms, and formant lines.
+- 
+# Research applications
+
+VowSpace has been actively used in phonetic research projects involving Turkish vowel acoustics. It is the primary analysis tool in the TÜBİTAK 2209-A project *"Vowel Space of Standard Turkish"*, which investigated the formant distributions of Turkish monophthongs across multiple speakers. 
+
+It is also being used in the ongoing collaborative study *"Acoustic Analysis of Turkish Vowel Formants: A Methodological Perspective"*, conducted with Dr. Emre Yağlı. This project focuses on evaluating normalization techniques and methodological best practices for cross-speaker vowel comparison in Turkish.
+
+These research efforts have benefited from VowSpace’s integrated vowel plotting, normalization, and interactive data editing features.
 
 # Acknowledgements
 
