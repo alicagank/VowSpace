@@ -8,7 +8,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 ## Version Log
 
-### VowSpace v1.4.1 Release Notes:
+### VowSpace v1.4.1 Release Notes (Latest version):
 
 **Bug Fixes:**
 
@@ -27,7 +27,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 - Changed the default dpi for saving images from 600 to 1200 for better readability.
 - Rearranged the menus for improved navigation.
 
-### VowSpace v1.4.0 Release Notes:
+### VowSpace v1.4.0 Release Notes (Previous version):
 
 **Bug Fixes:**
 
@@ -45,17 +45,49 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 - Updated dataframe methods: `clear_data`, `read`, and `write`.
 - Modified Bark and Lobanov normalization methods to include all formant frequencies.
 
-### VowSpace v1.3.0 Release Notes:
+---
 
-- Added ‘Audio Analysis Tools’, a separate window that the user can open through the VowSpace’s main user interface. Using this window, the user can read an audio file and get useful information about it such as intensity, pitch and formant frequencies.
-- Added an IPA keyboard for convenience.
-- Added the option to exclude a title for the plot.
+# Installation
 
-### VowSpace v1.2.0 Release Notes:
+## macOS
 
-- The initial release for Mac.
-- Fixed a bug regarding the Bark Difference Metric method.
-- Added more labeling options.
+1. Download the latest `.dmg` installer for VowSpace from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Open the `.dmg` file and drag the **VowSpace** icon into your **Applications** folder.
+3. If you encounter a security warning on first launch:
+   - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
+   - Confirm the prompt from macOS Gatekeeper.
+
+## Windows
+
+1. Download the latest `.exe` installer from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Double-click the `.exe` file to run the installer.
+3. Follow the on-screen instructions to complete the installation.
+4. Once installed, you can launch **VowSpace** from your Start Menu or Desktop shortcut.
+
+## Run the Python application directly
+
+Alternatively (and I highly encourage you to do so!), you may also clone this repository and run the application directly from source. This is ideal for developers or researchers who wish to experiment with or contribute to the code.
+
+```bash
+git clone https://github.com/alicagank/VowSpace.git
+cd VowSpace
+python main.py
+```
+
+If you choose to run the application from source, you’ll need Python 3.8 or higher and the following Python packages:
+
+- `PyQt5`
+- `matplotlib`
+- `pandas`
+- `numpy`
+- `scipy`
+- `parselmouth`
+
+All dependencies are listed in the `requirements.txt` file. To install them automatically, run:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
@@ -275,7 +307,7 @@ Please note that I am a solo developer and a full-time student/researcher. I may
 
 ---
 
-## Citation
+## Attribution
 
 You can cite VowSpace as:
 
@@ -283,4 +315,4 @@ You can cite VowSpace as:
 
 ---
 
-For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub. Alternatively (and I highly encourage to do so!), you may also clone this repository and run the main.py script and experiment with the code itself! You can find the source code on [GitHub](https://github.com/alicagank/VowSpace).
+For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub.
