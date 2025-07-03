@@ -81,7 +81,7 @@ If you choose to run the application from source, you’ll need Python 3.8 or hi
 - `pandas`
 - `numpy`
 - `scipy`
-- `parselmouth`
+- `praat-parselmouth`
 
 All dependencies are listed in the `requirements.txt` file. To install them automatically, run:
 
