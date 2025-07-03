@@ -64,6 +64,31 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 3. Follow the on-screen instructions to complete the installation.
 4. Once installed, you can launch **VowSpace** from your Start Menu or Desktop shortcut.
 
+## Run the Python application directly
+
+Alternatively (and I highly encourage you to do so!), you may also clone this repository and run the application directly from source. This is ideal for developers or researchers who wish to experiment with or contribute to the code.
+
+```bash
+git clone https://github.com/alicagank/VowSpace.git
+cd VowSpace
+python main.py
+```
+
+If you choose to run the application from source, you’ll need Python 3.8 or higher and the following Python packages:
+
+- `PyQt5`
+- `matplotlib`
+- `pandas`
+- `numpy`
+- `scipy`
+- `parselmouth`
+
+All dependencies are listed in the `requirements.txt` file. To install them automatically, run:
+
+```bash
+pip install -r requirements.txt
+```
+
 ---
 
 ## About VowSpace
@@ -290,4 +315,4 @@ You can cite VowSpace as:
 
 ---
 
-For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub. Alternatively (and I highly encourage to do so!), you may also clone this repository and run the main.py script and experiment with the code itself! You can find the source code on [GitHub](https://github.com/alicagank/VowSpace).
+For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub.
