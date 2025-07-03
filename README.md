@@ -8,7 +8,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 ## Version Log
 
-### VowSpace v1.4.1 Release Notes:
+### VowSpace v1.4.1 Release Notes (Latest version):
 
 **Bug Fixes:**
 
@@ -27,7 +27,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 - Changed the default dpi for saving images from 600 to 1200 for better readability.
 - Rearranged the menus for improved navigation.
 
-### VowSpace v1.4.0 Release Notes:
+### VowSpace v1.4.0 Release Notes (Previous version):
 
 **Bug Fixes:**
 
@@ -45,17 +45,24 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 - Updated dataframe methods: `clear_data`, `read`, and `write`.
 - Modified Bark and Lobanov normalization methods to include all formant frequencies.
 
-### VowSpace v1.3.0 Release Notes:
+---
 
-- Added ‘Audio Analysis Tools’, a separate window that the user can open through the VowSpace’s main user interface. Using this window, the user can read an audio file and get useful information about it such as intensity, pitch and formant frequencies.
-- Added an IPA keyboard for convenience.
-- Added the option to exclude a title for the plot.
+# Installation
 
-### VowSpace v1.2.0 Release Notes:
+## macOS
 
-- The initial release for Mac.
-- Fixed a bug regarding the Bark Difference Metric method.
-- Added more labeling options.
+1. Download the latest `.dmg` installer for VowSpace from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Open the `.dmg` file and drag the **VowSpace** icon into your **Applications** folder.
+3. If you encounter a security warning on first launch:
+   - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
+   - Confirm the prompt from macOS Gatekeeper.
+
+## Windows
+
+1. Download the latest `.exe` installer from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Double-click the `.exe` file to run the installer.
+3. Follow the on-screen instructions to complete the installation.
+4. Once installed, you can launch **VowSpace** from your Start Menu or Desktop shortcut.
 
 ---
 
@@ -275,7 +282,7 @@ Please note that I am a solo developer and a full-time student/researcher. I may
 
 ---
 
-## Citation
+## Attribution
 
 You can cite VowSpace as:
 
