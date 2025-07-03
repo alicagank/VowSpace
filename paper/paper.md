@@ -91,7 +91,7 @@ VowSpace has been actively used in phonetic research projects involving Turkish 
 
 It is also being used in the ongoing collaborative study *"Acoustic Analysis of Turkish Vowel Formants: A Methodological Perspective"*, conducted with Dr. Emre Yağlı. This project focuses on evaluating normalization techniques and methodological best practices for cross-speaker vowel comparison in Turkish.
 
-These research efforts have benefited from VowSpace’s integrated vowel plotting, normalization, and interactive data editing features.
+These research have benefited from VowSpace’s integrated vowel plotting, normalization, and interactive data editing features.
 
 # Acknowledgements
 
