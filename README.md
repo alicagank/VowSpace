@@ -63,10 +63,9 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 ## Windows
 
-1. Download the latest `.exe` installer from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
-2. Double-click the `.exe` file to run the installer.
-3. Follow the on-screen instructions to complete the installation.
-4. Once installed, you can launch **VowSpace** from your Start Menu or Desktop shortcut.
+VowSpace is currently available as a portable application for Windows.
+1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Once downloaded, you can launch **VowSpace**.
 
 ## Run the Python application directly
 
