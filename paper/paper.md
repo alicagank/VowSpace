@@ -19,9 +19,9 @@ bibliography: paper.bib
 
 # Background
 
-Vowel formant frequencies that vary by vowel and speaker, are essential in phonological and sociolinguistic analyses. These frequencies reveal language- and speaker-specific traits. F1 and F2 relate to vowel height and backness, aiding in vowel distinction [@PetersonBarney1952; @LadefogedJohnson2014]. F3 is generally associated with vowel openness and, along with F4 and F5, provides more delicate information about the speaker. Measuring and comparing formant frequencies is key in phonetics, dialectology, sociolinguistics, speech technology, and language learning.
+Vowel formant frequencies that vary by vowel and speaker, are essential in phonological and sociolinguistic analyses. These frequencies reveal language- and speaker-specific traits. F1 and F2 relate to vowel height and backness, aiding in vowel distinction [@peterson1952; @ladefoged2014]. F3 is generally associated with vowel openness and, along with F4 and F5, provides more delicate information about the speaker. Measuring and comparing formant frequencies is key in phonetics, dialectology, sociolinguistics, speech technology, and language learning.
 
-However, formant values are influenced by a speaker’s vocal tract length, gender, and age, making direct comparisons between individuals difficult. To address this, researchers have developed various vowel normalization techniques to reduce physiological differences while maintaining phonemic contrasts [@Lobanov1971; @Adank2004; @Disner1980].
+However, formant values are influenced by a speaker’s vocal tract length, gender, and age, making direct comparisons between individuals difficult. To address this, researchers have developed various vowel normalization techniques to reduce physiological differences while maintaining phonemic contrasts [@lobanov1971; @adank2004; @disner1980].
 
 Visualization of these formant values, usually achieved through F1–F2 scatterplots, is a common method to analyze vowel inventories, show diachronic and regional differences, and assess speech perception experiments. However, such visualizations and normalizations are often made with scripting languages or software that have steep learning curves, which limits access for non-specialists or students.
 
