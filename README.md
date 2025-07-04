@@ -53,17 +53,20 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 # Installation
 
+VowSpace is currently available as a portable application.
+
 ## macOS
 
-1. Download the latest `.dmg` installer for VowSpace from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
-2. Open the `.dmg` file and drag the **VowSpace** icon into your **Applications** folder.
+1. Download the latest `.app` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+2. Once downloaded, you can launch **VowSpace**.
 3. If you encounter a security warning on first launch:
    - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
    - Confirm the prompt from macOS Gatekeeper.
+4. You may drag the **VowSpace** `.app` icon into your **Applications** folder.
+
 
 ## Windows
 
-VowSpace is currently available as a portable application for Windows.
 1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
 
