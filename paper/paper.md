@@ -70,7 +70,7 @@ These research have benefited from VowSpace’s integrated vowel plotting, norma
 
 Development of this software was supported by mentorship and support from:
 
-•	Dr. Emre Yağlı, Hacettepe University — for guidance on Turkish vowel formant research,
+- Dr. Emre Yağlı, Hacettepe University — for guidance on Turkish vowel formant research,
 
 This project was developed independently with dedicated funding from the Scientific and Technological Research Council of Turkey (TÜBİTAK).
 
