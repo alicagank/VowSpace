@@ -2,6 +2,8 @@
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files and/or datasets.
 
+In phonetic and sociophonetic research, analyzing vowel formants is essential for understanding language variation, speaker physiology, and vowel space. Researchers often use general-purpose software like R or Praat, which require advanced skills and time for custom visualizations. VowSpace was created as an open-source tool for vowel space plotting, combining raw and normalized data. While R packages like phonR and vowelPlot, and Praat offer similar functions, they either assume programming expertise or lack accessible GUI features for normalization and visualization. 
+
 YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
 
 ![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2024/08/Screenshot-2024-08-04-at-04.23.24.png)
