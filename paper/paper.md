@@ -37,7 +37,7 @@ VowSpace operates through a main interface supplemented by two modular tools: th
 
 ![Audio Analysis Tools UI](jossimage2.png)
 
-The DataFrame Editor enables quick, in-app editing of vowel data, with immediate updates to the scatterplot upon saving. Data can also be exported as a new spreadsheet. VowSpace supports the following minimal input format:
+The DataFrame Editor enables quick, in-app editing of data, with immediate updates to the scatterplot upon saving. Data can also be exported as a new spreadsheet. VowSpace supports the following minimal input format:
 
 ```
 vowel f1 f2 speaker
