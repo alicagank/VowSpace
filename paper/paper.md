@@ -39,10 +39,13 @@ VowSpace operates through a main interface supplemented by two modular tools: th
 
 The DataFrame Editor enables quick, in-app editing of data, with immediate updates to the scatterplot upon saving. Data can also be exported as a new spreadsheet. VowSpace supports the following minimal input format:
 
+![DataFrame Editor UI](jossimage3.png)
+
 ```
 vowel f1 f2 speaker
 /æ/ 123 1234 Markus
 ```
+Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported and could be choosen as the data to plot.
 
 # Statement of Need
 
