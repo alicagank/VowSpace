@@ -1,6 +1,6 @@
 # VowSpace: A vowel formant analysis application
 
-VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files and/or spreadsheets.
+VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel sounds from audio files and/or datasets.
 
 YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
 
@@ -81,7 +81,7 @@ If you choose to run the application from source, you’ll need Python 3.8 or hi
 - `pandas`
 - `numpy`
 - `scipy`
-- `parselmouth`
+- `praat-parselmouth`
 
 All dependencies are listed in the `requirements.txt` file. To install them automatically, run:
 
