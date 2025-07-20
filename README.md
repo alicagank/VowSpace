@@ -18,20 +18,20 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 **New Features:**
 
-- Added new normalization methods: **Nearey I**, **Nearey II**, and **Bark Difference Metric**.  
+- Added new normalization methods: **Nearey1**, **Nearey2**, and **Bark Difference Metric**.  
 - Introduced additional scale conversion options: **Bark**, **Log**, **Mel**, and **ERB**.  
-- Enabled the **NavigationToolbar** in Audio Analysis Tools, allowing users to:  
-  – Zoom in on visualizations  
+- Enabled the **NavigationToolbar** in Audio Analysis Tools, which allows users to:  
+  – Zoom in/out  
   – Change the color palette  
   – Modify visualization settings  
   – Save with different configurations  
-- Introduced a brand-new, hand-drawn application icon.
+- Introduced a brand-new application icon that I drew myself. :)
 
 **Improvements:**
 
-- Modularized the previously monolithic codebase into well-structured, maintainable components.  
-- Enlarged the DataFrame Editor window for better visibility and usability.  
-- Significantly improved the overall code organization for easier development and collaboration.
+- Modularized the previously monolithic codebase into a more structured, maintainable components.
+- Significantly improved the overall code organization.
+- Made the DataFrame Editor window a bit larger for better visibility and usability.  
 
 **Documentation:**
 
