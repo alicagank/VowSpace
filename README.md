@@ -1,8 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![VowSpace Icon](assets/vowspace.ico)
+<p align="center">
+  <img src="assets/vowspace.ico" alt="VowSpace Icon">
+</p>
 
-# VowSpace: A vowel formant analysis application
+<h1 align="center">VowSpace: A vowel formant analysis application</h1>
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel formant frequencies from audio files and/or datasets.
 
