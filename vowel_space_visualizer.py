@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from PyQt5.QtGui import QIcon
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import Ellipse
 from scipy.spatial import ConvexHull
@@ -13,6 +14,7 @@ from PyQt5.QtWidgets import (
     QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction, QCheckBox, QComboBox
 )
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon
 
 from components.df_editor import DFEditor
 from components.ipa_window import IPAWindow
@@ -48,6 +50,7 @@ class VowelSpaceVisualizer(QWidget):
         # Set initial state
         self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "speaker"])
         self.setWindowTitle("VowSpace v1.4.2")
+        self.setWindowIcon(QIcon("assets/vowspace.ico"))
 
         self.create_menu_bar()
 
