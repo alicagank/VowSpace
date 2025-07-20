@@ -14,42 +14,47 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 ## Version Log
 
-### VowSpace v1.4.1 Release Notes (Latest version):
-
-**Bug Fixes:**
-
-- Fixed a bug that inverts the axes upon importing data.
-- Fixed a bug that made the app crash when the size of the canvas is below 1 pixel.
+### VowSpace v1.4.2 Release Notes *(Latest version)*
 
 **New Features:**
 
-- Added Ellipses and Qhulls to connect related data for better readability.
-- Group by Vowel option: Normally the application would connect the data that belonged to the same speaker. With this update, the user can now connect the same vowels for different purposes.
+- Added new normalization methods: **Nearey1**, **Nearey2**, and **Bark Difference Metric**.  
+- Introduced additional scale conversion options: **Bark**, **Log**, **Mel**, and **ERB**.  
+- Enabled the **NavigationToolbar** in Audio Analysis Tools, which allows users to:  
+  – Zoom in/out  
+  – Change the color palette  
+  – Modify visualization settings  
+  – Save with different configurations  
+- Introduced a brand-new application icon that I drew myself. :)
 
 **Improvements:**
 
-- Made the canvas bigger for better visualization.
-- Made the default and minimum size of the application 800×800.
-- Changed the default dpi for saving images from 600 to 1200 for better readability.
-- Rearranged the menus for improved navigation.
+- Modularized the previously monolithic codebase into a more structured, maintainable components.
+- Significantly improved the overall code organization.
+- Made the DataFrame Editor window a bit larger for better visibility and usability.  
 
-### VowSpace v1.4.0 Release Notes (Previous version):
+**Documentation:**
+
+- Added comprehensive tutorials to the GitHub repository to guide users through key features and usage.
+
+### VowSpace v1.4.1 Release Notes *(Previous version)*
 
 **Bug Fixes:**
 
-- Fixed bug causing program crash when a cell is empty in the dataframe.
-- Fixed bug causing program crash when applying a qhull on 2-dimensional data.
+- Fixed an issue where axes were inverted upon data import.  
+- Fixed a crash that occurred when the canvas size was below 1 pixel.
 
 **New Features:**
 
-- Added f0 (fundamental freq), f3, and f4 formants for both plotting and acquiring.
-- Added option to choose which formants to plot.
-- Added a dataframe editor to add, edit, and delete data using a UI.
+- Added Ellipses and Qhulls to visually group related data points for improved readability.  
+- Introduced a "Group by Vowel" option: previously, data points were connected based on the speaker; now users can optionally connect same vowels across different speakers.
 
-**Changes:**
+**Improvements:**
 
-- Updated dataframe methods: `clear_data`, `read`, and `write`.
-- Modified Bark and Lobanov normalization methods to include all formant frequencies.
+- Increased the default canvas size for better visualization.  
+- Set the default and minimum application window size to 800×800 pixels.  
+- Changed the default image export resolution from 600 to 1200 DPI for higher-quality output.  
+- Rearranged menu items for more intuitive navigation.
 
 ---
 
