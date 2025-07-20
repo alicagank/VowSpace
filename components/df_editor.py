@@ -8,7 +8,7 @@ class DFEditor(QDialog):
         self.data = data
         self.vowel_space_visualizer = visualizer  # Optional reference for updates
         self.setWindowTitle("DataFrame Editor")
-        self.setGeometry(100, 100, 700, 500)
+        self.setGeometry(100, 100, 750, 500)
         self.initUI()
 
     def initUI(self):
