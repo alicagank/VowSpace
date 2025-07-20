@@ -65,7 +65,7 @@ VowSpace is currently available as a portable application.
 
 ## macOS
 
-1. Download the latest `.app` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+1. Download the latest `.app` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
 3. If you encounter a security warning on first launch:
    - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
@@ -75,12 +75,12 @@ VowSpace is currently available as a portable application.
 
 ## Windows
 
-1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
    
 ## Linux (Debian tested)
 
-1. Download the latest executible file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+1. Download the latest executible file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
 
 (Some info on the Linux version: I will be working on developing a better version of VowSpace for other Linux distros, for now, I could only test it on minimal Debian. The app icon does not seem to work, and I am currently working on a better experience for Linux users!)
