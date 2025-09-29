@@ -27,7 +27,7 @@ Visualization of formant values through F1-F2 scatterplots facilitates the analy
 
 # The VowSpace application
 
-VowSpace is an open-source desktop application for acquiring, visualizing, normalizing, comparing, and analyzing vowel formant frequencies from audio files and/or datasets. It features an intuitive graphical user interface for exploring vowel space across speakers and groups, with normalization methods including Bark Difference [@traunmuller1990], Lobanov [@lobanov1971], Nearey 1 and 2 [@nearey1978], Bark [@traunmuller1990], Log, Mel [@stevens1940], and Erb [@moore1983]. It helps researchers visualize vowels, identify patterns, and compare formants. 
+VowSpace is an open-source desktop application for acquiring, visualizing, normalizing, comparing, and analyzing vowel formant frequencies from audio files and/or datasets. It features an intuitive graphical user interface for exploring vowel space across speakers and groups, with normalization methods including Bark Difference [@traunmuller1990], Lobanov [@lobanov1971; @remirez2022], Nearey 1 and 2 [@nearey1978], Bark [@traunmuller1990], Log, Mel [@stevens1940], and Erb [@moore1983]. It helps researchers visualize vowels, identify patterns, and compare formants. 
 
 VowSpace enables researchers to load, normalize, and visualize formant data, providing publication-ready results across platforms that support interactive, reproducible workflows.
 
