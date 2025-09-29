@@ -61,6 +61,6 @@ VowSpace has been utilized in Turkish vowel acoustics research, including the T�
 
 # Acknowledgements
 
-VowSpace’s development was supervised by Dr. Emre Yağlı from Hacettepe University for research on Turkish vowel formants. Further, the research was funded by the Scientific and Technological Research Council of Turkey under the project number 1919B012414090.
+VowSpace’s development has been supervised by Dr. Emre Yağlı from Hacettepe University for research on Turkish vowel formants. Further, the research was funded by the Scientific and Technological Research Council of Turkey under the project number 1919B012414090.
 
 # References
