@@ -33,7 +33,7 @@ VowSpace enables researchers to load, normalize, and visualize formant data, pro
 
 ![VowSpace's main user interface](jossimage1.png)
 
-VowSpace has a main interface and two tools: Audio Analysis and DataFrame Editor. The Audio Analysis window allows users to load audio files, view, and extract features such as intensity, pitch, and vowel formants (F1–F4) using a spectrogram. Users can also add formant values to the visualizer. 
+VowSpace has a main interface and two tools: Audio Analysis and DataFrame Editor. The Audio Analysis window allows users to load audio files, view, and extract features such as intensity, pitch, and vowel formants (F1–F4) using a spectrogram using the Parselmouth library [@parselmouth2018]. Users can also add formant values to the visualizer. 
 
 ![Audio Analysis Tools UI](jossimage2.png)
 
@@ -61,6 +61,6 @@ VowSpace has been utilized in Turkish vowel acoustics research, including the T�
 
 # Acknowledgements
 
-VowSpace’s development was supervised by Dr. Emre Yağlı from Hacettepe University for research on Turkish vowel formants. Further, the research was funded by the Scientific and Technological Research Council of Turkey (TÜBİTAK Project No).
+VowSpace’s development was supervised by Dr. Emre Yağlı from Hacettepe University for research on Turkish vowel formants. Further, the research was funded by the Scientific and Technological Research Council of Turkey under the project number 1919B012414090.
 
 # References
