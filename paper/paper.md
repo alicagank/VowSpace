@@ -19,61 +19,48 @@ bibliography: paper.bib
 
 # Background
 
-Vowel formant frequencies that vary by vowel and speaker, are essential in phonological and sociolinguistic analyses. These frequencies reveal language- and speaker-specific traits. F1 and F2 relate to vowel height and backness, aiding in vowel distinction [@peterson1952; @ladefoged2014]. F3 is generally associated with vowel openness and, along with F4 and F5, provides more delicate information about the speaker. Measuring and comparing formant frequencies is key in phonetics, dialectology, sociolinguistics, speech technology, and language learning.
+Vowel formant frequencies, which vary by vowel and speaker, are crucial in phonetic and sociolinguistic studies. These frequencies reveal language- and speaker-specific traits [@clopper2005]. F1 and F2 relate to vowel height and backness, aiding in vowel distinction, while F3, F4, and F5 provide more detailed speaker information [@fant1960; @stevens1998]. Measuring these frequencies is key across phonetics, sociolinguistics, dialectology, speech technology, and language learning.
 
-However, formant values are influenced by a speaker’s vocal tract length, gender, and age, making direct comparisons between individuals difficult. To address this, researchers have developed various vowel normalization techniques to reduce physiological differences while maintaining phonemic contrasts [@lobanov1971; @adank2004; @disner1980].
+Formant values are affected by a speaker’s vocal tract length, gender, and age, making comparisons difficult. To address this, researchers have developed various vowel normalization techniques to reduce physiological differences while preserving phonetic contrasts [@adank2004; @disner1980; @lobanov1971].
 
-Visualization of these formant values, usually achieved through F1–F2 scatterplots, is a common method to analyze vowel inventories, show diachronic and regional differences, and assess speech perception experiments. However, such visualizations and normalizations are often made with scripting languages or software that have steep learning curves, which limits access for non-specialists or students.
+Visualization of formant values through F1-F2 scatterplots facilitates the analysis of vowel inventories, regional and diachronic differences, and speech perception experiments. However, these visualizations often require complex scripting or software, limiting access for non-specialists or students.
 
 # The VowSpace application
 
-VowSpace is an open-source desktop application for acquiring, visualizing, normalizing, comparing, and analyzing vowel sounds from audio files and/or datasets. It offers an intuitive graphical user interface to explore vowel space across speakers and groups, supporting a variety of normalization methods such as the Bark Difference Metric, Lobanov, Nearey 1 and 2, as well as Bark, Log, Mel, and ERB transformations. It helps researchers visualize vowels, identify patterns, and compare formants.
+VowSpace is an open-source desktop application for acquiring, visualizing, normalizing, comparing, and analyzing vowel formant frequencies from audio files and/or datasets. It features an intuitive graphical user interface for exploring vowel space across speakers and groups, with normalization methods including Bark Difference [@traunmuller1990], Lobanov [@lobanov1971], Nearey 1 and 2 [@nearey1978], Bark [@traunmuller1990], Log, Mel [@stevens1940], and Erb [@moore1983]. It helps researchers visualize vowels, identify patterns, and compare formants. 
 
-The application overcomes manual plotting limits, allowing researchers to load formant data from datasets, normalize, and produce publication-ready analyses and visualizations. VowSpace is cross-platform and supports interactive, reproducible workflows.
+VowSpace enables researchers to load, normalize, and visualize formant data, providing publication-ready results across platforms that support interactive, reproducible workflows.
 
 ![VowSpace's main user interface](jossimage1.png)
 
-VowSpace operates through a main interface supplemented by two modular tools: the Audio Analysis Tools and the DataFrame Editor. The Audio Analysis window allows users to load an audio file, view and extract segmental and suprasegmental features such as intensity, pitch, and vowel formant values (F1–F4) through a spectrogram plot. Users can then add formant values directly to the visualizer.
+VowSpace has a main interface and two tools: Audio Analysis and DataFrame Editor. The Audio Analysis window allows users to load audio files, view, and extract features such as intensity, pitch, and vowel formants (F1–F4) using a spectrogram. Users can also add formant values to the visualizer. 
 
 ![Audio Analysis Tools UI](jossimage2.png)
 
-The built-in DataFrame Editor enables quick, in-app editing of data, with immediate updates to the scatterplot upon saving. Data can also be exported as a new spreadsheet. VowSpace supports the following minimal input format:
+The built-in DataFrame Editor allows in-app data editing with instant scatterplot updates upon saving. Data can be exported as a spreadsheet. VowSpace supports a minimal input format:
 
 ```
 vowel f1 f2 speaker
 /æ/ 123 1234 Markus
 ```
 
-Columns such as ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported and could be choosen as the data to plot.
+Supported columns include ‘bark_f1’ for Bark, logarithmic ‘log_f1’, and z-scores ‘zsc_f1’, which can be plotted.
 
 # Statement of Need
 
-In phonetic and sociophonetic research, analyzing vowel formants is essential for understanding language variation, speaker physiology, and vowel space. Researchers often use general-purpose software like R or Praat, which require advanced skills and time for custom visualizations. VowSpace was created as an open-source tool for vowel space plotting, combining raw and normalized data. While R packages like `phonR` and `vowelPlot`, and Praat offer similar functions, they either assume programming expertise or lack accessible GUI features for normalization and visualization.
+In phonetic and sociophonetic research, analyzing vowel formants is essential for understanding language variation, speaker physiology, and vowel space. Researchers often use general-purpose software, such as R or Praat, which require advanced skills and time for custom visualizations. VowSpace is an open-source tool for vowel space plotting, combining raw and normalized data. While R packages [@r2021] like phonR [@mccloy2016] and vowels [@kendall2018], as well as Praat [@boersma2025], offer similar functions, they either assume programming expertise or lack accessible GUI features for normalization and visualization.
 
-VowSpace fills this gap by offering:
+Besides R packages like phonR and vowels, and the widely used desktop application Praat, there are two web-based tools for vowel formant data normalization and visualization. NORM supports multiple normalization algorithms, including Lobanov, Nearey, Watt & Fabricius, and Bark difference, and allows for vowel space plotting and data export for cross-speaker and dialect comparisons [@thomas2007]. Visible Vowels offers an interactive platform for uploading formant data, creating vowel plots, and conducting exploratory analyses such as clustering and multidimensional scaling, focusing on visual analytics for phonetic and sociolinguistic research [@heeringa2018].
 
-- Simple data reading/writing capabilities by utilizing datasets,
-- Graphical plotting of formant frequencies with speaker metadata,
-- Built-in vowel normalization capabilities,
-- Exportable figures suitable for publications,
-- Audio analysis tools for the acquisition of vowel formants through spectrograms and formant lines.
+VowSpace offers advantages over web-based tools like NORM and Visible Vowels, making it suitable for large-scale or advanced phonetic research. As a desktop application, it avoids browser and internet limitations, supporting larger datasets, offline data security, and comprehensive visualization. It integrates normalization methods such as Nearey 1 and 2 and the Bark Difference Metric, along with interactive plotting features like zoomable vowel charts, customizable colors, and high-quality exports. Additionally, VowSpace provides simple data reading and writing, graphical plotting with speaker metadata, exportable figures suitable for publication, and audio analysis tools for vowel formant acquisition through spectrograms and formant lines. These capabilities make VowSpace a flexible, precise, and user-friendly alternative for research and teaching across phonetics, phonology, sociolinguistics, and second-language acquisition.
 
-This tool is ideal for researchers in phonetics, phonology, dialectology, and second-language acquisition, as well as instructors who demonstrate vowel space concepts in real-time.
 
 # Research applications
 
-VowSpace has been actively used in phonetic research projects involving Turkish vowel acoustics. It is the primary analysis tool in the TÜBİTAK 2209-A project "Vowel Space of Standard Turkish", which investigated the formant distributions of Turkish monophthongs across multiple speakers.
-
-It is also being used in the ongoing collaborative study "Acoustic Analysis of Turkish Vowel Formants: A Methodological Perspective", conducted with Dr. Emre Yağlı. This project focuses on evaluating normalization techniques and methodological best practices for cross-speaker vowel comparison in Turkish.
-
-These research have benefited from VowSpace’s integrated vowel plotting, normalization, and interactive data editing features.
+VowSpace has been utilized in Turkish vowel acoustics research, including the TÜBİTAK 2209-A project Vowel Space of Standard Turkish, which studies formant distributions across speakers. It is also part of the ongoing study titled Acoustic Analysis of Turkish Vowel Formants: A Methodological Perspective, which focuses on normalization techniques and methods for cross-speaker comparison in Turkish. The tool’s features, like vowel plotting, normalization, and data editing, aid these studies.
 
 # Acknowledgements
 
-Development of this software was supported by mentorship and support from:
-
-- Dr. Emre Yağlı, Hacettepe University — for guidance on Turkish vowel formant research,
-
-This project was developed independently with dedicated funding from the Scientific and Technological Research Council of Turkey (TÜBİTAK).
+VowSpace’s development was supervised by Dr. Emre Yağlı from Hacettepe University for research on Turkish vowel formants. Further, the research was funded by the Scientific and Technological Research Council of Turkey (TÜBİTAK Project No).
 
 # References
