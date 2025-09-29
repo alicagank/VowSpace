@@ -501,15 +501,42 @@ class VowelSpaceVisualizer(QWidget):
                 continue
 
             # Use the appropriate color mapping based on the selection
-            color = [colors[val] for val in subset[group_by]]
+            # Coerce to numeric and build a joint finite mask
+            x_num = pd.to_numeric(subset[x_column], errors="coerce")
+            y_num = pd.to_numeric(subset[y_column], errors="coerce")
+            mask = np.isfinite(x_num) & np.isfinite(y_num)
+
+            if not mask.any():
+                continue  # nothing valid to plot for this vowel
+
+            # Keep colors aligned with the filtered rows
+            color = [colors[val] for val in subset.loc[mask, group_by]]
 
             self.ax.scatter(
-                subset[y_column], subset[x_column],  # Use selected columns
+                y_num[mask], x_num[mask],  # note: (y, x) on axes
                 marker=vowel_markers[v],
                 c=color,
                 label=v,
                 alpha=0.8, edgecolors="w", linewidth=1
             )
+
+            # Labels: iterate only over valid rows
+            show_labels_f = self.checkbox_show_labels_f.isChecked()
+            show_labels_vowel = self.checkbox_show_labels_vowel.isChecked()
+            show_labels_speaker = self.checkbox_show_labels_speaker.isChecked()
+
+            for idx, row in subset.loc[mask].iterrows():
+                label = ''
+                if show_labels_f:
+                    label += f"{x_column}: {float(row[x_column]):.2f}\n{y_column}: {float(row[y_column]):.2f}\n"
+                if show_labels_vowel:
+                    label += f"{row['vowel']}\n"
+                if show_labels_speaker:
+                    label += f"{row['speaker']}\n"
+                if label:
+                    self.ax.annotate(label.strip(), (float(row[y_column]), float(row[x_column])),
+                                     textcoords="offset points", xytext=(0, 5),
+                                     ha='center', va='bottom', fontsize=8)
 
             # Show labels based on checkbox states
             show_labels_f = self.checkbox_show_labels_f.isChecked()
@@ -543,12 +570,19 @@ class VowelSpaceVisualizer(QWidget):
                 subset = self.data[self.data[group_by] == key]
 
                 # Ensure the subset has enough data points and variability
-                if len(subset) < 2 or subset[x_column].nunique() < 2 or subset[y_column].nunique() < 2:
+                # Coerce and joint-filter
+                x = pd.to_numeric(subset[x_column], errors="coerce")
+                y = pd.to_numeric(subset[y_column], errors="coerce")
+                mask = np.isfinite(x) & np.isfinite(y)
+                if mask.sum() < 2 or x[mask].nunique() < 2 or y[mask].nunique() < 2:
                     continue
 
-                # Calculate the mean and covariance of the data
-                mean = [np.mean(subset[y_column]), np.mean(subset[x_column])]
-                cov = np.cov(subset[y_column], subset[x_column])  # TODO: inverted axes
+                # Build a (N, 2) float array in (y, x) order (to match your plotting)
+                yx = np.column_stack([y[mask].to_numpy(dtype=float),
+                                      x[mask].to_numpy(dtype=float)])
+
+                mean = yx.mean(axis=0)  # [mean_y, mean_x]
+                cov = np.cov(yx, rowvar=False)  # 2×2 covariance on columns
 
                 # Eigenvalues and eigenvectors of the covariance matrix
                 eigvals, eigvecs = np.linalg.eigh(cov)
@@ -585,37 +619,51 @@ class VowelSpaceVisualizer(QWidget):
                     self.ax.text(mean[0], mean[1], key, color='black', ha='center', va='center', fontsize=10)
 
         if self.connect_qhull_action.isChecked() and len(self.data) >= 3:
-            if self.group_by_vowel_action.isChecked():
-                group_by = 'vowel'
-            else:
-                group_by = 'speaker'
+            group_by = 'vowel' if self.group_by_vowel_action.isChecked() else 'speaker'
 
             for key, group in self.data.groupby(group_by):
-                points = np.array([group[y_column], group[x_column]]).T
-
-                if len(points) < 3:
+                # Skip NaN group keys (cannot color/label them reliably)
+                if pd.isna(key):
                     continue
 
-                if np.linalg.matrix_rank(points) < 2:
-                    QMessageBox.critical(self, "Error",
-                                         f"The input data for {group_by} '{key}' is less than 2-dimensional.")
-                    continue
+                # Coerce to numeric and joint-filter finite rows
+                gx = pd.to_numeric(group[x_column], errors="coerce")
+                gy = pd.to_numeric(group[y_column], errors="coerce")
+                gmask = np.isfinite(gx) & np.isfinite(gy)
 
+                # Build a strict float64 (N,2) array in (y, x) order
+                points = np.column_stack([
+                    gy[gmask].to_numpy(dtype=np.float64, copy=False),
+                    gx[gmask].to_numpy(dtype=np.float64, copy=False)
+                ])
+
+                # Need at least 3 non-collinear, unique points for a hull
+                if points.shape[0] < 3:
+                    continue
+                if np.unique(points, axis=0).shape[0] < 3:
+                    continue
                 try:
+                    # Guard against degenerate rank (collinear points)
+                    if np.linalg.matrix_rank(points) < 2:
+                        QMessageBox.critical(self, "Error",
+                                             f"The input data for {group_by} '{key}' is less than 2-dimensional.")
+                        continue
+
                     hull = ConvexHull(points)
-                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2, label=key,
-                                          facecolor=colors[key])
+                    face = colors.get(key, plt.cm.viridis(0.5))  # fallback color if key missing
+                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2,
+                                          label=key, facecolor=face)
                     self.ax.add_patch(polygon)
 
-                    # Calculate the centroid of the convex hull
+                    # Centroid of the hull for labeling
                     centroid = np.mean(points[hull.vertices], axis=0)
-
-                    # Add label to the center of the polygon
                     if self.show_center_info_action.isChecked():
-                        self.ax.text(centroid[0], centroid[1], key, color='black', ha='center', va='center',
-                                     fontsize=10)
+                        self.ax.text(centroid[0], centroid[1], str(key),
+                                     color='black', ha='center', va='center', fontsize=10)
+
                 except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Qhull error for {group_by} '{key}': {str(e)}")
+                    QMessageBox.critical(self, "Error",
+                                         f"Qhull error for {group_by} '{key}': {str(e)}")
 
         custom_title = self.edit_title.text()
         if self.checkbox_no_title.isChecked():
