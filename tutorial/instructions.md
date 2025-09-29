@@ -7,7 +7,7 @@ Welcome! In this directory, you’ll find two Excel files, two audio recordings,
 ### 🔍 What's Inside?
 
 #### ✅ Tutorial #1: Lobanov normalization tutorial
-Use a classic American English dataset to learn how to normalize vowel formants using the **Lobanov method**. See how normalization minimizes gender-based variation and brings out sociolinguistic patterns. Pretty useful for researchers preparing publishable plots.
+Use a classic American English dataset to learn how to normalize vowel formants using the **Lobanov method**. See how normalization minimizes gender-based variation and brings out sociolinguistic patterns.
 
 #### 🇹🇷 Tutorial #2: Plotting Turkish vowels
 Visualize Turkish vowels from an acoustic study using Qhulls and ellipses. Learn how to group by vowel, interpret articulatory space, and apply ellipse logic using covariance and eigenvalues. A great hands-on example of vowel space visualization techniques.
@@ -220,7 +220,5 @@ Once the application has read the audio file:
 - Right-click in the middle of a vowel region to add it to the main visualizer (you need to type in the vowel only, the speaker is automatically added!)
 
 I’ve also included another file: ozlem.mp3. It contains a similar recording from a female speaker friend of mine. Try the same steps with this file and compare the results!
-
-You may also try and use the file asc-diff.xlsx. It contains the formant frequencies in the cagan.wav and ozlem.wav files along with a third speaker! You can access this file by the 'Read from Excel' on the menu bar.
 
 I hope these will be of help!
