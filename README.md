@@ -10,7 +10,8 @@ In phonetic and sociophonetic research, analyzing vowel formants is essential fo
 
 YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
 
-![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2024/08/Screenshot-2024-08-04-at-04.23.24.png)
+![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2025/07/main-window.png)
+
 
 ## Version Log
 
@@ -64,7 +65,7 @@ VowSpace is currently available as a portable application.
 
 ## macOS
 
-1. Download the latest `.app` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+1. Download the latest `.app` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
 3. If you encounter a security warning on first launch:
    - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
@@ -74,8 +75,15 @@ VowSpace is currently available as a portable application.
 
 ## Windows
 
-1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/your-repo/vowspace/releases) page.
+1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
+   
+## Linux (Debian tested)
+
+1. Download the latest executible file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
+2. Once downloaded, you can launch **VowSpace**.
+
+(Some info on the Linux version: I will be working on developing a better version of VowSpace for other Linux distros, for now, I could only test it on minimal Debian. The app icon does not seem to work, and I am currently working on a better experience for Linux users!)
 
 ## Run the Python application directly
 
