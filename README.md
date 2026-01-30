@@ -2,6 +2,14 @@
 
 ![VowSpace Icon](assets/vowspace.ico)
 
+### Feedback form
+
+I have been receiving helpful emails from users of VowSpace. Your feedback, bug reports, feature requests, and usage notes directly help improve the application. If you ask me for something, I will most likely add it at my earliest convenience.
+
+If you have tried or used VowSpace, I would really appreciate it if you could fill out this anonymous feedback form, too. :)
+
+https://forms.gle/D9P6TYfAhiiY4swx8
+
 # VowSpace: A vowel formant analysis application
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel formant frequencies from audio files and/or datasets.
