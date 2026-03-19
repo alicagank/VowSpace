@@ -202,6 +202,16 @@ Audio Analysis Tools is a separate window that the user can access through the V
 
 In the most current stage of development, the user is able to add the formant frequencies to the main visualizer window on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
 
+The Audio Analysis Tools support the following lossless and lossy audio formats to be read:
+
+- **WAV (.wav)**
+- **FLAC (.flac)**
+- **AIFF / AIFC (.aiff, .aif, .aifc)** 
+- **MP3 (.mp3)**
+- **OGG (.ogg)**
+
+These formats are supported via Parselmouth/Praat integration.
+
 ![aat](https://alicagankaya.com/wp-content/uploads/2024/07/a3-2048x943.jpg)
 Intensity
 
@@ -228,6 +238,13 @@ vowel   f1   f2   speaker
 ```
 
 The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. When any data is inputted through the user interface, a dataframe is created with this information. Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported.
+
+VowSpace supports the following tabular data formats for both reading and writing:
+
+- **Comma-separated values (.csv)**
+- **Excel (.xlsx, .xls)**
+
+These formats are handled using the pandas library, with Excel support provided via openpyxl.
 
 ## IPA Keyboard
 
