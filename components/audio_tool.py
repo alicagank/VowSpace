@@ -122,7 +122,7 @@ class AudioAnalysisTool(QWidget):
             QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
 
     def read_audio_file(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.mp3 *.ogg)")
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.aiff *.aif *.aifc *.flac *.wav *.mp3 *.ogg)")
         if file_name:
             try:
                 self.audio_file = file_name
