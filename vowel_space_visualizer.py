@@ -68,8 +68,8 @@ class VowelSpaceVisualizer(QWidget):
 
         save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
         save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
-        save_data_action = self.create_action('Save Data As...', self.save_data_to_excel)
-        import_data_action = self.create_action('Import Data from Dataset', self.import_data_from_excel)
+        save_data_action = self.create_action('Save Data As...', self.save_data)
+        import_data_action = self.create_action('Import Data from Dataset', self.import_data)
 
         file_menu.addAction(save_action)
         file_menu.addAction(save_as_action)
@@ -819,76 +819,96 @@ class VowelSpaceVisualizer(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
 
-    # Saves the current dataframe as an .xlsx file
-    def save_data_to_excel(self):
+    # Saves the current dataframe as an Excel or CSV file
+    def save_data(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
 
-        # Gets the title of the scatterplot
         custom_title = self.edit_title.text() or "Vowel Space(s)"
 
-        # Prompts user for file name and include the scatterplot title
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Data as Excel", f"{custom_title}.xlsx",
-                                                   "Excel Files (*.xlsx);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Data",
+            f"{custom_title}.xlsx",
+            "Excel Files (*.xlsx);;CSV Files (*.csv);;All Files (*)",
+            options=options
+        )
 
         if file_name:
             try:
-                # Remove columns that have no data
+                # Remove empty columns
                 columns_to_keep = self.data.columns[self.data.count() > 0]
-                self.data = self.data[columns_to_keep]
+                data_to_save = self.data[columns_to_keep]
 
-                # Determine file format based on the selected file extension
-                file_format = 'xls' if file_name.lower().endswith('.xls') else 'xlsx'
+                if file_name.endswith('.csv'):
+                    data_to_save.to_csv(file_name, index=False)
+                    file_format = 'CSV'
+                else:
+                    data_to_save.to_excel(
+                        file_name,
+                        index=False,
+                        sheet_name='Sheet1',
+                        engine='openpyxl'
+                    )
+                    file_format = 'Excel'
 
-                self.data.to_excel(file_name, index=False, sheet_name='Sheet1', engine='openpyxl')
                 QMessageBox.information(self, "Success", f"Data saved to {file_format} successfully.")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error saving data to {file_format}: {str(e)}")
 
-    # Imports data from an .xls or .xlsx file. The files should have columns named "vowel", "speaker", and F values.
-    def import_data_from_excel(self):
-        self.clear_data()  # Clears the already existing data on the dataframe before the importing
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error saving data: {str(e)}")
+
+    # Imports data from an Excel or CSV file. The files should have columns named "vowel", "speaker", and F values.
+    def import_data(self):
+        self.clear_data()
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "Import Data from Dataset", "",
-                                                   "Excel Files (*.xls *.xlsx);;All Files (*)", options=options)
+
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Import Data from Dataset",
+            "",
+            "Data Files (*.xls *.xlsx *.csv);;Excel Files (*.xls *.xlsx);;CSV Files (*.csv);;All Files (*)",
+            options=options
+        )
 
         if file_name:
             try:
-                # Read Excel file with specific na_values to handle various representations of missing values
                 na_values = ['', 'NaN', 'nan', 'N/A', 'NA', 'n/a']
-                new_data = pd.read_excel(file_name, na_values=na_values)
 
-                # Ensure all formant columns are treated as numeric and handle errors gracefully
+                # Detects file type
+                if file_name.endswith('.csv'):
+                    new_data = pd.read_csv(file_name, na_values=na_values)
+                else:
+                    new_data = pd.read_excel(file_name, na_values=na_values)
+
+                # Ensure numeric formants
                 formant_columns = ['f0', 'f1', 'f2', 'f3', 'f4']
                 for col in formant_columns:
                     if col in new_data.columns:
                         new_data[col] = pd.to_numeric(new_data[col], errors='coerce')
 
-                # Set 'speaker' column to an empty string if it doesn't exist
+                # Handle speaker column
                 if 'speaker' not in new_data.columns:
                     new_data['speaker'] = ''
 
-                # Fill missing values in 'speaker' column with 'N/A'
                 new_data['speaker'] = new_data['speaker'].fillna('N/A')
 
-                # Drop rows with any missing values after conversion
+                # Drop missing
                 new_data = new_data.dropna()
 
-                # Concatenate new data with existing data
+                # Merge
                 self.data = pd.concat([self.data, new_data], ignore_index=True)
 
-                # import_data_from_excel
                 self.df_editor = DFEditor(self.data, visualizer=self)
                 self.df_editor.show()
 
-                # Update scatterplot after importing data
                 self.update_scatterplot()
 
-                QMessageBox.information(self, "Success", "Data imported from Excel successfully.")
+                QMessageBox.information(self, "Success", "Data imported successfully.")
+
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error importing data from Excel: {str(e)}")
+                QMessageBox.critical(self, "Error", f"Error importing data: {str(e)}")
 
     # Shows an IPA keyboard
     def show_IPA(self):
