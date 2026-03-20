@@ -19,7 +19,7 @@ bibliography: paper.bib
 
 # Summary
 
-Vowel formant frequencies, which vary by vowel and speaker, are crucial parameters in phonetic and sociolinguistic studies. These frequencies reveal language- and speaker-specific traits [@clopper2005], where F1 and F2 relate to vowel height and backness, while higher formants (i.e., F3, F4, and F5) provide detailed information regarding speaker identity [@fant1960; @stevens1998]. Measuring these frequencies is key across phonetics, sociolinguistics, dialectology, speech technology, and language learning.
+Vowel formant frequencies, which vary by vowel and speaker, are crucial parameters in phonetic and sociolinguistic studies. These frequencies reveal language- and speaker-specific traits [@clopper2005], where F1 and F2 relate to vowel height and backness, while higher formants (i.e., F3, F4, and F5) provide detailed information regarding speaker identity [@fant1960; @stevens1999]. Measuring these frequencies is key across phonetics, sociolinguistics, dialectology, speech technology, and language learning.
 
 However, formant values are inherently affected by a speaker’s vocal tract length, gender and age, making comparisons difficult. To address this, researchers have developed various vowel normalization techniques to reduce physiological differences while preserving phonetic contrasts [@adank2004; @disner1980; @lobanov1971]. Such normalization is essential for cross-speaker and cross-dialectal analysis, as it allows for the isolation of linguistic variation from biological variance.
 
