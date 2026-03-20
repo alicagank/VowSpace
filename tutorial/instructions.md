@@ -222,3 +222,11 @@ Once the application has read the audio file:
 I’ve also included another file: ozlem.mp3. It contains a similar recording from a female speaker friend of mine. Try the same steps with this file and compare the results!
 
 I hope these will be of help!
+
+## Ethics and Data Statement
+
+The human participant data (i.e., audio recordings) provided in the tutorial were collected in accordance with the ethical principles of the Declaration of Helsinki. The study received formal approval from the Hacettepe University Social Sciences and Humanities Ethics Board on 10 September 2024 (Ref: 2024/16). All participants provided written informed consent for their voice data to be recorded and used for research and instructional purposes.
+
+- **Ethics Committee**: Hacettepe University Social Sciences and Humanities Ethics Board
+- **Approval Date**: 16.08.2024
+- **Approval Number**: E-28297300-900-00003711909
