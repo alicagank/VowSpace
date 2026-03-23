@@ -46,7 +46,7 @@ Please describe:
 - Follow existing code structure and naming conventions
 - Keep functions modular and readable
 - Document key functions
-- Avoid unnecessary dependencies
+- Avoid unnecessary dependencies if possible
 
 ## Tests
 
