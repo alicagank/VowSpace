@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 
-from core.normalization import (
+from vowspace.core.normalization import (
     lobanov_normalization,
     bark_difference,
     nearey1,

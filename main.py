@@ -8,8 +8,10 @@ A büg once bit my sister... No realli!
 Mynd you, büg bites Kan be pretti nasti...
 """
 import sys
+
 from PyQt5.QtWidgets import QApplication
-from vowel_space_visualizer import VowelSpaceVisualizer
+
+from vowspace.vowel_space_visualizer import VowelSpaceVisualizer
 
 
 def main():

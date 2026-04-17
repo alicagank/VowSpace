@@ -52,3 +52,6 @@ docs/notes/
 
 # ========== JUNK ==========
 ._*
+
+# ========== COVERAGE ==========
+.coverage

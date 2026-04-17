@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import pytest
 
-from vowel_space_visualizer import VowelSpaceVisualizer
+from vowspace.vowel_space_visualizer import VowelSpaceVisualizer
 
 
 class DummyDFEditor:

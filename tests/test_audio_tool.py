@@ -3,7 +3,7 @@
 import os
 import pytest
 
-from components.audio_tool import AudioAnalysisTool
+from vowspace.components.audio_tool import AudioAnalysisTool
 
 
 class DummyPitch:

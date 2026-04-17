@@ -1,6 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![VowSpace Icon](assets/vowspace.ico)
+![VowSpace Icon](vowspace/assets/vowspace.ico)
 
 ### Feedback form
 
