@@ -88,7 +88,7 @@ VowSpace is currently available as a portable application.
    
 ## Linux (Debian tested)
 
-1. Download the latest executible file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
+1. Download the latest executable file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
 
 (Some info on the Linux version: I will be working on developing a better version of VowSpace for other Linux distros, for now, I could only test it on minimal Debian. The app icon does not seem to work, and I am currently working on a better experience for Linux users!)
@@ -100,25 +100,27 @@ Alternatively (and I highly encourage you to do so!), you may also clone this re
 ```bash
 git clone https://github.com/alicagank/VowSpace.git
 cd VowSpace
-python main.py
 ```
 
-If you choose to run the application from source, you’ll need Python 3.8 or higher and the following Python packages:
+You’ll need Python 3.10 or higher. Dependencies are declared in `pyproject.toml` and can be installed in two ways:
 
-- `PyQt5`
-- `matplotlib`
-- `pandas`
-- `numpy`
-- `scipy`
-- `praat-parselmouth`
-
-All dependencies are listed in the `requirements.txt` file. To install them automatically, run:
+**Using [uv](https://docs.astral.sh/uv/) (recommended):**
 
 ```bash
-pip install -r requirements.txt
+uv run vowspace
 ```
 
----
+uv will automatically create a virtual environment and install all dependencies on first run.
+
+**Using pip:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install .
+vowspace
+```
+
 
 ## About VowSpace
 

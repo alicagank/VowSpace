@@ -24,6 +24,7 @@ vowspace = "main:main"
 
 [tool.setuptools]
 packages = ["vowspace"]
+py-modules = ["main"]
 
 [tool.setuptools.package-data]
 "*" = ["*.png", "*.ico", "*.wav", "*.xlsx"]

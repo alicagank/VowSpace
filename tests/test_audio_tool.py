@@ -1,6 +1,5 @@
 # test_audio_tool.py
 
-import os
 import pytest
 
 from vowspace.components.audio_tool import AudioAnalysisTool
@@ -99,9 +98,9 @@ class DummyEvent:
 
 @pytest.fixture
 def audio_tool(qtbot, monkeypatch):
-    monkeypatch.setattr("components.audio_tool.QMessageBox.information", lambda *args, **kwargs: None)
-    monkeypatch.setattr("components.audio_tool.QMessageBox.critical", lambda *args, **kwargs: None)
-    monkeypatch.setattr("components.audio_tool.Sound", DummySound)
+    monkeypatch.setattr("vowspace.components.audio_tool.QMessageBox.information", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.components.audio_tool.QMessageBox.critical", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.components.audio_tool.Sound", DummySound)
 
     widget = AudioAnalysisTool()
     qtbot.addWidget(widget)
@@ -118,7 +117,7 @@ def test_audio_tool_initializes(audio_tool):
 
 def test_read_audio_file_sets_analysis_objects(audio_tool, monkeypatch):
     monkeypatch.setattr(
-        "components.audio_tool.QFileDialog.getOpenFileName",
+        "vowspace.components.audio_tool.QFileDialog.getOpenFileName",
         lambda *args, **kwargs: ("/tmp/test.wav", "Audio Files (*.wav)")
     )
 
@@ -153,8 +152,8 @@ def test_toggle_intensity_changes_state(audio_tool, monkeypatch):
 
 
 def test_handle_click_updates_visualizer(monkeypatch, qtbot):
-    monkeypatch.setattr("components.audio_tool.QMessageBox.information", lambda *args, **kwargs: None)
-    monkeypatch.setattr("components.audio_tool.QMessageBox.critical", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.components.audio_tool.QMessageBox.information", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.components.audio_tool.QMessageBox.critical", lambda *args, **kwargs: None)
 
     visualizer = DummyVisualizer()
     widget = AudioAnalysisTool(visualizer=visualizer)
@@ -174,7 +173,7 @@ def test_save_graph_calls_figure_savefig(audio_tool, monkeypatch, tmp_path):
     out_file = tmp_path / "graph.jpeg"
 
     monkeypatch.setattr(
-        "components.audio_tool.QFileDialog.getSaveFileName",
+        "vowspace.components.audio_tool.QFileDialog.getSaveFileName",
         lambda *args, **kwargs: (str(out_file), "JPEG files (*.jpeg)")
     )
 
