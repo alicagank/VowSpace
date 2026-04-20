@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-xinerama0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-xkb1 \
+            libxkbcommon-x11-0 \
+            libegl1 \
+            libgl1 \
+            libpulse0
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: uv run pytest
