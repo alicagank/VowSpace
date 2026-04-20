@@ -1,14 +1,15 @@
 # components/audio_tools.py
 
 import os
-import numpy as np
-from parselmouth import Sound
+
 import matplotlib.pyplot as plt
+import numpy as np
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QHBoxLayout, QMessageBox, QFileDialog, QMenuBar, QMenu, QAction
 )
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from parselmouth import Sound
 
 
 class AudioAnalysisTool(QWidget):

@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from components.df_editor import DFEditor
+from vowspace.components.df_editor import DFEditor
 
 
 class DummyVisualizer:

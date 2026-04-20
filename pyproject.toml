@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "VowSpace"
+version = "1.4.2"
+description = "Vowel Space Visualizer"
+authors = [{ name = "VowSpace Authors" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy~=1.26.4",
+    "pandas~=2.2.1",
+    "PyQt5~=5.15.10",
+    "matplotlib~=3.8.3",
+    "scipy~=1.12.0",
+    "praat-parselmouth>=0.4",
+    "openpyxl"
+]
+
+[project.scripts]
+vowspace = "main:main"
+
+[tool.setuptools]
+packages = ["vowspace"]
+py-modules = ["main"]
+
+[tool.setuptools.package-data]
+"*" = ["*.png", "*.ico", "*.wav", "*.xlsx"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-qt",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+    "types-requests>=2.31.0",
+]
+
+[tool.pytest]
+testpaths = ["tests"]

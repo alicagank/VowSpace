@@ -1,11 +1,10 @@
 # test_io_gui.py
 # Ensures that the IO functions work as expected under different circumstances
 
-import os
 import pandas as pd
 import pytest
 
-from vowel_space_visualizer import VowelSpaceVisualizer
+from vowspace.vowel_space_visualizer import VowelSpaceVisualizer
 
 
 class DummyDFEditor:
@@ -20,9 +19,9 @@ class DummyDFEditor:
 @pytest.fixture
 def visualizer(qtbot, monkeypatch):
     # no popup during tests
-    monkeypatch.setattr("vowel_space_visualizer.DFEditor", DummyDFEditor)
-    monkeypatch.setattr("vowel_space_visualizer.QMessageBox.information", lambda *args, **kwargs: None)
-    monkeypatch.setattr("vowel_space_visualizer.QMessageBox.critical", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.vowel_space_visualizer.DFEditor", DummyDFEditor)
+    monkeypatch.setattr("vowspace.vowel_space_visualizer.QMessageBox.information", lambda *args, **kwargs: None)
+    monkeypatch.setattr("vowspace.vowel_space_visualizer.QMessageBox.critical", lambda *args, **kwargs: None)
 
     widget = VowelSpaceVisualizer()
     qtbot.addWidget(widget)
@@ -41,7 +40,7 @@ def test_save_data_csv(visualizer, monkeypatch, tmp_path):
     out_file = tmp_path / "output.csv"
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getSaveFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getSaveFileName",
         lambda *args, **kwargs: (str(out_file), "CSV Files (*.csv)")
     )
 
@@ -69,7 +68,7 @@ def test_save_data_excel(visualizer, monkeypatch, tmp_path):
     out_file = tmp_path / "output.xlsx"
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getSaveFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getSaveFileName",
         lambda *args, **kwargs: (str(out_file), "Excel Files (*.xlsx)")
     )
 
@@ -95,7 +94,7 @@ def test_import_data_csv(visualizer, monkeypatch, tmp_path):
     df.to_csv(in_file, index=False)
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getOpenFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getOpenFileName",
         lambda *args, **kwargs: (str(in_file), "CSV Files (*.csv)")
     )
 
@@ -119,7 +118,7 @@ def test_import_data_excel(visualizer, monkeypatch, tmp_path):
     df.to_excel(in_file, index=False)
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getOpenFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getOpenFileName",
         lambda *args, **kwargs: (str(in_file), "Excel Files (*.xlsx)")
     )
 
@@ -141,7 +140,7 @@ def test_import_creates_speaker_column_if_missing(visualizer, monkeypatch, tmp_p
     df.to_csv(in_file, index=False)
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getOpenFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getOpenFileName",
         lambda *args, **kwargs: (str(in_file), "CSV Files (*.csv)")
     )
 
@@ -162,7 +161,7 @@ def test_import_drops_invalid_rows(visualizer, monkeypatch, tmp_path):
     df.to_csv(in_file, index=False)
 
     monkeypatch.setattr(
-        "vowel_space_visualizer.QFileDialog.getOpenFileName",
+        "vowspace.vowel_space_visualizer.QFileDialog.getOpenFileName",
         lambda *args, **kwargs: (str(in_file), "CSV Files (*.csv)")
     )
 
