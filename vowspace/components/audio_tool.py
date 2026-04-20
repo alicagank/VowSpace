@@ -1,5 +1,3 @@
-# components/audio_tools.py
-
 import os
 
 import matplotlib.pyplot as plt
