@@ -1,5 +1,3 @@
-# components/ipa_window.py
-
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QGroupBox
 
 class IPAWindow(QDialog):

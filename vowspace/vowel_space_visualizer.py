@@ -1,4 +1,3 @@
-# vowel_space_visualizer.py
 # This is where everything else comes together.
 
 import matplotlib.pyplot as plt

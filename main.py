@@ -1,5 +1,3 @@
-# main.py
-
 """
 This is the development version of VowSpace.
 There might be bugs.

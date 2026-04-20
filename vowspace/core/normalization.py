@@ -1,14 +1,14 @@
-# core/normalization.py
-
 import numpy as np
 import pandas as pd
+from typing import List
+
 
 # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
 
 # Lobanov's method was one of the earlier vowel-extrinsic formulas to appear, but it remains among the best.
 # Implementation: Following Nearey (1977) and Adank et al. (2004), NORM uses the formula (see the General Note below):
 # Fn[V]N = (Fn[V] - MEANn)/Sn
-def lobanov_normalization(df, formants, group_column='speaker'):
+def lobanov_normalization(df: pd.DataFrame, formants: List[str], group_column: str = 'speaker') -> pd.DataFrame:
     def zscore(x):
         return (x - x.mean()) / x.std()
 
@@ -18,7 +18,8 @@ def lobanov_normalization(df, formants, group_column='speaker'):
             df[z_name] = df.groupby(group_column)[formant].transform(zscore)
     return df
 
-def bark_difference(df):
+
+def bark_difference(df: pd.DataFrame) -> pd.DataFrame:
     def bark(f):
         return 26.81 / (1 + 1960 / f) - 0.53
 
@@ -32,11 +33,12 @@ def bark_difference(df):
     df['Z2_minus_Z1'] = df['bark_f2'] - df['bark_f1']
     return df
 
+
 # Cite: Remirez, Emily. 2022, October 20. Vowel plotting in Python. Linguistics Methods Hub. (https://lingmethodshub.github.io/content/python/vowel-plotting-py). doi: 10.5281/zenodo.7232005
 
 
 # Cite: https://github.com/drammock/phonR/blob/master/R/phonR.R
-def nearey1(df, formants, group_column='speaker'):
+def nearey1(df: pd.DataFrame, formants: List[str], group_column: str = 'speaker') -> pd.DataFrame:
     def norm_logmean(f, group=None):
         if group is None:
             return np.log(f) - np.log(f.mean())
@@ -50,7 +52,7 @@ def nearey1(df, formants, group_column='speaker'):
     return df
 
 
-def nearey2(df, formants, group_column='speaker'):
+def nearey2(df: pd.DataFrame, formants: List[str], group_column: str = 'speaker') -> pd.DataFrame:
     def norm_shared_logmean(f, group=None):
         if group is None:
             return np.log(f) - np.mean(np.log(f), axis=0)
@@ -63,9 +65,11 @@ def nearey2(df, formants, group_column='speaker'):
         df[f"slogmean_{f}"] = norm_data.iloc[:, i]
     return df
 
+
 # Bark Difference Metric - Zi = 26.81/(1+1960/Fi) - 0.53 (Traunmüller, 1997)
-def bark_transform(df, formants):
-    def bark(f): return 26.81 / (1 + 1960 / f) - 0.53
+def bark_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
+    def bark(f):
+        return 26.81 / (1 + 1960 / f) - 0.53
 
     for f in formants:
         name = f"bark_{f}"
@@ -73,19 +77,20 @@ def bark_transform(df, formants):
             df[name] = bark(df[f])
     return df
 
-def log_transform(df, formants):
+
+def log_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
         df[f"log_{f}"] = np.log10(df[f])
     return df
 
 
-def mel_transform(df, formants):
+def mel_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
         df[f"mel_{f}"] = 2595 * np.log10(1 + df[f] / 700)
     return df
 
 
-def erb_transform(df, formants):
+def erb_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
         df[f"erb_{f}"] = 21.4 * np.log10(1 + 0.00437 * df[f])
     return df
