@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
         python-version: ["3.12"]
 
     runs-on: ${{ matrix.os }}
@@ -25,16 +25,28 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install system dependencies (Linux)
+        run: sudo apt-get update && sudo apt-get install -y patchelf
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
       - name: Build with Nuitka
         uses: Nuitka/Nuitka-Action@main
         with:
           script-name: main.py
-          mode: app
+          mode: standalone
+          extra-options: >-
+            --enable-plugin=pyqt5
+            --follow-imports
+            --include-data-dir=vowspace/assets=vowspace/assets
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: vowspace-${{ runner.os }}-py${{ matrix.python-version }}
           path: |
-            build/*
-            dist/*
+            *.dist/**
+            *.bin
