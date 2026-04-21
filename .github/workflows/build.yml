@@ -41,7 +41,7 @@ jobs:
           include-package-data: matplotlib
           include-data-dir: vowspace/assets=vowspace/assets
           windows-icon-from-ico: vowspace/assets/vowspace.ico
-          macos-app-icon: vowspace/assets/vowspace.png
+          macos-app-icon: vowspace/assets/vowspace.icns
           linux-icon: vowspace/assets/vowspace.png
           output-dir: build
 
