@@ -1,4 +1,4 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml) [![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml)
 
 ![VowSpace Icon](vowspace/assets/vowspace.ico)
 
