@@ -45,7 +45,7 @@ class VowelSpaceVisualizer(QWidget):
         self.set_layout()
 
         # Set initial state
-        self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "speaker"])
+        self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"])
         self.setWindowTitle("VowSpace v1.4.2")
         self.setWindowIcon(QIcon("vowspace/assets/vowspace.ico"))
 
@@ -209,6 +209,9 @@ class VowelSpaceVisualizer(QWidget):
         self.label_f4 = QLabel('f4 Value:')
         self.edit_f4 = QLineEdit()
 
+        self.label_f5 = QLabel('f5 Value:')
+        self.edit_f5 = QLineEdit()
+
         self.checkbox_show_all_formants = QCheckBox('Show all formant input boxes')
         self.checkbox_show_all_formants.stateChanged.connect(self.toggle_formant_boxes)
         # Initially hide formant input boxes
@@ -237,18 +240,18 @@ class VowelSpaceVisualizer(QWidget):
         # Dropdown menus for selecting columns
         self.label_x_axis = QLabel('Y Axis:')
         self.dropdown_x_axis = QComboBox()
-        self.dropdown_x_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
+        self.dropdown_x_axis.addItems(["f0", "f1", "f2", "f3", "f4", "f5"])  # Add available columns
         self.dropdown_x_axis.setCurrentText("f1")  # Set default value to F1
 
         self.label_y_axis = QLabel('X Axis:')
         self.dropdown_y_axis = QComboBox()
-        self.dropdown_y_axis.addItems(["f0", "f1", "f2", "f3", "f4"])  # Add available columns
+        self.dropdown_y_axis.addItems(["f0", "f1", "f2", "f3", "f4", "f5"])  # Add available columns
         self.dropdown_y_axis.setCurrentText("f2")  # Set default value to F2
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
 
-    def update_input_fields_audio(self, f1, f2, f3, f4, speaker_name):
+    def update_input_fields_audio(self, f1, f2, f3, f4, f5, speaker_name):
         # Update speaker's name
         self.edit_speaker.setText(str(speaker_name))
 
@@ -258,6 +261,7 @@ class VowelSpaceVisualizer(QWidget):
         self.edit_f2.setText("{:.3f}".format(f2))
         self.edit_f3.setText("{:.3f}".format(f3))
         self.edit_f4.setText("{:.3f}".format(f4))
+        self.edit_f5.setText("{:.3f}".format(f5))
 
         # Activate and bring VowelSpaceVisualizer window to focus
         self.activateWindow()
@@ -280,8 +284,10 @@ class VowelSpaceVisualizer(QWidget):
         input_grid_layout.addWidget(self.edit_f3, 4, 1)
         input_grid_layout.addWidget(self.label_f4, 5, 0)
         input_grid_layout.addWidget(self.edit_f4, 5, 1)
-        input_grid_layout.addWidget(self.label_speaker, 6, 0)
-        input_grid_layout.addWidget(self.edit_speaker, 6, 1)
+        input_grid_layout.addWidget(self.label_f5, 6, 0)
+        input_grid_layout.addWidget(self.edit_f5, 6, 1)
+        input_grid_layout.addWidget(self.label_speaker, 7, 0)
+        input_grid_layout.addWidget(self.edit_speaker, 7, 1)
 
         layout.addLayout(input_grid_layout)
 
@@ -332,6 +338,8 @@ class VowelSpaceVisualizer(QWidget):
             self.edit_f3.show()
             self.label_f4.show()
             self.edit_f4.show()
+            self.label_f5.show()
+            self.edit_f5.show()
         else:
             # Hide all formant input boxes
             self.label_f0.hide()
@@ -340,6 +348,8 @@ class VowelSpaceVisualizer(QWidget):
             self.edit_f3.hide()
             self.label_f4.hide()
             self.edit_f4.hide()
+            self.label_f5.hide()
+            self.edit_f5.hide()
 
     # Adding data functionality
     def add_data(self):
@@ -363,11 +373,14 @@ class VowelSpaceVisualizer(QWidget):
         # Convert F4 to float or set to NaN if empty
         f4 = float(self.edit_f4.text()) if self.edit_f4.text() else np.nan
 
+        # Convert F5 to float or set to Nan if empty
+        f5 = float(self.edit_f5.text()) if self.edit_f5.text() else np.nan
+
         speaker = self.edit_speaker.text() if self.edit_speaker.text() else ''
 
         new_data = pd.DataFrame(
-            {"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "speaker": [speaker]}) if speaker else \
-            pd.DataFrame({"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4]})
+            {"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "f5": [f5], "speaker": [speaker]}) if speaker else \
+            pd.DataFrame({"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "f5": [f5]})
 
         self.data = pd.concat([self.data, new_data], ignore_index=True)
 
@@ -384,6 +397,7 @@ class VowelSpaceVisualizer(QWidget):
         self.edit_f2.clear()
         self.edit_f3.clear()
         self.edit_f4.clear()
+        self.edit_f5.clear()
         self.edit_speaker.clear()
 
     # Validates the data to be added - or else the program crashes.
@@ -398,6 +412,7 @@ class VowelSpaceVisualizer(QWidget):
             f2 = float(self.edit_f2.text()) if self.edit_f2.text() else np.nan
             f3 = float(self.edit_f3.text()) if self.edit_f3.text() else np.nan
             f4 = float(self.edit_f4.text()) if self.edit_f4.text() else np.nan
+            f5 = float(self.edit_f5.text()) if self.edit_f5.text() else np.nan
         except ValueError:
             self.show_error_message("Invalid numeric input for an F value.")
             return False
@@ -879,7 +894,7 @@ class VowelSpaceVisualizer(QWidget):
                     new_data = pd.read_excel(file_name, na_values=na_values)
 
                 # Ensure numeric formants
-                formant_columns = ['f0', 'f1', 'f2', 'f3', 'f4']
+                formant_columns = ['f0', 'f1', 'f2', 'f3', 'f4', 'f5']
                 for col in formant_columns:
                     if col in new_data.columns:
                         new_data[col] = pd.to_numeric(new_data[col], errors='coerce')

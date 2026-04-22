@@ -69,7 +69,7 @@ class AudioAnalysisTool(QWidget):
 
         formants_submenu = QMenu('Show Formants', self)
         self.formant_actions = []
-        for i in range(1, 5):
+        for i in range(1, 6):
             action = self.create_action(f'Show f{i}', getattr(self, f'toggle_formant_f{i}'), checkable=True)
             formants_submenu.addAction(action)
             self.formant_actions.append(action)
@@ -103,6 +103,9 @@ class AudioAnalysisTool(QWidget):
         self.redraw_plots()
 
     def toggle_formant_f4(self):
+        self.redraw_plots()
+
+    def toggle_formant_f5(self):
         self.redraw_plots()
 
     def redraw_plots(self):
@@ -204,10 +207,11 @@ class AudioAnalysisTool(QWidget):
             f2 = self.formants.get_value_at_time(2, x)
             f3 = self.formants.get_value_at_time(3, x)
             f4 = self.formants.get_value_at_time(4, x)
+            f5 = self.formants.get_value_at_time(5, x)
 
             audio_title = os.path.splitext(os.path.basename(self.audio_file))[0]
             if self.vowel_space_visualizer:
-                self.vowel_space_visualizer.update_input_fields_audio(f1, f2, f3, f4, audio_title)
+                self.vowel_space_visualizer.update_input_fields_audio(f1, f2, f3, f4, f5, audio_title)
 
     def save_graph(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save Graph", "", "JPEG files (*.jpeg)")
