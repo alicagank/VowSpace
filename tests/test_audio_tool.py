@@ -31,6 +31,7 @@ class DummyFormants:
             2: 1500.0,
             3: 2500.0,
             4: 3500.0,
+            5: 4200.0
         }
         return values[formant_number]
 
@@ -83,9 +84,9 @@ class DummyVisualizer:
         self.called = False
         self.args = None
 
-    def update_input_fields_audio(self, f1, f2, f3, f4, audio_title):
+    def update_input_fields_audio(self, f1, f2, f3, f4, f5, audio_title):
         self.called = True
-        self.args = (f1, f2, f3, f4, audio_title)
+        self.args = (f1, f2, f3, f4, f5, audio_title)
 
 
 class DummyEvent:
@@ -166,7 +167,7 @@ def test_handle_click_updates_visualizer(monkeypatch, qtbot):
     widget.handle_click(event)
 
     assert visualizer.called is True
-    assert visualizer.args == (500.0, 1500.0, 2500.0, 3500.0, "example")
+    assert visualizer.args == (500.0, 1500.0, 2500.0, 3500.0, 4200.0, "example")
 
 
 def test_save_graph_calls_figure_savefig(audio_tool, monkeypatch, tmp_path):
