@@ -1,4 +1,4 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml) [![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml)
 
 ![VowSpace Icon](vowspace/assets/vowspace.ico)
 
@@ -69,7 +69,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 # Installation
 
-VowSpace is currently available as a portable application.
+VowSpace is currently available as a portable application. The distributions are handled by Nuitka with the build.yml workflow.
 
 ## macOS
 
@@ -86,7 +86,7 @@ VowSpace is currently available as a portable application.
 1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.
    
-## Linux (Debian tested)
+## Linux
 
 1. Download the latest executable file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
 2. Once downloaded, you can launch **VowSpace**.

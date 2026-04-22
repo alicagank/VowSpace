@@ -1,4 +1,4 @@
-name: Build app all platforms
+name: Build app
 
 on:
   workflow_dispatch:
@@ -14,8 +14,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.12"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.12"
+            mode: standalone
+          - os: windows-latest
+            python-version: "3.12"
+            mode: standalone
+          - os: macos-latest
+            python-version: "3.12"
+            mode: app
 
     steps:
       - name: Check out repository
@@ -35,7 +43,7 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           script-name: main.py
-          mode: standalone
+          mode: ${{ matrix.mode }}
           enable-plugins: pyqt5
           include-package: PyQt5
           include-package-data: matplotlib
