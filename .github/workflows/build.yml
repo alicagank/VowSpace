@@ -57,6 +57,8 @@ jobs:
           product-name: VowSpace
           output-file: VowSpace
           file-description: VowSpace
+          file-version: 1.4.2
+          product-version: 1.4.2
           output-dir: build
 
       - name: Upload artifacts
