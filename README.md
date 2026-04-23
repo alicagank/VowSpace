@@ -128,7 +128,7 @@ Vowel plotting and normalization are of utmost importance when dealing with data
 
 ## Vowel Plotting in VowSpace
 
-VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and visualize the data. When plotting vowel formants, VowSpace utilizes a rectangular template with f1 value on the rightmost side and f2 value on the bottommost side of the screen with rulers on the opposite sides of the values. The vowels that belong to different sources are represented with points with different colors.
+VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and visualize the data. When plotting vowel formants, VowSpace utilizes a rectangular template with F1 value on the rightmost side and f2 value on the bottommost side of the screen with rulers on the opposite sides of the values. The vowels that belong to different sources are represented with points with different colors.
 
 ## Vowel Normalization in VowSpace
 
@@ -200,9 +200,9 @@ All normalization methods are implemented in Python based on the work of Remirez
 
 ## Audio Analysis Tools
 
-Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (f1-f5). All of this is achieved by the Parselmouth library, an awesome interface of Praat for Python!
+Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (F1-F5). All of this is achieved by the Parselmouth library, an awesome interface of Praat for Python!
 
-Note on f5: Higher formants can be somewhat unstable in certain recordings. Depending on the recording quality and environment, f5 values may appear as `NaN`. These values can be reviewed and edited in the DataFrame Editor manually or you may try to get a second measurement to make sure.
+Note on F5: Higher formants can be somewhat unstable in certain recordings. Depending on the recording quality and environment, F5 values may appear as `NaN`. These values can be reviewed and edited in the DataFrame Editor manually or you may try to get a second measurement to make sure.
 
 In the most current stage of development, the user is able to add the formant frequencies to the main visualizer window on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
 
