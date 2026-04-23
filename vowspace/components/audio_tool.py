@@ -20,6 +20,7 @@ class AudioAnalysisTool(QWidget):
         self.pitch = None
         self.intensity = None
         self.formants = None
+        self.audio_file = None
 
         self.initUI()
 
@@ -110,21 +111,29 @@ class AudioAnalysisTool(QWidget):
 
     def redraw_plots(self):
         try:
+            if not self.audio_file:
+                return
+
             self.draw_spectrogram(self.audio_file)
 
-            if self.show_pitch and self.pitch:
+            if self.show_pitch and self.pitch is not None:
                 self.draw_pitch(self.pitch)
-            if self.show_intensity and self.intensity:
+            if self.show_intensity and self.intensity is not None:
                 self.draw_intensity(self.intensity)
 
             for i, action in enumerate(self.formant_actions, start=1):
-                if action.isChecked() and self.formants:
+                if action.isChecked() and self.formants is not None:
                     self.draw_formants(self.formants, i)
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error redrawing plots: {str(e)}")
 
     def read_audio_file(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.aiff *.aif *.aifc *.flac *.wav *.mp3 *.ogg)")
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Audio File",
+            "",
+            "Audio Files (*.aiff *.aif *.aifc *.flac *.wav *.mp3 *.ogg)"
+        )
         if file_name:
             try:
                 self.audio_file = file_name
@@ -152,7 +161,7 @@ class AudioAnalysisTool(QWidget):
             plt.xlim([snd.xmin, snd.xmax])
 
             X, Y = spectrogram.x_grid(), spectrogram.y_grid()
-            sg_db = 10 * np.log10(spectrogram.values)
+            sg_db = 10 * np.log10(np.maximum(spectrogram.values, 1e-12))
             plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='binary')
             plt.ylim([spectrogram.ymin, spectrogram.ymax])
             plt.xlabel("time [s]")
@@ -201,7 +210,7 @@ class AudioAnalysisTool(QWidget):
             self.coordinates_label.setText(f'Cursor Coordinates: x={x:.2f}, y={y:.2f}')
 
     def handle_click(self, event):
-        if event.inaxes and event.button == 3 and self.formants:
+        if event.inaxes and event.button == 3 and self.formants is not None:
             x = event.xdata
             f1 = self.formants.get_value_at_time(1, x)
             f2 = self.formants.get_value_at_time(2, x)
