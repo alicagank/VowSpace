@@ -32,6 +32,7 @@ from vowspace.core.normalization import (
 class VowelSpaceVisualizer(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon("vowspace/assets/vowspace-1024.png"))
         self.initUI()
 
         self.resize_timer = QTimer()

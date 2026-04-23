@@ -8,12 +8,14 @@ Mynd you, büg bites Kan be pretti nasti...
 import sys
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
 
 from vowspace.vowel_space_visualizer import VowelSpaceVisualizer
 
 
 def main():
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("vowspace/assets/vowspace-1024.png"))
     window = VowelSpaceVisualizer()
     window.show()
     sys.exit(app.exec_())
