@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -25,23 +23,29 @@ jobs:
             python-version: "3.12"
             mode: app
 
+    runs-on: ${{ matrix.os }}
+
     steps:
-      - name: Check out repository
+      - name: Check-out repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: x64
+          cache: pip
 
-      - name: Install project dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .
 
-      - name: Build with Nuitka
+      - name: Build Executable (Linux/Windows)
+        if: runner.os != 'macOS'
         uses: Nuitka/Nuitka-Action@main
         with:
+          nuitka-version: main
           script-name: main.py
           mode: ${{ matrix.mode }}
           enable-plugins: pyqt5
@@ -50,9 +54,6 @@ jobs:
           include-package-data: matplotlib
           include-data-dir: vowspace/assets=vowspace/assets
           windows-icon-from-ico: vowspace/assets/vowspace.ico
-          macos-app-icon: vowspace/assets/vowspace.icns
-          macos-app-name: VowSpace
-          macos-signed-app-name: com.alicagank.vowspace
           linux-icon: vowspace/assets/vowspace.png
           product-name: VowSpace
           output-file: VowSpace
@@ -61,9 +62,33 @@ jobs:
           product-version: 1.4.2
           output-dir: build
 
-      - name: Upload artifacts
+      - name: Build Executable (macOS)
+        if: runner.os == 'macOS'
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          nuitka-version: main
+          script-name: main.py
+          mode: ${{ matrix.mode }}
+          enable-plugins: pyqt5
+          include-qt-plugins: platforms,platformthemes,imageformats
+          include-package: PyQt5
+          include-package-data: matplotlib
+          macos-app-icon: vowspace/assets/vowspace.icns
+          macos-app-name: VowSpace
+          macos-signed-app-name: com.alicagank.vowspace
+          macos-app-version: 1.4.2
+          product-name: VowSpace
+          output-file: VowSpace
+          file-description: VowSpace
+          output-dir: build
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: vowspace-${{ runner.os }}-py${{ matrix.python-version }}
+          name: ${{ runner.os }} Build
           path: |
-            build/**
+            build/*.exe
+            build/*.bin
+            build/*.app/**/*
+            build/*.dist/**/*
+          include-hidden-files: true
