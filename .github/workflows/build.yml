@@ -45,12 +45,18 @@ jobs:
           script-name: main.py
           mode: ${{ matrix.mode }}
           enable-plugins: pyqt5
+          include-qt-plugins: platforms,styles,imageformats
           include-package: PyQt5
           include-package-data: matplotlib
           include-data-dir: vowspace/assets=vowspace/assets
           windows-icon-from-ico: vowspace/assets/vowspace.ico
           macos-app-icon: vowspace/assets/vowspace.icns
+          macos-app-name: VowSpace
+          macos-signed-app-name: com.alicagank.vowspace
           linux-icon: vowspace/assets/vowspace.png
+          product-name: VowSpace
+          output-file: VowSpace
+          file-description: VowSpace
           output-dir: build
 
       - name: Upload artifacts
