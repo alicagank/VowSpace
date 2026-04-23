@@ -9,45 +9,43 @@ on:
 jobs:
   build:
     name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             python-version: "3.12"
-            mode: standalone
+            extra: linux
           - os: windows-latest
             python-version: "3.12"
-            mode: standalone
+            extra: windows
           - os: macos-latest
             python-version: "3.12"
-            mode: app
-
-    runs-on: ${{ matrix.os }}
+            extra: mac
 
     steps:
-      - name: Check-out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: x64
           cache: pip
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .
 
-      - name: Build Executable (Linux/Windows)
-        if: runner.os != 'macOS'
+      # 🔹 Linux + Windows
+      - name: Build (Linux/Windows)
+        if: matrix.extra != 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
           script-name: main.py
-          mode: ${{ matrix.mode }}
+          mode: standalone
           enable-plugins: pyqt5
           include-qt-plugins: platforms,platformthemes,imageformats
           include-package: PyQt5
@@ -62,13 +60,14 @@ jobs:
           product-version: 1.4.2
           output-dir: build
 
-      - name: Build Executable (macOS)
-        if: runner.os == 'macOS'
+      # 🔹 macOS
+      - name: Build (macOS)
+        if: matrix.extra == 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
           script-name: main.py
-          mode: ${{ matrix.mode }}
+          mode: app
           enable-plugins: pyqt5
           include-qt-plugins: platforms,platformthemes,imageformats
           include-package: PyQt5
@@ -87,8 +86,5 @@ jobs:
         with:
           name: ${{ runner.os }} Build
           path: |
-            build/*.exe
-            build/*.bin
-            build/*.app/**/*
-            build/*.dist/**/*
+            build/**
           include-hidden-files: true
