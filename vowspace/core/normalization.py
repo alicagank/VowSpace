@@ -42,13 +42,22 @@ def nearey1(df: pd.DataFrame, formants: List[str], group_column: str = 'speaker'
     def norm_logmean(f, group=None):
         if group is None:
             return np.log(f) - np.log(f.mean())
+
         grouped = f.groupby(group)
-        result = pd.concat([(np.log(g) - np.log(g.mean())) for _, g in grouped])
+        result = pd.concat(
+            [(np.log(g) - np.log(g.mean())) for _, g in grouped],
+            axis=0
+        )
         return result.sort_index()
 
-    log_data = norm_logmean(df[formants], group=df[group_column])
+    # coerce selected formants to numeric
+    formant_df = df[formants].apply(pd.to_numeric, errors='coerce')
+
+    log_data = norm_logmean(formant_df, group=df[group_column])
+
     for f in formants:
         df[f"logmean_{f}"] = log_data[f]
+
     return df
 
 
@@ -56,13 +65,19 @@ def nearey2(df: pd.DataFrame, formants: List[str], group_column: str = 'speaker'
     def norm_shared_logmean(f, group=None):
         if group is None:
             return np.log(f) - np.mean(np.log(f), axis=0)
+
         grouped = f.groupby(group)
         result = grouped.apply(lambda x: np.log(x) - np.mean(np.log(x), axis=0)).reset_index(drop=True)
         return result
 
-    norm_data = norm_shared_logmean(df[formants], group=df[group_column])
+    # Coerce selected formants to numeric
+    formant_df = df[formants].apply(pd.to_numeric, errors='coerce')
+
+    norm_data = norm_shared_logmean(formant_df, group=df[group_column])
+
     for i, f in enumerate(formants):
         df[f"slogmean_{f}"] = norm_data.iloc[:, i]
+
     return df
 
 
@@ -72,6 +87,7 @@ def bark_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
         return 26.81 / (1 + 1960 / f) - 0.53
 
     for f in formants:
+        numeric_col = pd.to_numeric(df[f], errors='coerce')
         name = f"bark_{f}"
         if name not in df.columns:
             df[name] = bark(df[f])
@@ -80,17 +96,21 @@ def bark_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
 
 def log_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
-        df[f"log_{f}"] = np.log10(df[f])
+        numeric_col = pd.to_numeric(df[f], errors='coerce')
+        df[f"log_{f}"] = np.log10(numeric_col)
     return df
 
 
 def mel_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
-        df[f"mel_{f}"] = 2595 * np.log10(1 + df[f] / 700)
+        numeric_col = pd.to_numeric(df[f], errors='coerce')
+        df[f"mel_{f}"] = 2595 * np.log10(1 + numeric_col / 700)
     return df
 
 
 def erb_transform(df: pd.DataFrame, formants: List[str]) -> pd.DataFrame:
     for f in formants:
-        df[f"erb_{f}"] = 21.4 * np.log10(1 + 0.00437 * df[f])
+        numeric_col = pd.to_numeric(df[f], errors='coerce')
+        numeric_col = numeric_col.where(numeric_col > -(1 / 0.00437), np.nan)
+        df[f"erb_{f}"] = 21.4 * np.log10(1 + 0.00437 * numeric_col)
     return df

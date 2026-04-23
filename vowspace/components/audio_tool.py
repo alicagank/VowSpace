@@ -70,7 +70,7 @@ class AudioAnalysisTool(QWidget):
         formants_submenu = QMenu('Show Formants', self)
         self.formant_actions = []
         for i in range(1, 6):
-            action = self.create_action(f'Show f{i}', getattr(self, f'toggle_formant_f{i}'), checkable=True)
+            action = self.create_action(f'Show F{i}', getattr(self, f'toggle_formant_f{i}'), checkable=True)
             formants_submenu.addAction(action)
             self.formant_actions.append(action)
         options_menu.addMenu(formants_submenu)

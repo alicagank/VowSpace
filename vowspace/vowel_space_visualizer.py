@@ -194,22 +194,22 @@ class VowelSpaceVisualizer(QWidget):
         self.label_vowel = QLabel('Vowel/Lexset/Word:')
         self.edit_vowel = QLineEdit()
 
-        self.label_f0 = QLabel('f0 Value:')
+        self.label_f0 = QLabel('F0 Value:')
         self.edit_f0 = QLineEdit()
 
-        self.label_f1 = QLabel('f1 Value:')
+        self.label_f1 = QLabel('F1 Value:')
         self.edit_f1 = QLineEdit()
 
-        self.label_f2 = QLabel('f2 Value:')
+        self.label_f2 = QLabel('F2 Value:')
         self.edit_f2 = QLineEdit()
 
-        self.label_f3 = QLabel('f3 Value:')
+        self.label_f3 = QLabel('F3 Value:')
         self.edit_f3 = QLineEdit()
 
-        self.label_f4 = QLabel('f4 Value:')
+        self.label_f4 = QLabel('F4 Value:')
         self.edit_f4 = QLineEdit()
 
-        self.label_f5 = QLabel('f5 Value:')
+        self.label_f5 = QLabel('F5 Value:')
         self.edit_f5 = QLineEdit()
 
         self.checkbox_show_all_formants = QCheckBox('Show all formant input boxes')
@@ -240,13 +240,13 @@ class VowelSpaceVisualizer(QWidget):
         # Dropdown menus for selecting columns
         self.label_x_axis = QLabel('Y Axis:')
         self.dropdown_x_axis = QComboBox()
-        self.dropdown_x_axis.addItems(["f0", "f1", "f2", "f3", "f4", "f5"])  # Add available columns
-        self.dropdown_x_axis.setCurrentText("f1")  # Set default value to F1
+        self.dropdown_x_axis.addItems(["F0", "F1", "F2", "F3", "F4", "F5"])  # Add available columns
+        self.dropdown_x_axis.setCurrentText("F1")  # Set default value to F1
 
         self.label_y_axis = QLabel('X Axis:')
         self.dropdown_y_axis = QComboBox()
-        self.dropdown_y_axis.addItems(["f0", "f1", "f2", "f3", "f4", "f5"])  # Add available columns
-        self.dropdown_y_axis.setCurrentText("f2")  # Set default value to F2
+        self.dropdown_y_axis.addItems(["F0", "F1", "F2", "F3", "F4", "F5"])  # Add available columns
+        self.dropdown_y_axis.setCurrentText("F2")  # Set default value to F2
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -454,8 +454,11 @@ class VowelSpaceVisualizer(QWidget):
         }
 
         # Get selected columns from dropdown menus
-        x_column = self.dropdown_x_axis.currentText()
-        y_column = self.dropdown_y_axis.currentText()
+        x_column_ui = self.dropdown_x_axis.currentText()
+        y_column_ui = self.dropdown_y_axis.currentText()
+
+        x_column = x_column_ui.lower()
+        y_column = y_column_ui.lower()
 
         # Apply transformations if checkboxes are checked
         # Check if more than one normalization method is selected
@@ -540,7 +543,7 @@ class VowelSpaceVisualizer(QWidget):
             for idx, row in subset.loc[mask].iterrows():
                 label = ''
                 if show_labels_f:
-                    label += f"{x_column}: {float(row[x_column]):.2f}\n{y_column}: {float(row[y_column]):.2f}\n"
+                    label += f"{x_column.upper()}: {float(row[x_column]):.2f}\n{y_column.upper()}: {float(row[y_column]):.2f}\n"
                 if show_labels_vowel:
                     label += f"{row['vowel']}\n"
                 if show_labels_speaker:
@@ -559,7 +562,7 @@ class VowelSpaceVisualizer(QWidget):
                 label = ''
 
                 if show_labels_f:
-                    label += f"{x_column}: {row[x_column]:.2f}\n{y_column}: {row[y_column]:.2f}\n"
+                    label += f"{x_column.upper()}: {row[x_column]:.2f}\n{y_column.upper()}: {row[y_column]:.2f}\n"
 
                 if show_labels_vowel:
                     label += f"{row['vowel']}\n"
@@ -707,8 +710,8 @@ class VowelSpaceVisualizer(QWidget):
             self.ax.set_xlabel(custom_label_x, pad=25)
             self.ax.set_ylabel(custom_label_y, pad=25)
         else:'''
-        self.ax.set_xlabel(y_column)
-        self.ax.set_ylabel(x_column)
+        self.ax.set_xlabel(y_column.upper())
+        self.ax.set_ylabel(x_column.upper())
 
         # Position of the rulers
         self.ax.yaxis.tick_right()
@@ -732,7 +735,7 @@ class VowelSpaceVisualizer(QWidget):
 
     # Normalization!
     def lobify(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = lobanov_normalization(self.data, formants)
         self.update_scatterplot()
 
@@ -741,32 +744,32 @@ class VowelSpaceVisualizer(QWidget):
         self.update_scatterplot()
 
     def Nearey1(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = nearey1(self.data, formants)
         self.update_scatterplot()
 
     def Nearey2(self, exp=False):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = nearey2(self.data, formants)
         self.update_scatterplot()
 
     def metricBark(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = bark_transform(self.data, formants)
         self.update_scatterplot()
 
     def normLog(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = log_transform(self.data, formants)
         self.update_scatterplot()
 
     def normMel(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = mel_transform(self.data, formants)
         self.update_scatterplot()
 
     def normErb(self, arg):
-        formants = [self.dropdown_x_axis.currentText(), self.dropdown_y_axis.currentText()]
+        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
         self.data = erb_transform(self.data, formants)
         self.update_scatterplot()
 
@@ -785,19 +788,13 @@ class VowelSpaceVisualizer(QWidget):
         # self.resize_timer.stop()
         # self.update_scatterplot()
 
-    # Clears all the data from the dataframe
+    # Return to the original state of the dataframe
     def clear_data(self):
-        # Get a list of all current column names
-        existing_columns = list(self.data.columns)
+        # Reset to clean base schema ONLY
+        self.data = pd.DataFrame(
+            columns=["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
+        )
 
-        # Clear existing data in all columns
-        for column in existing_columns:
-            self.data[column] = pd.Series(dtype=self.data[column].dtype)  # Clear data in each column
-
-        # Reset self.data to an empty DataFrame with original columns
-        self.data = pd.DataFrame(columns=existing_columns)
-
-        # Update the scatterplot after clearing data
         self.update_scatterplot()
 
     # Allows the user to simply save whatever there is on the scatterplot quickly
