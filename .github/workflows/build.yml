@@ -45,7 +45,7 @@ jobs:
           script-name: main.py
           mode: ${{ matrix.mode }}
           enable-plugins: pyqt5
-          include-qt-plugins: platforms,styles,imageformats
+          include-qt-plugins: platforms,platformthemes,imageformats
           include-package: PyQt5
           include-package-data: matplotlib
           include-data-dir: vowspace/assets=vowspace/assets
