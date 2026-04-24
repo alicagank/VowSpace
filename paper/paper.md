@@ -62,7 +62,7 @@ VowSpace was developed as the primary technical output and analytical framework 
 
 ![VowSpace's main user interface](jossimage1.jpeg)
 
-![Audio Analysis Tools UI](jossimage2.jpeg)
+![Audio Analysis Tools](jossimage2.jpeg)
 
 # AI usage disclosure
 
