@@ -7,7 +7,8 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
-    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction, QCheckBox, QComboBox
+    QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction,
+    QCheckBox, QComboBox, QDialog, QGroupBox
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import Ellipse
@@ -39,6 +40,29 @@ class VowelSpaceVisualizer(QWidget):
         self.resize_timer.timeout.connect(self.delayed_update_scatterplot)
 
     def initUI(self):
+        # Set normalization to normal
+        self.current_normalization = "None"
+
+        # Correct booleans
+        self.plot_settings = {
+            "group_by_vowel": False,
+            "show_legend": False,
+            "show_grid": False,
+
+            "labels_f": False,
+            "labels_vowel": False,
+            "labels_speaker": False,
+
+            "ellipse": False,
+            "ellipse_outline": False,
+            "circular": False,
+
+            "qhull": False,
+            "qhull_outline": False,
+
+            "show_center": False
+        }
+
         # Create widgets
         self.create_widgets()
 
@@ -61,12 +85,12 @@ class VowelSpaceVisualizer(QWidget):
         menubar = QMenuBar(self)
 
         # File menu
-        file_menu = menubar.addMenu('File')
+        file_menu = menubar.addMenu("File")
 
-        save_action = self.create_action('Save', self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
-        save_as_action = self.create_action('Save As...', self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
-        save_data_action = self.create_action('Save Data As...', self.save_data)
-        import_data_action = self.create_action('Import Data from Dataset', self.import_data)
+        save_action = self.create_action("Save", self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
+        save_as_action = self.create_action("Save As...", self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        save_data_action = self.create_action("Save Data As...", self.save_data)
+        import_data_action = self.create_action("Import Data from Dataset", self.import_data)
 
         file_menu.addAction(save_action)
         file_menu.addAction(save_as_action)
@@ -74,110 +98,21 @@ class VowelSpaceVisualizer(QWidget):
         file_menu.addAction(import_data_action)
 
         # Edit menu
-        edit_menu = menubar.addMenu('Edit')
+        edit_menu = menubar.addMenu("Edit")
 
-        undo_action = self.create_action('Undo', self.undo_last_data, Qt.CTRL + Qt.Key_Z)
+        undo_action = self.create_action("Undo", self.undo_last_data, Qt.CTRL + Qt.Key_Z)
         edit_menu.addAction(undo_action)
 
         # Options menu
-        options_menu = menubar.addMenu('Options')
+        options_menu = menubar.addMenu("Options")
 
-        # Visualization Options submenu
-        visualization_options_menu = options_menu.addMenu('Visualization Options')
+        visualization_settings_action = self.create_action(
+            "Visualization Settings...",
+            self.open_visualization_settings
+        )
+        options_menu.addAction(visualization_settings_action)
 
-        # Color grouping by speaker or vowel
-        self.group_by_vowel_action = self.create_action('Group by Vowel', self.update_scatterplot, format='png',
-                                                        checkable=True)
-        visualization_options_menu.addAction(self.group_by_vowel_action)
-
-        # Connect submenu under Visualization Options
-        connect_menu = visualization_options_menu.addMenu('Connect')
-
-        # actions to Connect submenu
-        self.connect_ellipse_action = self.create_action('Connect with Ellipse(s)',
-                                                                 self.update_scatterplot, format='png', checkable=True)
-        connect_menu.addAction(self.connect_ellipse_action)
-
-        self.connect_qhull_action = self.create_action('Connect with Qhull(s)', self.update_scatterplot,
-                                                      format='png', checkable=True)
-        connect_menu.addAction(self.connect_qhull_action)
-
-        self.show_center_info_action = self.create_action('Show Center Label(s)', self.update_scatterplot, format='png',
-                                                          checkable=True)
-        connect_menu.addAction(self.show_center_info_action)
-
-        # Data Options submenu
-        data_options_menu = options_menu.addMenu('Data Options')
-
-        # Show labels or not submenu
-        labels_submenu = QMenu('Label Options', self)
-
-        # Choice 1: Show Labels for F Values
-        self.checkbox_show_labels_f = self.create_action('Show Labels for F Value(s)', self.update_scatterplot,
-                                                         format='png', checkable=True)
-        labels_submenu.addAction(self.checkbox_show_labels_f)
-
-        # Choice 2: Show Labels for Vowels
-        self.checkbox_show_labels_vowel = self.create_action('Show Labels for Vowel(s)', self.update_scatterplot,
-                                                             format='png', checkable=True)
-        labels_submenu.addAction(self.checkbox_show_labels_vowel)
-
-        # Choice 3: Show Labels for Speakers
-        self.checkbox_show_labels_speaker = self.create_action('Show Labels for Speaker(s)', self.update_scatterplot,
-                                                               format='png', checkable=True)
-        labels_submenu.addAction(self.checkbox_show_labels_speaker)
-
-        # Adds another submenu under Show Data Labels
-        visualization_options_menu.addMenu(labels_submenu)
-
-        # Legend Options submenu
-        legend_options_menu = visualization_options_menu.addMenu('Legend Options')
-
-        # Show legend or not
-        self.checkbox_show_legend = self.create_action('Show Legend', self.update_scatterplot, format='png',
-                                                       checkable=True)
-        legend_options_menu.addAction(self.checkbox_show_legend)
-
-        # Show grids or not
-        self.checkbox_show_grids = self.create_action('Show Grids', self.update_scatterplot, format='png',
-                                                      checkable=True)
-        visualization_options_menu.addAction(self.checkbox_show_grids)
-
-        # Bark difference metric
-        self.checkbox_normalize_bark = self.create_action('Bark Diff', self.diffBark, format='png',
-                                                             checkable=True)
-        data_options_menu.addAction(self.checkbox_normalize_bark)
-
-        # Lobanov Normalization
-        self.checkbox_normalize_lobanov = self.create_action('Lobanov Normalization', self.lobify, format='png',
-                                                             checkable=True)
-        data_options_menu.addAction(self.checkbox_normalize_lobanov)
-
-        # Nearey1 Normalization
-        self.checkbox_normalize_nearey1 = self.create_action('Nearey1 Normalization', self.Nearey1, format='png',
-                                                             checkable=True)
-        data_options_menu.addAction(self.checkbox_normalize_nearey1)
-
-        # Nearey2 Normalization
-        self.checkbox_normalize_nearey2 = self.create_action('Nearey2 Normalization', self.Nearey2, format='png',
-                                                             checkable=True)
-        data_options_menu.addAction(self.checkbox_normalize_nearey2)
-
-        # Use Bark
-        self.checkbox_use_bark = self.create_action('Bark Conversion', self.metricBark, format='png', checkable=True)
-        data_options_menu.addAction(self.checkbox_use_bark)
-
-        # Use Log
-        self.checkbox_use_log = self.create_action('Log Conversion', self.normLog, format='png', checkable=True)
-        data_options_menu.addAction(self.checkbox_use_log)
-
-        # Use Mel
-        self.checkbox_use_mel = self.create_action('Mel Conversion', self.normMel, format='png', checkable=True)
-        data_options_menu.addAction(self.checkbox_use_mel)
-
-        # Use Erb
-        self.checkbox_use_erb = self.create_action('Erb Conversion', self.normErb, format='png', checkable=True)
-        data_options_menu.addAction(self.checkbox_use_erb)
+        # All these are now handled by a new QDialogue
 
         self.layout().setMenuBar(menubar)
 
@@ -248,6 +183,34 @@ class VowelSpaceVisualizer(QWidget):
         self.dropdown_y_axis = QComboBox()
         self.dropdown_y_axis.addItems(["F0", "F1", "F2", "F3", "F4", "F5"])  # Add available columns
         self.dropdown_y_axis.setCurrentText("F2")  # Set default value to F2
+
+        # Visualization customization dropdowns
+        self.label_palette = QLabel("Palette:")
+        self.dropdown_palette = QComboBox()
+        self.dropdown_palette.addItems([
+            "viridis",
+            "plasma",
+            "inferno",
+            "magma",
+            "cividis",
+            "tab10",
+            "Set2",
+            "Dark2"
+        ])
+        self.dropdown_palette.setCurrentText("viridis")
+        self.dropdown_palette.currentTextChanged.connect(self.update_plot)
+
+        self.label_point_size = QLabel("Point Size:")
+        self.dropdown_point_size = QComboBox()
+        self.dropdown_point_size.addItems(["20", "40", "60", "80", "100"])
+        self.dropdown_point_size.setCurrentText("40")
+        self.dropdown_point_size.currentTextChanged.connect(self.update_plot)
+
+        self.label_point_alpha = QLabel("Point Alpha:")
+        self.dropdown_point_alpha = QComboBox()
+        self.dropdown_point_alpha.addItems(["0.3", "0.5", "0.7", "0.8", "1.0"])
+        self.dropdown_point_alpha.setCurrentText("0.8")
+        self.dropdown_point_alpha.currentTextChanged.connect(self.update_plot)
 
         self.figure, self.ax = plt.subplots(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -434,345 +397,437 @@ class VowelSpaceVisualizer(QWidget):
             self.data = self.data.iloc[:-1]
             self.update_scatterplot()
 
+    def open_visualization_settings(self):
+        self.visualization_settings_window = VisualizationSettingsDialog(self)
+        self.visualization_settings_window.show()
+
     # Creates the scatterplot
     def update_scatterplot(self, format=None):
+        """Compatibility wrapper.
+
+        Existing menu actions already call update_scatterplot()
+        For now route everything through update_plot(), I want to avoid while WIP
+        """
+        self.update_plot(format)
+
+    def update_plot(self, format=None):
         self.ax.clear()
 
-        markers = '.'  # Use a single marker for all vowels (.)
-        vowel_markers = {v: markers for v in self.data['vowel'].unique()}
+        self.apply_normalization_if_needed()
 
-        # Determine if we are coloring by speaker or by vowel
-        if self.group_by_vowel_action.isChecked():
-            group_by = 'vowel'
-            unique_values = self.data['vowel'].unique()
-        else:
-            group_by = 'speaker'
-            unique_values = self.data['speaker'].unique()
+        config = self.get_plot_config()
+        if config is None:
+            return
 
-        colors = {
-            value: plt.cm.viridis(i / len(unique_values))
-            for i, value in enumerate(unique_values)
-        }
+        self.plot_scatter_points(config)
 
-        # Get selected columns from dropdown menus
+        if self.plot_settings["ellipse"]:
+            self.plot_ellipses(config)
+
+        if self.plot_settings["qhull"]:
+            self.plot_qhulls(config)
+
+        self.apply_plot_style(config)
+
+        self.figure.tight_layout()
+        self.canvas.draw()
+
+    def get_plot_config(self):
+        #  Collect all reusable plot settings in one place
+
         x_column_ui = self.dropdown_x_axis.currentText()
         y_column_ui = self.dropdown_y_axis.currentText()
 
         x_column = x_column_ui.lower()
         y_column = y_column_ui.lower()
 
-        # Apply transformations if checkboxes are checked
-        # Check if more than one normalization method is selected
-        if sum([
-            self.checkbox_use_bark.isChecked(),
-            self.checkbox_normalize_bark.isChecked(),
-            self.checkbox_normalize_lobanov.isChecked(),
-            self.checkbox_normalize_nearey1.isChecked(),
-            self.checkbox_normalize_nearey2.isChecked(),
-            self.checkbox_use_log.isChecked(),
-            self.checkbox_use_mel.isChecked(),
-            self.checkbox_use_erb.isChecked(),
-        ]) > 1:
-            self.show_error_message(
-                "Cannot apply two normalizations' transformations simultaneously.")
-            return
+        x_column, y_column = self.apply_selected_normalization_to_columns(
+            x_column,
+            y_column
+        )
 
-        # Determine which normalization to apply
-        if self.checkbox_use_bark.isChecked():
-            x_column = f"bark_{x_column}"
-            y_column = f"bark_{y_column}"
-        elif self.checkbox_use_log.isChecked():
-            x_column = f"log_{x_column}"
-            y_column = f"log_{y_column}"
-        elif self.checkbox_use_mel.isChecked():
-            x_column = f"mel_{x_column}"
-            y_column = f"mel_{y_column}"
-        elif self.checkbox_use_erb.isChecked():
-            x_column = f"erb_{x_column}"
-            y_column = f"erb_{y_column}"
-        elif self.checkbox_normalize_bark.isChecked():
-            x_column = f"Z3_minus_Z2"
-            y_column = f"Z3_minus_Z1"
-        elif self.checkbox_normalize_lobanov.isChecked():
-            x_column = f"zsc_{x_column}"
-            y_column = f"zsc_{y_column}"
-        elif self.checkbox_normalize_nearey1.isChecked():
-            x_column = f"logmean_{x_column}"
-            y_column = f"logmean_{y_column}"
-        elif self.checkbox_normalize_nearey2.isChecked():
-            x_column = f"slogmean_{x_column}"
-            y_column = f"slogmean_{y_column}"
-
-        # Check if selected columns exist in the data
         if x_column not in self.data.columns or y_column not in self.data.columns:
-            QMessageBox.critical(self, "Error",
-                                 f"Selected column(s) '{x_column}' or '{y_column}' do not exist in the dataset.")
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Selected column(s) '{x_column}' or '{y_column}' do not exist in the dataset."
+            )
+            return None
+
+        group_by = "vowel" if self.plot_settings["group_by_vowel"] else "speaker"
+
+        if group_by not in self.data.columns:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Grouping column '{group_by}' does not exist in the dataset."
+            )
+            return None
+
+        unique_values = self.data[group_by].dropna().unique()
+
+        cmap = plt.get_cmap(self.dropdown_palette.currentText())
+
+        colors = {
+            value: cmap(i / max(len(unique_values), 1))
+            for i, value in enumerate(unique_values)
+        }
+
+        return {
+            "x_column": x_column,
+            "y_column": y_column,
+            "group_by": group_by,
+            "colors": colors,
+        }
+
+    def apply_selected_normalization_to_columns(self, x_column, y_column):
+        normalization = self.current_normalization
+
+        if normalization == "Bark Conversion":
+            return f"bark_{x_column}", f"bark_{y_column}"
+
+        if normalization == "Log Conversion":
+            return f"log_{x_column}", f"log_{y_column}"
+
+        if normalization == "Mel Conversion":
+            return f"mel_{x_column}", f"mel_{y_column}"
+
+        if normalization == "ERB Conversion":
+            return f"erb_{x_column}", f"erb_{y_column}"
+
+        if normalization == "Bark Difference":
+            return "Z3_minus_Z2", "Z3_minus_Z1"
+
+        if normalization == "Lobanov Normalization":
+            return f"zsc_{x_column}", f"zsc_{y_column}"
+
+        if normalization == "Nearey1 Normalization":
+            return f"logmean_{x_column}", f"logmean_{y_column}"
+
+        if normalization == "Nearey2 Normalization":
+            return f"slogmean_{x_column}", f"slogmean_{y_column}"
+
+        return x_column, y_column
+
+    def apply_normalization_if_needed(self):
+        normalization = self.current_normalization
+
+        if normalization == "None":
             return
 
-        for v in self.data['vowel'].unique():
-            subset = self.data[self.data['vowel'] == v]
+        formants = [
+            self.dropdown_x_axis.currentText().lower(),
+            self.dropdown_y_axis.currentText().lower()
+        ]
 
-            # Check if x_column or y_column exist in subset
-            if x_column not in subset.columns or y_column not in subset.columns:
-                continue
+        if normalization == "Bark Conversion":
+            self.data = bark_transform(self.data, formants)
 
-            # Use the appropriate color mapping based on the selection
-            # Coerce to numeric and build a joint finite mask
+        elif normalization == "Log Conversion":
+            self.data = log_transform(self.data, formants)
+
+        elif normalization == "Mel Conversion":
+            self.data = mel_transform(self.data, formants)
+
+        elif normalization == "ERB Conversion":
+            self.data = erb_transform(self.data, formants)
+
+        elif normalization == "Bark Difference":
+            self.data = bark_difference(self.data)
+
+        elif normalization == "Lobanov Normalization":
+            self.data = lobanov_normalization(self.data, formants)
+
+        elif normalization == "Nearey1 Normalization":
+            self.data = nearey1(self.data, formants)
+
+        elif normalization == "Nearey2 Normalization":
+            self.data = nearey2(self.data, formants)
+
+    def plot_scatter_points(self, config):
+        #  Plot the basic vowel space scatter points
+
+        x_column = config["x_column"]
+        y_column = config["y_column"]
+        group_by = config["group_by"]
+        colors = config["colors"]
+
+        markers = "."
+        vowel_markers = {
+            vowel: markers
+            for vowel in self.data["vowel"].dropna().unique()
+        }
+
+        for vowel in self.data["vowel"].dropna().unique():
+            subset = self.data[self.data["vowel"] == vowel]
+
             x_num = pd.to_numeric(subset[x_column], errors="coerce")
             y_num = pd.to_numeric(subset[y_column], errors="coerce")
             mask = np.isfinite(x_num) & np.isfinite(y_num)
 
             if not mask.any():
-                continue  # nothing valid to plot for this vowel
+                continue
 
-            # Keep colors aligned with the filtered rows
-            color = [colors[val] for val in subset.loc[mask, group_by]]
+            color = [
+                colors.get(value, plt.cm.viridis(0.5))
+                for value in subset.loc[mask, group_by]
+            ]
 
             self.ax.scatter(
-                y_num[mask], x_num[mask],  # note: (y, x) on axes
-                marker=vowel_markers[v],
+                y_num[mask],
+                x_num[mask],
+                marker=vowel_markers.get(vowel, "."),
                 c=color,
-                label=v,
-                alpha=0.8, edgecolors="w", linewidth=1
+                label=vowel,
+                s=float(self.dropdown_point_size.currentText()),
+                alpha=float(self.dropdown_point_alpha.currentText()),
+                edgecolors="w",
+                linewidth=1
             )
 
-            # Labels: iterate only over valid rows
-            show_labels_f = self.checkbox_show_labels_f.isChecked()
-            show_labels_vowel = self.checkbox_show_labels_vowel.isChecked()
-            show_labels_speaker = self.checkbox_show_labels_speaker.isChecked()
+            self.plot_point_labels(
+                subset.loc[mask],
+                x_column,
+                y_column
+            )
 
-            for idx, row in subset.loc[mask].iterrows():
-                label = ''
-                if show_labels_f:
-                    label += f"{x_column.upper()}: {float(row[x_column]):.2f}\n{y_column.upper()}: {float(row[y_column]):.2f}\n"
-                if show_labels_vowel:
-                    label += f"{row['vowel']}\n"
-                if show_labels_speaker:
-                    label += f"{row['speaker']}\n"
-                if label:
-                    self.ax.annotate(label.strip(), (float(row[y_column]), float(row[x_column])),
-                                     textcoords="offset points", xytext=(0, 5),
-                                     ha='center', va='bottom', fontsize=8)
+    def plot_point_labels(self, subset, x_column, y_column):
+        #  Plot optional labels for formant values, vowels, and speakers
 
-            # Show labels based on checkbox states
-            show_labels_f = self.checkbox_show_labels_f.isChecked()
-            show_labels_vowel = self.checkbox_show_labels_vowel.isChecked()
-            show_labels_speaker = self.checkbox_show_labels_speaker.isChecked()
+        show_labels_f = self.plot_settings["labels_f"]
+        show_labels_vowel = self.plot_settings["labels_vowel"]
+        show_labels_speaker = self.plot_settings["labels_speaker"]
 
-            for index, row in subset.iterrows():
-                label = ''
+        if not any([show_labels_f, show_labels_vowel, show_labels_speaker]):
+            return
 
-                if show_labels_f:
-                    label += f"{x_column.upper()}: {row[x_column]:.2f}\n{y_column.upper()}: {row[y_column]:.2f}\n"
+        for _, row in subset.iterrows():
+            label = ""
 
-                if show_labels_vowel:
-                    label += f"{row['vowel']}\n"
+            if show_labels_f:
+                label += f"{x_column.upper()}: {float(row[x_column]):.2f}\n"
+                label += f"{y_column.upper()}: {float(row[y_column]):.2f}\n"
 
-                if show_labels_speaker:
-                    label += f"{row['speaker']}\n"
+            if show_labels_vowel:
+                label += f"{row['vowel']}\n"
 
-                # Add label if any information is present
-                if label:
-                    self.ax.annotate(label.strip(), (row[y_column], row[x_column]), textcoords="offset points",
-                                     xytext=(0, 5), ha='center', va='bottom', fontsize=8)
+            if show_labels_speaker and "speaker" in row:
+                label += f"{row['speaker']}\n"
 
-        if self.connect_ellipse_action.isChecked():
-            if self.group_by_vowel_action.isChecked():
-                group_by = 'vowel'
+            if label:
+                self.ax.annotate(
+                    label.strip(),
+                    (float(row[y_column]), float(row[x_column])),
+                    textcoords="offset points",
+                    xytext=(0, 5),
+                    ha="center",
+                    va="bottom",
+                    fontsize=8
+                )
+
+    def plot_ellipses(self, config):
+        #   Plot confidence ellipses around vowel or speaker groups
+
+        x_column = config["x_column"]
+        y_column = config["y_column"]
+        group_by = config["group_by"]
+        colors = config["colors"]
+
+        for key in self.data[group_by].dropna().unique():
+            subset = self.data[self.data[group_by] == key]
+
+            x = pd.to_numeric(subset[x_column], errors="coerce")
+            y = pd.to_numeric(subset[y_column], errors="coerce")
+            mask = np.isfinite(x) & np.isfinite(y)
+
+            if mask.sum() < 2:
+                continue
+
+            if x[mask].nunique() < 2 or y[mask].nunique() < 2:
+                continue
+
+            yx = np.column_stack([
+                y[mask].to_numpy(dtype=float),
+                x[mask].to_numpy(dtype=float)
+            ])
+
+            mean = yx.mean(axis=0)
+            cov = np.cov(yx, rowvar=False)
+
+            eigvals, eigvecs = np.linalg.eigh(cov)
+            order = eigvals.argsort()[::-1]
+            eigvals = eigvals[order]
+            eigvecs = eigvecs[:, order]
+
+            scale_factor = np.sqrt(chi2.ppf(0.67, df=2))
+
+            width, height = 2 * scale_factor * np.sqrt(eigvals)
+            angle = np.degrees(np.arctan2(*eigvecs[:, 0][::-1]))
+
+            color = colors.get(key, plt.cm.viridis(0.5))
+
+            if self.plot_settings["circular"]:
+                diameter = max(width, height)
+                width = diameter
+                height = diameter
+                angle = 0
+
+            if self.plot_settings["ellipse_outline"]:
+                facecolor = "none"
+                alpha = 1.0
             else:
-                group_by = 'speaker'
-
-            for key in self.data[group_by].unique():
-                subset = self.data[self.data[group_by] == key]
-
-                # Ensure the subset has enough data points and variability
-                # Coerce and joint-filter
-                x = pd.to_numeric(subset[x_column], errors="coerce")
-                y = pd.to_numeric(subset[y_column], errors="coerce")
-                mask = np.isfinite(x) & np.isfinite(y)
-                if mask.sum() < 2 or x[mask].nunique() < 2 or y[mask].nunique() < 2:
-                    continue
-
-                # Build a (N, 2) float array in (y, x) order (to match your plotting)
-                yx = np.column_stack([y[mask].to_numpy(dtype=float),
-                                      x[mask].to_numpy(dtype=float)])
-
-                mean = yx.mean(axis=0)  # [mean_y, mean_x]
-                cov = np.cov(yx, rowvar=False)  # 2×2 covariance on columns
-
-                # Eigenvalues and eigenvectors of the covariance matrix
-                eigvals, eigvecs = np.linalg.eigh(cov)
-
-                # Sort eigenvalues and corresponding eigenvectors
-                order = eigvals.argsort()[::-1]
-                eigvals, eigvecs = eigvals[order], eigvecs[:, order]
-
-                # Scaling factor for the 67% confidence ellipse
-                # https://joeystanley.com/blog/making-vowel-plots-in-r-part-1/#ellipses
-                scale_factor = np.sqrt(chi2.ppf(0.67, df=2))
-
-                # Calculate width and height of the ellipse
-                width, height = 2 * scale_factor * np.sqrt(eigvals)
-
-                # Calculate the angle of the ellipse
-                angle = np.degrees(np.arctan2(*eigvecs[:, 0][::-1]))
-
-                # Determine the color based on the current grouping
-                ell_color = colors[key]
-
-                # Define transparency
+                facecolor = color
                 alpha = 0.2
 
-                # Create an ellipse
-                ell = Ellipse(xy=(mean[0], mean[1]),
-                              width=width, height=height,
-                              angle=angle,
-                              edgecolor=ell_color, fc=ell_color, lw=1, alpha=alpha)
-                self.ax.add_patch(ell)
+            ellipse = Ellipse(
+                xy=(mean[0], mean[1]),
+                width=width,
+                height=height,
+                angle=angle,
+                edgecolor=color,
+                facecolor=facecolor,
+                lw=1.5,
+                alpha=alpha
+            )
 
-                # Add label to the center of the ellipse
-                if self.show_center_info_action.isChecked():
-                    self.ax.text(mean[0], mean[1], key, color='black', ha='center', va='center', fontsize=10)
+            self.ax.add_patch(ellipse)
 
-        if self.connect_qhull_action.isChecked() and len(self.data) >= 3:
-            group_by = 'vowel' if self.group_by_vowel_action.isChecked() else 'speaker'
+            if self.plot_settings["show_center"]:
+                self.ax.text(
+                    mean[0],
+                    mean[1],
+                    str(key),
+                    color="black",
+                    ha="center",
+                    va="center",
+                    fontsize=10
+                )
 
-            for key, group in self.data.groupby(group_by):
-                # Skip NaN group keys (cannot color/label them reliably)
-                if pd.isna(key):
-                    continue
+    def plot_qhulls(self, config):
+        #   Plot convex hulls around vowel or speaker groups
 
-                # Coerce to numeric and joint-filter finite rows
-                gx = pd.to_numeric(group[x_column], errors="coerce")
-                gy = pd.to_numeric(group[y_column], errors="coerce")
-                gmask = np.isfinite(gx) & np.isfinite(gy)
+        x_column = config["x_column"]
+        y_column = config["y_column"]
+        group_by = config["group_by"]
+        colors = config["colors"]
 
-                # Build a strict float64 (N,2) array in (y, x) order
-                points = np.column_stack([
-                    gy[gmask].to_numpy(dtype=np.float64, copy=False),
-                    gx[gmask].to_numpy(dtype=np.float64, copy=False)
-                ])
+        if len(self.data) < 3:
+            return
 
-                # Need at least 3 non-collinear, unique points for a hull
-                if points.shape[0] < 3:
-                    continue
-                if np.unique(points, axis=0).shape[0] < 3:
-                    continue
-                try:
-                    # Guard against degenerate rank (collinear points)
-                    if np.linalg.matrix_rank(points) < 2:
-                        QMessageBox.critical(self, "Error",
-                                             f"The input data for {group_by} '{key}' is less than 2-dimensional.")
-                        continue
+        for key, group in self.data.groupby(group_by):
+            if pd.isna(key):
+                continue
 
-                    hull = ConvexHull(points)
-                    face = colors.get(key, plt.cm.viridis(0.5))  # fallback color if key missing
-                    polygon = plt.Polygon(points[hull.vertices], closed=True, alpha=0.2,
-                                          label=key, facecolor=face)
-                    self.ax.add_patch(polygon)
+            gx = pd.to_numeric(group[x_column], errors="coerce")
+            gy = pd.to_numeric(group[y_column], errors="coerce")
+            mask = np.isfinite(gx) & np.isfinite(gy)
 
-                    # Centroid of the hull for labeling
+            points = np.column_stack([
+                gy[mask].to_numpy(dtype=np.float64, copy=False),
+                gx[mask].to_numpy(dtype=np.float64, copy=False)
+            ])
+
+            if points.shape[0] < 3:
+                continue
+
+            if np.unique(points, axis=0).shape[0] < 3:
+                continue
+
+            if np.linalg.matrix_rank(points) < 2:
+                QMessageBox.critical(
+                    self,
+                    "Error",
+                    f"The input data for {group_by} '{key}' is less than 2-dimensional."
+                )
+                continue
+
+            try:
+                hull = ConvexHull(points)
+                color = colors.get(key, plt.cm.viridis(0.5))
+
+                if self.plot_settings["qhull_outline"]:
+                    facecolor = "none"
+                    edgecolor = color
+                    alpha = 1.0
+                else:
+                    facecolor = color
+                    edgecolor = color
+                    alpha = 0.2
+
+                polygon = plt.Polygon(
+                    points[hull.vertices],
+                    closed=True,
+                    alpha=alpha,
+                    label=key,
+                    facecolor=facecolor,
+                    edgecolor=edgecolor,
+                    linewidth=1.5
+                )
+
+                self.ax.add_patch(polygon)
+
+                if self.plot_settings["show_center"]:
                     centroid = np.mean(points[hull.vertices], axis=0)
-                    if self.show_center_info_action.isChecked():
-                        self.ax.text(centroid[0], centroid[1], str(key),
-                                     color='black', ha='center', va='center', fontsize=10)
+                    self.ax.text(
+                        centroid[0],
+                        centroid[1],
+                        str(key),
+                        color="black",
+                        ha="center",
+                        va="center",
+                        fontsize=10
+                    )
 
-                except Exception as e:
-                    QMessageBox.critical(self, "Error",
-                                         f"Qhull error for {group_by} '{key}': {str(e)}")
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Error",
+                    f"Qhull error for {group_by} '{key}': {str(e)}"
+                )
+
+    def apply_plot_style(self, config):
+        #   Apply shared title, legend, grid, axes, and vowel space orientation
+
+        x_column = config["x_column"]
+        y_column = config["y_column"]
 
         custom_title = self.edit_title.text()
+
         if self.checkbox_no_title.isChecked():
             self.ax.set_title("", pad=25)
         else:
-            self.ax.set_title(custom_title if custom_title else "Vowel Space(s)", pad=25)
+            self.ax.set_title(
+                custom_title if custom_title else "Vowel Space(s)",
+                pad=25
+            )
 
-        show_legend = self.checkbox_show_legend.isChecked()
-        # Remove previous legend if exists
         legend = self.ax.get_legend()
         if legend:
             legend.remove()
 
-        if show_legend:
+        if self.plot_settings["show_legend"]:
             handles, labels = self.ax.get_legend_handles_labels()
             if handles and labels:
-                self.ax.legend(loc='lower left', bbox_to_anchor=(1.05, 0))
+                self.ax.legend(loc="lower left", bbox_to_anchor=(1.05, 0))
 
-        show_grid = self.checkbox_show_grids.isChecked()
-        if show_grid:
-            self.ax.grid(True, linestyle='--', linewidth=0.5)
+        if self.plot_settings["show_grid"]:
+            self.ax.grid(True, linestyle="--", linewidth=0.5)
         else:
             self.ax.grid(False)
 
-        # Set labels for the axes, inverted, that is, if needed...
-        '''custom_label_x = self.edit_label_x.text()
-        custom_label_y = self.edit_label_y.text()
-        if self.checkbox_custom_labels.isChecked():
-            self.ax.set_xlabel(custom_label_x, pad=25)
-            self.ax.set_ylabel(custom_label_y, pad=25)
-        else:'''
         self.ax.set_xlabel(y_column.upper())
         self.ax.set_ylabel(x_column.upper())
 
-        # Position of the rulers
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
 
-        # Invert axes to resemble vowel space
-        # plt.gca().invert_xaxis()
-        # plt.gca().invert_yaxis() this is very buggy and doesn't work consistently for some reason
         self.ax.invert_xaxis()
         self.ax.invert_yaxis()
 
-        # Position the axes
         self.ax.xaxis.set_label_position("bottom")
         self.ax.xaxis.set_ticks_position("top")
         self.ax.yaxis.set_label_position("left")
         self.ax.yaxis.set_ticks_position("right")
-
-        # Use tight_layout to minimize gaps between the window and the scatterplot
-        self.figure.tight_layout()
-        self.canvas.draw()
-
-    # Normalization!
-    def lobify(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = lobanov_normalization(self.data, formants)
-        self.update_scatterplot()
-
-    def diffBark(self, arg):
-        self.data = bark_difference(self.data)
-        self.update_scatterplot()
-
-    def Nearey1(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = nearey1(self.data, formants)
-        self.update_scatterplot()
-
-    def Nearey2(self, exp=False):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = nearey2(self.data, formants)
-        self.update_scatterplot()
-
-    def metricBark(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = bark_transform(self.data, formants)
-        self.update_scatterplot()
-
-    def normLog(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = log_transform(self.data, formants)
-        self.update_scatterplot()
-
-    def normMel(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = mel_transform(self.data, formants)
-        self.update_scatterplot()
-
-    def normErb(self, arg):
-        formants = [self.dropdown_x_axis.currentText().lower(), self.dropdown_y_axis.currentText().lower()]
-        self.data = erb_transform(self.data, formants)
-        self.update_scatterplot()
 
     # Takes delay event into account when resizing the app to avoid lag
     def custom_resize_event(self, event):
@@ -934,3 +989,212 @@ class VowelSpaceVisualizer(QWidget):
         # Creates a new instance of AudioAnalysisTools if not open
         self.audio_tools_window = AudioAnalysisTool(visualizer=self)
         self.audio_tools_window.show()
+
+class VisualizationSettingsDialog(QDialog):
+    def __init__(self, visualizer):
+        super().__init__(visualizer)
+        self.visualizer = visualizer
+
+        self.setWindowTitle("Visualization Settings")
+        self.setMinimumWidth(360)
+
+        self.create_widgets()
+        self.set_layout()
+        self.load_current_settings()
+
+    def create_widgets(self):
+        self.normalization_dropdown = QComboBox()
+        self.normalization_dropdown.addItems([
+            "None",
+            "Bark Conversion",
+            "Log Conversion",
+            "Mel Conversion",
+            "ERB Conversion",
+            "Bark Difference",
+            "Lobanov Normalization",
+            "Nearey1 Normalization",
+            "Nearey2 Normalization"
+        ])
+        self.group_by_vowel_checkbox = QCheckBox("Group by vowel")
+        self.show_legend_checkbox = QCheckBox("Show legend")
+        self.show_grid_checkbox = QCheckBox("Show grid")
+
+        self.show_f_labels_checkbox = QCheckBox("Show formant value labels")
+        self.show_vowel_labels_checkbox = QCheckBox("Show vowel labels")
+        self.show_speaker_labels_checkbox = QCheckBox("Show speaker labels")
+
+        self.connect_ellipse_checkbox = QCheckBox("Connect with ellipse(s)")
+        self.ellipse_outline_checkbox = QCheckBox("Ellipse outline only")
+        self.circular_boundary_checkbox = QCheckBox("Use circular boundary")
+        self.connect_qhull_checkbox = QCheckBox("Connect with Qhull(s)")
+        self.qhull_outline_checkbox = QCheckBox("Qhull outline only")
+        self.show_center_labels_checkbox = QCheckBox("Show center labels")
+
+        self.palette_dropdown = QComboBox()
+        self.palette_dropdown.addItems([
+            "viridis", "plasma", "inferno", "magma",
+            "cividis", "tab10", "Set2", "Dark2"
+        ])
+
+        self.point_size_dropdown = QComboBox()
+        self.point_size_dropdown.addItems(["20", "40", "60", "80", "100"])
+
+        self.point_alpha_dropdown = QComboBox()
+        self.point_alpha_dropdown.addItems(["0.3", "0.5", "0.7", "0.8", "1.0"])
+
+        self.apply_button = QPushButton("Apply")
+        self.reset_button = QPushButton("Reset to Defaults")
+        self.close_button = QPushButton("Close")
+
+        self.apply_button.clicked.connect(self.apply_settings)
+        self.reset_button.clicked.connect(self.reset_to_defaults)
+        self.close_button.clicked.connect(self.close)
+
+    def set_layout(self):
+        main_layout = QVBoxLayout()
+
+        normalization_group = QGroupBox("Normalization")
+        normalization_layout = QVBoxLayout()
+        normalization_layout.addWidget(QLabel("Normalization / Conversion:"))
+        normalization_layout.addWidget(self.normalization_dropdown)
+        normalization_group.setLayout(normalization_layout)
+
+        main_layout.addWidget(normalization_group)
+
+        general_group = QGroupBox("General")
+        general_layout = QVBoxLayout()
+        general_layout.addWidget(self.group_by_vowel_checkbox)
+        general_layout.addWidget(self.show_legend_checkbox)
+        general_layout.addWidget(self.show_grid_checkbox)
+        general_group.setLayout(general_layout)
+
+        labels_group = QGroupBox("Labels")
+        labels_layout = QVBoxLayout()
+        labels_layout.addWidget(self.show_f_labels_checkbox)
+        labels_layout.addWidget(self.show_vowel_labels_checkbox)
+        labels_layout.addWidget(self.show_speaker_labels_checkbox)
+        labels_group.setLayout(labels_layout)
+
+        points_group = QGroupBox("Points")
+        points_layout = QGridLayout()
+        points_layout.addWidget(QLabel("Palette:"), 0, 0)
+        points_layout.addWidget(self.palette_dropdown, 0, 1)
+        points_layout.addWidget(QLabel("Point size:"), 1, 0)
+        points_layout.addWidget(self.point_size_dropdown, 1, 1)
+        points_layout.addWidget(QLabel("Point alpha:"), 2, 0)
+        points_layout.addWidget(self.point_alpha_dropdown, 2, 1)
+        points_group.setLayout(points_layout)
+
+        boundary_group = QGroupBox("Boundaries")
+        boundary_layout = QVBoxLayout()
+
+        ellipse_group = QGroupBox("Ellipses")
+        ellipse_layout = QVBoxLayout()
+        ellipse_layout.addWidget(self.connect_ellipse_checkbox)
+        ellipse_layout.addWidget(self.ellipse_outline_checkbox)
+        ellipse_layout.addWidget(self.circular_boundary_checkbox)
+        ellipse_group.setLayout(ellipse_layout)
+
+        qhull_group = QGroupBox("Qhulls")
+        qhull_layout = QVBoxLayout()
+        qhull_layout.addWidget(self.connect_qhull_checkbox)
+        qhull_layout.addWidget(self.qhull_outline_checkbox)
+        qhull_group.setLayout(qhull_layout)
+
+        shared_boundary_group = QGroupBox("Shared")
+        shared_boundary_layout = QVBoxLayout()
+        shared_boundary_layout.addWidget(self.show_center_labels_checkbox)
+        shared_boundary_group.setLayout(shared_boundary_layout)
+
+        boundary_layout.addWidget(ellipse_group)
+        boundary_layout.addWidget(qhull_group)
+        boundary_layout.addWidget(shared_boundary_group)
+
+        boundary_group.setLayout(boundary_layout)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.apply_button)
+        button_layout.addWidget(self.reset_button)
+        button_layout.addWidget(self.close_button)
+
+        main_layout.addWidget(general_group)
+        main_layout.addWidget(labels_group)
+        main_layout.addWidget(points_group)
+        main_layout.addWidget(boundary_group)
+        main_layout.addLayout(button_layout)
+
+        self.setLayout(main_layout)
+
+    def load_current_settings(self):
+        v = self.visualizer
+
+        self.normalization_dropdown.setCurrentText(
+            self.visualizer.current_normalization
+        )
+
+        self.group_by_vowel_checkbox.setChecked(v.plot_settings["group_by_vowel"])
+        self.show_legend_checkbox.setChecked(v.plot_settings["show_legend"])
+        self.show_grid_checkbox.setChecked(v.plot_settings["show_grid"])
+
+        self.show_f_labels_checkbox.setChecked(v.plot_settings["labels_f"])
+        self.show_vowel_labels_checkbox.setChecked(v.plot_settings["labels_vowel"])
+        self.show_speaker_labels_checkbox.setChecked(v.plot_settings["labels_speaker"])
+
+        self.connect_ellipse_checkbox.setChecked(v.plot_settings["ellipse"])
+        self.ellipse_outline_checkbox.setChecked(v.plot_settings["ellipse_outline"])
+        self.circular_boundary_checkbox.setChecked(v.plot_settings["circular"])
+        self.connect_qhull_checkbox.setChecked(v.plot_settings["qhull"])
+        self.qhull_outline_checkbox.setChecked(v.plot_settings["qhull_outline"])
+        self.show_center_labels_checkbox.setChecked(v.plot_settings["show_center"])
+
+        self.palette_dropdown.setCurrentText(v.dropdown_palette.currentText())
+        self.point_size_dropdown.setCurrentText(v.dropdown_point_size.currentText())
+        self.point_alpha_dropdown.setCurrentText(v.dropdown_point_alpha.currentText())
+
+    def apply_settings(self):
+        v = self.visualizer
+
+        v.current_normalization = self.normalization_dropdown.currentText()
+
+        v.plot_settings["group_by_vowel"] = self.group_by_vowel_checkbox.isChecked()
+        v.plot_settings["show_legend"] = self.show_legend_checkbox.isChecked()
+        v.plot_settings["show_grid"] = self.show_grid_checkbox.isChecked()
+
+        v.plot_settings["labels_f"] = self.show_f_labels_checkbox.isChecked()
+        v.plot_settings["labels_vowel"] = self.show_vowel_labels_checkbox.isChecked()
+        v.plot_settings["labels_speaker"] = self.show_speaker_labels_checkbox.isChecked()
+
+        v.plot_settings["ellipse"] = self.connect_ellipse_checkbox.isChecked()
+        v.plot_settings["ellipse_outline"] = self.ellipse_outline_checkbox.isChecked()
+        v.plot_settings["circular"] = self.circular_boundary_checkbox.isChecked()
+        v.plot_settings["qhull"] = self.connect_qhull_checkbox.isChecked()
+        v.plot_settings["qhull_outline"] = self.qhull_outline_checkbox.isChecked()
+        v.plot_settings["show_center"] = self.show_center_labels_checkbox.isChecked()
+
+        v.dropdown_palette.setCurrentText(self.palette_dropdown.currentText())
+        v.dropdown_point_size.setCurrentText(self.point_size_dropdown.currentText())
+        v.dropdown_point_alpha.setCurrentText(self.point_alpha_dropdown.currentText())
+
+        v.update_plot()
+
+    def reset_to_defaults(self):
+        self.group_by_vowel_checkbox.setChecked(False)
+        self.show_legend_checkbox.setChecked(False)
+        self.show_grid_checkbox.setChecked(False)
+
+        self.show_f_labels_checkbox.setChecked(False)
+        self.show_vowel_labels_checkbox.setChecked(False)
+        self.show_speaker_labels_checkbox.setChecked(False)
+
+        self.connect_ellipse_checkbox.setChecked(False)
+        self.ellipse_outline_checkbox.setChecked(False)
+        self.circular_boundary_checkbox.setChecked(False)
+        self.connect_qhull_checkbox.setChecked(False)
+        self.qhull_outline_checkbox.setChecked(False)
+        self.show_center_labels_checkbox.setChecked(False)
+
+        self.palette_dropdown.setCurrentText("viridis")
+        self.point_size_dropdown.setCurrentText("40")
+        self.point_alpha_dropdown.setCurrentText("0.8")
+
+        self.apply_settings()
