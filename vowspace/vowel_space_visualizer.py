@@ -69,8 +69,10 @@ class VowelSpaceVisualizer(QWidget):
         # Set layout
         self.set_layout()
 
-        # Set initial state
-        self.data = pd.DataFrame(columns=["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"])
+        # Set initial state, add base columns
+        base_columns = ["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
+        self.original_data = pd.DataFrame(columns=base_columns)
+        self.data = self.original_data.copy()
         self.setWindowTitle("VowSpace v1.4.4")
         self.setWindowIcon(QIcon("vowspace/assets/vowspace.ico"))
 
@@ -346,7 +348,8 @@ class VowelSpaceVisualizer(QWidget):
             {"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "f5": [f5], "speaker": [speaker]}) if speaker else \
             pd.DataFrame({"vowel": [vowel], "f0": [f0], "f1": [f1], "f2": [f2], "f3": [f3], "f4": [f4], "f5": [f5]})
 
-        self.data = pd.concat([self.data, new_data], ignore_index=True)
+        self.original_data = pd.concat([self.original_data, new_data], ignore_index=True)
+        self.data = self.original_data.copy()
 
         self.clear_input_fields()
 
@@ -393,8 +396,9 @@ class VowelSpaceVisualizer(QWidget):
 
     # Deletes the last inputted data from the dataframe
     def undo_last_data(self):
-        if not self.data.empty:
-            self.data = self.data.iloc[:-1]
+        if not self.original_data.empty:
+            self.original_data = self.original_data.iloc[:-1].copy()
+            self.data = self.original_data.copy()
             self.update_plot()
 
     def open_visualization_settings(self):
@@ -503,6 +507,8 @@ class VowelSpaceVisualizer(QWidget):
 
     def apply_normalization_if_needed(self):
         normalization = self.current_normalization
+
+        self.data = self.original_data.copy()
 
         if normalization == "None":
             return
@@ -839,9 +845,9 @@ class VowelSpaceVisualizer(QWidget):
     # Return to the original state of the dataframe
     def clear_data(self):
         # Reset to clean base schema ONLY
-        self.data = pd.DataFrame(
-            columns=["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
-        )
+        base_columns = ["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
+        self.original_data = pd.DataFrame(columns=base_columns)
+        self.data = self.original_data.copy()
 
         self.update_plot()
 
@@ -954,7 +960,8 @@ class VowelSpaceVisualizer(QWidget):
                 new_data = new_data.dropna()
 
                 # Merge
-                self.data = pd.concat([self.data, new_data], ignore_index=True)
+                self.original_data = pd.concat([self.original_data, new_data], ignore_index=True)
+                self.data = self.original_data.copy()
 
                 self.df_editor = DFEditor(self.data, visualizer=self)
                 self.df_editor.show()
