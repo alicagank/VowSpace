@@ -37,7 +37,7 @@ class VowelSpaceVisualizer(QWidget):
         self.initUI()
 
         self.resize_timer = QTimer()
-        self.resize_timer.timeout.connect(self.delayed_update_scatterplot)
+        self.resize_timer.timeout.connect(self.delayed_update_plot)
 
     def initUI(self):
         # Set normalization to normal
@@ -165,7 +165,7 @@ class VowelSpaceVisualizer(QWidget):
         # The buttons that trigger those actions
         self.button_add_data = self.create_button('Add Data', self.add_data, Qt.Key_Return)
         self.button_clear_data = self.create_button('Clear Data', self.clear_data)
-        self.button_update_scatterplot = self.create_button('Update Scatterplot', self.update_scatterplot)
+        self.button_update_plot = self.create_button('Update Plot', self.update_plot)
         # Audio Analysis Tools class
         self.button_audio_analysis_tools = self.create_button('Audio Analysis Tools', self.audio_analysis_tools)
         # IPA keyboard button
@@ -265,7 +265,7 @@ class VowelSpaceVisualizer(QWidget):
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(self.button_add_data)
         buttons_layout.addWidget(self.button_clear_data)
-        buttons_layout.addWidget(self.button_update_scatterplot)
+        buttons_layout.addWidget(self.button_update_plot)
         buttons_layout.addWidget(self.button_audio_analysis_tools)
         buttons_layout.addWidget(self.button_IPA)
         buttons_layout.addWidget(self.button_open_df_editor)
@@ -351,7 +351,7 @@ class VowelSpaceVisualizer(QWidget):
         self.clear_input_fields()
 
         self.edit_vowel.setFocus()
-        self.update_scatterplot()
+        self.update_plot()
 
     # Automatically clears the input fields after adding data
     def clear_input_fields(self):
@@ -395,21 +395,13 @@ class VowelSpaceVisualizer(QWidget):
     def undo_last_data(self):
         if not self.data.empty:
             self.data = self.data.iloc[:-1]
-            self.update_scatterplot()
+            self.update_plot()
 
     def open_visualization_settings(self):
         self.visualization_settings_window = VisualizationSettingsDialog(self)
         self.visualization_settings_window.show()
 
     # Creates the scatterplot
-    def update_scatterplot(self, format=None):
-        """Compatibility wrapper.
-
-        Existing menu actions already call update_scatterplot()
-        For now route everything through update_plot(), I want to avoid while WIP
-        """
-        self.update_plot(format)
-
     def update_plot(self, format=None):
         self.ax.clear()
 
@@ -835,14 +827,14 @@ class VowelSpaceVisualizer(QWidget):
         super().resizeEvent(event)
 
     # Takes delay event into account when resizing the scatterplot to avoid lag
-    def delayed_update_scatterplot(self):
+    def delayed_update_plot(self):
         self.resize_timer.stop()  # Stops the timer to ensure it only triggers o
         # nce
-        self.update_scatterplot()
+        self.update_plot()
 
         # Uses the timer to avoid lag - will return to that
         # self.resize_timer.stop()
-        # self.update_scatterplot()
+        # self.update_plot()
 
     # Return to the original state of the dataframe
     def clear_data(self):
@@ -851,7 +843,7 @@ class VowelSpaceVisualizer(QWidget):
             columns=["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
         )
 
-        self.update_scatterplot()
+        self.update_plot()
 
     # Allows the user to simply save whatever there is on the scatterplot quickly
     def save_scatterplot_auto(self):
@@ -967,7 +959,7 @@ class VowelSpaceVisualizer(QWidget):
                 self.df_editor = DFEditor(self.data, visualizer=self)
                 self.df_editor.show()
 
-                self.update_scatterplot()
+                self.update_plot()
 
                 QMessageBox.information(self, "Success", "Data imported successfully.")
 
