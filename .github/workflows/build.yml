@@ -26,9 +26,11 @@ jobs:
             extra: mac
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -38,8 +40,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
-      # 🔹 Linux + Windows
-      - name: Build (Linux/Windows)
+      # Linux + Windows
+      - name: Build Linux/Windows app
         if: matrix.extra != 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
@@ -56,12 +58,12 @@ jobs:
           product-name: VowSpace
           output-file: VowSpace
           file-description: VowSpace
-          file-version: 1.4.2
-          product-version: 1.4.2
+          file-version: 1.4.5
+          product-version: 1.4.5
           output-dir: build
 
-      # 🔹 macOS
-      - name: Build (macOS)
+      # macOS
+      - name: Build macOS app
         if: matrix.extra == 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
@@ -72,19 +74,19 @@ jobs:
           include-qt-plugins: platforms,platformthemes,imageformats
           include-package: PyQt5
           include-package-data: matplotlib
+          include-data-dir: vowspace/assets=vowspace/assets
           macos-app-icon: vowspace/assets/vowspace.icns
           macos-app-name: VowSpace
           macos-signed-app-name: com.alicagank.vowspace
-          macos-app-version: 1.4.2
+          macos-app-version: 1.4.5
           product-name: VowSpace
           output-file: VowSpace
           file-description: VowSpace
           output-dir: build
 
-      - name: Upload Artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }} Build
-          path: |
-            build/**
+          name: VowSpace-${{ matrix.extra }}
+          path: build/**
           include-hidden-files: true
