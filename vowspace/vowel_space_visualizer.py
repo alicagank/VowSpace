@@ -121,7 +121,7 @@ class VowelSpaceVisualizer(QWidget):
         options_menu = menubar.addMenu("Options")
 
         visualization_settings_action = self.create_action(
-            "Visualization/Normalization Settings...",
+            "Visualization / Normalization Settings...",
             self.open_visualization_settings
         )
         options_menu.addAction(visualization_settings_action)
@@ -1062,7 +1062,7 @@ class VisualizationSettingsDialog(QDialog):
         super().__init__(visualizer)
         self.visualizer = visualizer
 
-        self.setWindowTitle("Visualization Settings")
+        self.setWindowTitle("Visualization / Normalization Settings")
         self.setMinimumWidth(360)
 
         self.create_widgets()
