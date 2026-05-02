@@ -361,7 +361,7 @@ Please note that I am a solo developer and a full-time student/researcher. I may
 
 You can cite VowSpace as:
 
-- Kaya, A. Ç. (2024). VowSpace: A vowel formant analysis application [Poster presentation]. *37th National Linguistics Congress, Kocaeli, Türkiye*. The Linguistics Association.
+Kaya, A. Ç., (2026). VowSpace: A vowel formant analysis application for phonetic research. Journal of Open Source Software, 11(120), 10189, https://doi.org/10.21105/joss.10189
 
 ---
 
