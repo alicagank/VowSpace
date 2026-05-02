@@ -1275,6 +1275,7 @@ class ExportSettingsDialog(QDialog):
 
         self.setWindowTitle("Export Plot")
         self.setMinimumWidth(520)
+        self.resize(520, 600)
 
         self.create_widgets()
         self.set_layout()
