@@ -10,7 +10,7 @@ If you have tried or used VowSpace, I would really appreciate it if you could fi
 
 https://forms.gle/D9P6TYfAhiiY4swx8
 
-# VowSpace: A vowel formant analysis application
+# VowSpace: A vowel formant analysis application for phonetic research
 
 VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel formant frequencies from audio files and/or datasets.
 
@@ -23,49 +23,33 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 ## Version Log
 
-### VowSpace v1.4.2 Release Notes *(Latest version)*
+### VowSpace v1.4.5 Release Notes *(the Visualization Update)*
+This version focuses on on giving users more control over plot customization, improving saving options, and making the UI cleaner and easier to use!
 
-**New Features:**
-
-- Added new normalization methods: **Nearey1**, **Nearey2**, and **Bark Difference Metric**.  
-- Introduced additional scale conversion options: **Bark**, **Log**, **Mel**, and **ERB**.  
-- Enabled the **NavigationToolbar** in Audio Analysis Tools, which allows users to:  
-  – Zoom in/out  
-  – Change the color palette  
-  – Modify visualization settings  
-  – Save with different configurations  
-- Introduced a brand-new application icon that I drew myself. :)
-
-**Improvements:**
-
-- Modularized the previously monolithic codebase into a more structured, maintainable components.
-- Significantly improved the overall code organization.
-- Made the DataFrame Editor window a bit larger for better visibility and usability.  
-
-**Documentation:**
-
-- Added comprehensive tutorials to the GitHub repository to guide users through key features and usage.
-
-### VowSpace v1.4.1 Release Notes *(Previous version)*
-
-**Bug Fixes:**
-
-- Fixed an issue where axes were inverted upon data import.  
-- Fixed a crash that occurred when the canvas size was below 1 pixel.
-
-**New Features:**
-
-- Added Ellipses and Qhulls to visually group related data points for improved readability.  
-- Introduced a "Group by Vowel" option: previously, data points were connected based on the speaker; now users can optionally connect same vowels across different speakers.
+**New features:**
+- Added a dedicated Export Plot dialog with:
+- Live preview of export settings
+- Support for PNG, JPG, TIFF, SVG, and PDF formats, pixel-based dimension control with DPI scaling
+- Introduced new visualization customization options, including:
+  - Color palette selection
+  - Point size and transparency controls
+  - Ellipse and convex hull styling options (filled/outline/circular)
+- Added centralized Visualization Settings dialog for improved workflow
 
 **Improvements:**
+- Refactored visualization system:
+  - Replaced scattered UI controls with a unified settings interface, now visualization settings and normalization settings are under one window
+  - Improved organization of visualization options (ellipses, qhulls, labels, etc.)
+- Reworked normalization pipeline:
+  - Switched to dropdown-based selection (single normalization at a time)
+  - Prevented cumulative transformations by preserving original data
+- Improved export workflow:
+  - Unified saving process into export dialog
+  - Added quick-save option using current export settings
 
-- Increased the default canvas size for better visualization.  
-- Set the default and minimum application window size to 800×800 pixels.  
-- Changed the default image export resolution from 600 to 1200 DPI for higher-quality output.  
-- Rearranged menu items for more intuitive navigation.
-
----
+**Bug fixes:**
+  - Fixed normalization stacking issue that caused incorrect results across updates
+  - Resolved UI inconsistencies in visualization toggles
 
 # Installation
 
@@ -249,6 +233,14 @@ VowSpace supports the following tabular data formats for both reading and writin
 - **Excel (.xlsx, .xls)**
 
 These formats are handled using the pandas library, with Excel support provided via openpyxl.
+
+## Export Plot
+
+The app also includes a nifty export tool that allows you to save your plot in PNG, JPG, TIFF, SVG, or PDF format. It features a preview screen where you can see how changes to DPI, pixel dimensions, and layout settings affect the final output.
+
+![Export Plot](https://alicagankaya.com/wp-content/uploads/2026/05/export.png)
+
+
 
 ## IPA Keyboard
 
