@@ -18,7 +18,7 @@ In phonetic and sociophonetic research, analyzing vowel formants is essential fo
 
 YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
 
-![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2025/07/main-window.png)
+![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2026/05/vowspace-main.png)
 
 
 ## Version Log
