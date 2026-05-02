@@ -1,10 +1,12 @@
 # This is where everything else comes together.
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+import tempfile
 import numpy as np
 import pandas as pd
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
     QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction,
@@ -63,6 +65,16 @@ class VowelSpaceVisualizer(QWidget):
             "show_center": False
         }
 
+        # Saving defaults
+        self.export_settings = {
+            "format": "png",
+            "dpi": 300,
+            "width": 1800,
+            "height": 1800,
+            "transparent": False,
+            "tight": True
+        }
+
         # Create widgets
         self.create_widgets()
 
@@ -73,7 +85,7 @@ class VowelSpaceVisualizer(QWidget):
         base_columns = ["vowel", "f0", "f1", "f2", "f3", "f4", "f5", "speaker"]
         self.original_data = pd.DataFrame(columns=base_columns)
         self.data = self.original_data.copy()
-        self.setWindowTitle("VowSpace v1.4.4")
+        self.setWindowTitle("VowSpace v1.4.5")
         self.setWindowIcon(QIcon("vowspace/assets/vowspace.ico"))
 
         self.create_menu_bar()
@@ -89,13 +101,13 @@ class VowelSpaceVisualizer(QWidget):
         # File menu
         file_menu = menubar.addMenu("File")
 
-        save_action = self.create_action("Save", self.save_scatterplot_auto, Qt.CTRL + Qt.Key_S)
-        save_as_action = self.create_action("Save As...", self.save_scatterplot, Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        save_action = self.create_action("Save Plot", self.save_plot_quick, Qt.CTRL + Qt.Key_S)
+        export_plot_action = self.create_action("Export Plot...", self.open_export_settings)
         save_data_action = self.create_action("Save Data As...", self.save_data)
         import_data_action = self.create_action("Import Data from Dataset", self.import_data)
 
         file_menu.addAction(save_action)
-        file_menu.addAction(save_as_action)
+        file_menu.addAction(export_plot_action)
         file_menu.addAction(save_data_action)
         file_menu.addAction(import_data_action)
 
@@ -109,7 +121,7 @@ class VowelSpaceVisualizer(QWidget):
         options_menu = menubar.addMenu("Options")
 
         visualization_settings_action = self.create_action(
-            "Visualization Settings...",
+            "Visualization/Normalization Settings...",
             self.open_visualization_settings
         )
         options_menu.addAction(visualization_settings_action)
@@ -404,6 +416,10 @@ class VowelSpaceVisualizer(QWidget):
     def open_visualization_settings(self):
         self.visualization_settings_window = VisualizationSettingsDialog(self)
         self.visualization_settings_window.show()
+
+    def open_export_settings(self):
+        self.export_settings_window = ExportSettingsDialog(self)
+        self.export_settings_window.exec_()
 
     # Creates the scatterplot
     def update_plot(self, format=None):
@@ -851,35 +867,87 @@ class VowelSpaceVisualizer(QWidget):
 
         self.update_plot()
 
-    # Allows the user to simply save whatever there is on the scatterplot quickly
-    def save_scatterplot_auto(self):
-        custom_title = self.edit_title.text() or "Vowel Space(s)"
-        file_name = f"{custom_title}.jpg"
+    def save_plot_quick(self):
+        custom_title = self.edit_title.text() or "Vowel Space"
+        file_format = self.export_settings["format"]
+        file_name = f"{custom_title}.{file_format}"
 
-        if file_name:
-            try:
-                self.figure.savefig(file_name, format='jpeg', dpi=1200)
-                QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
+        self.export_figure(file_name)
 
-    # Lets the user to make further changes to the file to be saved
-    def save_scatterplot(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save Scatterplot", "",
-                                                   "JPEG Files (*.jpg *.jpeg);;PNG Files (*.png);;All Files (*)",
-                                                   options=options)
+    # Saving reimagined
+    def save_plot(self):
+        file_format = self.export_settings["format"]
 
-        if file_name:
-            try:
-                # Determine file format based on the selected file extension
-                file_format = 'jpeg' if file_name.lower().endswith(('.jpg', '.jpeg')) else 'png'
+        filters = (
+            "PNG Files (*.png);;"
+            "JPEG Files (*.jpg *.jpeg);;"
+            "PDF Files (*.pdf);;"
+            "SVG Files (*.svg);;"
+            "TIFF Files (*.tif *.tiff);;"
+            "All Files (*)"
+        )
 
-                self.figure.savefig(file_name, format=file_format, dpi=1200)
-                QMessageBox.information(self, "Success", "Scatterplot saved successfully.")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error saving scatterplot: {str(e)}")
+        file_name, selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Save Plot",
+            "",
+            filters
+        )
+
+        if not file_name:
+            return
+
+        selected_format = self.infer_export_format(file_name, selected_filter)
+
+        if not file_name.lower().endswith((
+                ".png", ".jpg", ".jpeg", ".pdf", ".svg", ".tif", ".tiff"
+        )):
+            file_name += f".{selected_format}"
+
+        self.export_figure(file_name, selected_format)
+
+    def export_figure(self, file_name, file_format=None):
+        file_format = file_format or self.export_settings["format"]
+
+        old_size = self.figure.get_size_inches()
+
+        try:
+            width_px = self.export_settings["width"]
+            height_px = self.export_settings["height"]
+            dpi = self.export_settings["dpi"]
+
+            self.figure.set_size_inches(
+                width_px / dpi,
+                height_px / dpi
+            )
+
+            if self.export_settings["tight"]:
+                self.figure.tight_layout()
+
+            self.figure.savefig(
+                file_name,
+                format=file_format,
+                dpi=dpi,
+                transparent=self.export_settings["transparent"],
+                bbox_inches="tight" if self.export_settings["tight"] else None
+            )
+
+            QMessageBox.information(
+                self,
+                "Success",
+                "Plot exported successfully."
+            )
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Error exporting plot: {str(e)}"
+            )
+
+        finally:
+            self.figure.set_size_inches(old_size)
+            self.canvas.draw()
 
     # Saves the current dataframe as an Excel or CSV file
     def save_data(self):
@@ -1197,3 +1265,232 @@ class VisualizationSettingsDialog(QDialog):
         self.point_alpha_dropdown.setCurrentText("0.8")
 
         self.apply_settings()
+
+# A better way to save plots for publication
+class ExportSettingsDialog(QDialog):
+    def __init__(self, visualizer):
+        super().__init__(visualizer)
+        self.visualizer = visualizer
+        self.preview_file = None
+
+        self.setWindowTitle("Export Plot")
+        self.setMinimumWidth(520)
+
+        self.create_widgets()
+        self.set_layout()
+        self.load_current_settings()
+        self.update_preview()
+
+    def create_widgets(self):
+        self.format_dropdown = QComboBox()
+        self.format_dropdown.addItems(["png", "jpeg", "pdf", "svg", "tiff"])
+
+        self.dpi_dropdown = QComboBox()
+        self.dpi_dropdown.addItems(["150", "300", "600"])
+        self.dpi_dropdown.setCurrentText("300")
+
+        self.width_input = QLineEdit()
+        self.height_input = QLineEdit()
+
+        self.transparent_checkbox = QCheckBox("Transparent background")
+        self.tight_checkbox = QCheckBox("Tight layout")
+
+        self.preview_label = QLabel()
+        self.preview_label.setMinimumSize(420, 320)
+        self.preview_label.setScaledContents(True)
+
+        self.preview_button = QPushButton("Preview")
+        self.save_button = QPushButton("Save")
+        self.apply_button = QPushButton("Apply")
+        self.reset_button = QPushButton("Reset to Defaults")
+        self.close_button = QPushButton("Close")
+
+        self.save_button.setDefault(True)
+
+        self.preview_button.clicked.connect(self.update_preview)
+        self.save_button.clicked.connect(self.save_from_dialog)
+        self.apply_button.clicked.connect(self.apply_settings)
+        self.reset_button.clicked.connect(self.reset_to_defaults)
+        self.close_button.clicked.connect(self.close)
+
+    def set_layout(self):
+        main_layout = QVBoxLayout()
+
+        export_group = QGroupBox("Export Settings")
+        export_layout = QGridLayout()
+
+        export_layout.addWidget(QLabel("Format:"), 0, 0)
+        export_layout.addWidget(self.format_dropdown, 0, 1)
+
+        export_layout.addWidget(QLabel("DPI:"), 1, 0)
+        export_layout.addWidget(self.dpi_dropdown, 1, 1)
+
+        export_layout.addWidget(QLabel("Width (px):"), 2, 0)
+        export_layout.addWidget(self.width_input, 2, 1)
+
+        export_layout.addWidget(QLabel("Height (px):"), 3, 0)
+        export_layout.addWidget(self.height_input, 3, 1)
+
+        export_layout.addWidget(self.transparent_checkbox, 4, 0, 1, 2)
+        export_layout.addWidget(self.tight_checkbox, 5, 0, 1, 2)
+
+        export_group.setLayout(export_layout)
+
+        preview_group = QGroupBox("Preview")
+        preview_layout = QVBoxLayout()
+        preview_layout.addWidget(self.preview_label)
+        preview_layout.addWidget(self.preview_button)
+        preview_group.setLayout(preview_layout)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.apply_button)
+        button_layout.addWidget(self.reset_button)
+        button_layout.addWidget(self.close_button)
+
+        main_layout.addWidget(export_group)
+        main_layout.addWidget(preview_group)
+        main_layout.addLayout(button_layout)
+
+        self.setLayout(main_layout)
+
+    def load_current_settings(self):
+        settings = self.visualizer.export_settings
+
+        self.format_dropdown.setCurrentText(settings["format"])
+        self.dpi_dropdown.setCurrentText(str(settings["dpi"]))
+        self.width_input.setText(str(settings["width"]))
+        self.height_input.setText(str(settings["height"]))
+        self.transparent_checkbox.setChecked(settings["transparent"])
+        self.tight_checkbox.setChecked(settings["tight"])
+
+    def validate_export_values(self):
+        try:
+            width_px = int(self.width_input.text())
+            height_px = int(self.height_input.text())
+            dpi = int(self.dpi_dropdown.currentText())
+
+            if width_px <= 0 or height_px <= 0:
+                raise ValueError
+
+        except ValueError:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Width and height must be positive whole numbers in pixels."
+            )
+            return None
+
+        return width_px, height_px, dpi
+
+    def apply_settings(self):
+        values = self.validate_export_values()
+        if values is None:
+            return False
+
+        width_px, height_px, dpi = values
+
+        self.visualizer.export_settings["format"] = self.format_dropdown.currentText()
+        self.visualizer.export_settings["dpi"] = dpi
+        self.visualizer.export_settings["width"] = width_px
+        self.visualizer.export_settings["height"] = height_px
+        self.visualizer.export_settings["transparent"] = self.transparent_checkbox.isChecked()
+        self.visualizer.export_settings["tight"] = self.tight_checkbox.isChecked()
+
+        return True
+
+    def update_preview(self):
+        values = self.validate_export_values()
+        if values is None:
+            return
+
+        width_px, height_px, dpi = values
+
+        old_size = self.visualizer.figure.get_size_inches()
+
+        try:
+            width_in = width_px / dpi
+            height_in = height_px / dpi
+
+            self.visualizer.figure.set_size_inches(width_in, height_in)
+
+            if self.tight_checkbox.isChecked():
+                self.visualizer.figure.tight_layout()
+
+            temp_file = tempfile.NamedTemporaryFile(
+                suffix=".png",
+                delete=False
+            )
+            temp_file.close()
+
+            self.visualizer.figure.savefig(
+                temp_file.name,
+                format="png",
+                dpi=dpi,
+                transparent=self.transparent_checkbox.isChecked(),
+                bbox_inches="tight" if self.tight_checkbox.isChecked() else None
+            )
+
+            self.preview_file = temp_file.name
+
+            pixmap = QPixmap(self.preview_file)
+            self.preview_label.setPixmap(pixmap)
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Error creating preview: {str(e)}"
+            )
+
+        finally:
+            self.visualizer.figure.set_size_inches(old_size)
+            self.visualizer.canvas.draw()
+
+    def save_from_dialog(self):
+        if not self.apply_settings():
+            return
+
+        file_format = self.visualizer.export_settings["format"]
+
+        filters = (
+            "PNG Files (*.png);;"
+            "JPEG Files (*.jpg *.jpeg);;"
+            "PDF Files (*.pdf);;"
+            "SVG Files (*.svg);;"
+            "TIFF Files (*.tif *.tiff);;"
+            "All Files (*)"
+        )
+
+        default_name = self.visualizer.edit_title.text() or "Vowel Space"
+        default_name = f"{default_name}.{file_format}"
+
+        file_name, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export Plot",
+            default_name,
+            filters
+        )
+
+        if not file_name:
+            return
+
+        if "." in file_name:
+            base_name = file_name.rsplit(".", 1)[0]
+        else:
+            base_name = file_name
+
+        file_name = f"{base_name}.{file_format}"
+
+        self.visualizer.export_figure(file_name, file_format)
+
+    def reset_to_defaults(self):
+        self.format_dropdown.setCurrentText("png")
+        self.dpi_dropdown.setCurrentText("300")
+        self.width_input.setText("2400")
+        self.height_input.setText("2400")
+        self.transparent_checkbox.setChecked(False)
+        self.tight_checkbox.setChecked(True)
+
+        self.apply_settings()
+        self.update_preview()
