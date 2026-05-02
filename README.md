@@ -24,6 +24,8 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 ## Version Log
 
 ### VowSpace v1.4.5 Release Notes *(the Visualization Update)*
+This version focuses on on giving users more control over plot customization, improving saving options, and making the UI cleaner and easier to use!
+
 **New features:**
 - Added a dedicated Export Plot dialog with:
 - Live preview of export settings
@@ -36,7 +38,7 @@ YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutor
 
 **Improvements:**
 - Refactored visualization system:
-  - Replaced scattered UI controls with a unified settings interface
+  - Replaced scattered UI controls with a unified settings interface, now visualization settings and normalization settings are under one window
   - Improved organization of visualization options (ellipses, qhulls, labels, etc.)
 - Reworked normalization pipeline:
   - Switched to dropdown-based selection (single normalization at a time)
