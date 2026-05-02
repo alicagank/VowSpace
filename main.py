@@ -24,5 +24,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# VowSpace (Vowel Space Visualizer) v.1.4.2
+# VowSpace (Vowel Space Visualizer)
 # Ali Çağan Kaya, under the GPL-3.0 license.
