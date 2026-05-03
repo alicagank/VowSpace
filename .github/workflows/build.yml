@@ -17,16 +17,16 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: "3.12"
-            extra: linux
+            platform: linux
           - os: windows-latest
             python-version: "3.12"
-            extra: windows
+            platform: windows
           - os: macos-latest
             python-version: "3.12"
-            extra: mac
+            platform: mac
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -35,14 +35,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .
 
-      # Linux + Windows
-      - name: Build Linux/Windows app
-        if: matrix.extra != 'mac'
+      - name: Install Linux system dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y patchelf libgl1 libegl1 libxkbcommon-x11-0 libxcb-cursor0
+
+      - name: Build Linux and Windows app
+        if: matrix.platform != 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
@@ -53,18 +58,12 @@ jobs:
           include-package: PyQt5
           include-package-data: matplotlib
           include-data-dir: vowspace/assets=vowspace/assets
-          windows-icon-from-ico: vowspace/assets/vowspace.ico
-          linux-icon: vowspace/assets/vowspace.png
-          product-name: VowSpace
           output-file: VowSpace
-          file-description: VowSpace
-          file-version: 1.4.5
-          product-version: 1.4.5
           output-dir: build
+          assume-yes-for-downloads: true
 
-      # macOS
       - name: Build macOS app
-        if: matrix.extra == 'mac'
+        if: matrix.platform == 'mac'
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
@@ -74,7 +73,7 @@ jobs:
           include-qt-plugins: platforms,platformthemes,imageformats
           include-package: PyQt5
           include-package-data: matplotlib
-          include-data-dir: vowspace/assets=vowspace/assets
+          include-data-dir: vowspace/assets=resources/assets
           macos-app-icon: vowspace/assets/vowspace.icns
           macos-app-name: VowSpace
           macos-signed-app-name: com.alicagank.vowspace
@@ -83,10 +82,43 @@ jobs:
           output-file: VowSpace
           file-description: VowSpace
           output-dir: build
+          assume-yes-for-downloads: true
 
-      - name: Upload artifacts
+      - name: Package Linux build
+        if: matrix.platform == 'linux'
+        run: |
+          cd build
+          tar -czf VowSpace-linux.tar.gz main.dist
+
+      - name: Package Windows build
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/main.dist -DestinationPath build/VowSpace-windows.zip
+
+      - name: Package macOS build
+        if: matrix.platform == 'mac'
+        run: |
+          cd build
+          zip -r VowSpace-macOS.zip main.app
+
+      - name: Upload Linux artifact
+        if: matrix.platform == 'linux'
         uses: actions/upload-artifact@v4
         with:
-          name: VowSpace-${{ matrix.extra }}
-          path: build/**
-          include-hidden-files: true
+          name: VowSpace-linux
+          path: build/VowSpace-linux.tar.gz
+
+      - name: Upload Windows artifact
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: VowSpace-windows
+          path: build/VowSpace-windows.zip
+
+      - name: Upload macOS artifact
+        if: matrix.platform == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: VowSpace-macOS
+          path: build/VowSpace-macOS.zip
