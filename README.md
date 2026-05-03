@@ -1,4 +1,4 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml) [![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml) [![DOI](https://joss.theoj.org/papers/10.21105/joss.10189/status.svg)](https://doi.org/10.21105/joss.10189) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19718178.svg)](https://doi.org/10.5281/zenodo.19718178)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml) [![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml) [![DOI](https://joss.theoj.org/papers/10.21105/joss.10189/status.svg)](https://doi.org/10.21105/joss.10189)
 
 ![VowSpace Icon](vowspace/assets/vowspace.ico)
 
@@ -18,7 +18,7 @@ In phonetic and sociophonetic research, analyzing vowel formants is essential fo
 
 YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
 
-![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2025/07/main-window.png)
+![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2026/05/vowspace-main.png)
 
 
 ## Version Log
