@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "VowSpace"
-version = "1.4.4"
+version = "1.4.5"
 description = "Vowel Space Visualizer"
-authors = [{ name = "VowSpace Authors" }]
+authors = [{ name = "Ali Çağan Kaya" }]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -27,7 +27,7 @@ packages = ["vowspace"]
 py-modules = ["main"]
 
 [tool.setuptools.package-data]
-"*" = ["*.png", "*.ico", "*.wav", "*.xlsx"]
+"*" = ["*.png", "*.ico", "*.icns", "*.wav", "*.xlsx"]
 
 [project.optional-dependencies]
 dev = [
