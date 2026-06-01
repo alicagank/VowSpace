@@ -65,12 +65,16 @@ VowSpace is currently available as a portable application. The distributions are
 
 ## macOS
 
-1. Download the latest `.app` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
-2. Once downloaded, you can launch **VowSpace**.
-3. If you encounter a security warning on first launch:
-   - Right-click (or Ctrl-click) the VowSpace app and select **Open**.
-   - Confirm the prompt from macOS Gatekeeper.
-4. You may drag the **VowSpace** `.app` icon into your **Applications** folder.
+1. Download the latest `.dmg` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
+2. Open the downloaded `.dmg` file.
+3. Drag the **VowSpace** app icon into the **Applications** folder.
+4. Launch **VowSpace** from your **Applications** folder.
+
+If macOS shows a security warning on first launch:
+
+- Right-click or Ctrl-click the **VowSpace** app.
+- Select **Open**.
+- Confirm the prompt from macOS Gatekeeper.
 
 
 ## Windows
