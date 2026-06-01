@@ -2,7 +2,15 @@
 
 ![VowSpace Icon](vowspace/assets/vowspace.ico)
 
-### Feedback form
+## Software paper
+
+I'm very happy to share that VowSpace has been published in the *Journal of Open Source Software*. The paper gives an overview of the motivation behind the project, its main features, and its intended use in phonetic research:
+
+> Kaya, A. Ç., (2026). VowSpace: A vowel formant analysis application for phonetic research. Journal of Open Source Software, 11(120), 10189, https://doi.org/10.21105/joss.10189
+
+You can read the paper here: https://joss.theoj.org/papers/10.21105/joss.10189
+
+## Feedback form
 
 I have been receiving helpful emails from users of VowSpace. Your feedback, bug reports, feature requests, and usage notes directly help improve the application. If you ask me for something, I will most likely add it at my earliest convenience.
 
