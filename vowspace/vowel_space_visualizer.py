@@ -10,7 +10,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
     QGridLayout, QFileDialog, QMessageBox, QMenu, QMenuBar, QAction,
-    QCheckBox, QComboBox, QDialog, QGroupBox
+    QCheckBox, QComboBox, QDialog, QGroupBox, QScrollArea
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import Ellipse
@@ -58,11 +58,15 @@ class VowelSpaceVisualizer(QWidget):
             "ellipse": False,
             "ellipse_outline": False,
             "circular": False,
+            "ellipse_confidence": 0.67,
 
             "qhull": False,
             "qhull_outline": False,
 
-            "show_center": False
+            "show_center": False,
+
+            "custom_x_label": "",
+            "custom_y_label": ""
         }
 
         # Saving defaults
@@ -592,7 +596,7 @@ class VowelSpaceVisualizer(QWidget):
                 x_num[mask],
                 marker=vowel_markers.get(vowel, "."),
                 c=color,
-                label=vowel,
+                label=None,
                 s=float(self.dropdown_point_size.currentText()),
                 alpha=float(self.dropdown_point_alpha.currentText()),
                 edgecolors="w",
@@ -673,7 +677,9 @@ class VowelSpaceVisualizer(QWidget):
             eigvals = eigvals[order]
             eigvecs = eigvecs[:, order]
 
-            scale_factor = np.sqrt(chi2.ppf(0.67, df=2))
+            # Added customizable confidence interval
+            confidence = self.plot_settings.get("ellipse_confidence", 0.67)
+            scale_factor = np.sqrt(chi2.ppf(confidence, df=2))
 
             width, height = 2 * scale_factor * np.sqrt(eigvals)
             angle = np.degrees(np.arctan2(*eigvecs[:, 0][::-1]))
@@ -815,22 +821,63 @@ class VowelSpaceVisualizer(QWidget):
                 pad=25
             )
 
-        legend = self.ax.get_legend()
-        if legend:
-            legend.remove()
-
         if self.plot_settings["show_legend"]:
-            handles, labels = self.ax.get_legend_handles_labels()
-            if handles and labels:
-                self.ax.legend(loc="lower left", bbox_to_anchor=(1.05, 0))
+            from matplotlib.lines import Line2D
+
+            group_by = config["group_by"]
+            colors = config["colors"]
+
+            legend_title = "Vowel" if group_by == "vowel" else "Speaker"
+
+            legend_handles = [
+                Line2D(
+                    [0],
+                    [0],
+                    marker="o",
+                    linestyle="",
+                    markerfacecolor=color,
+                    markeredgecolor="black",
+                    markersize=7,
+                    label=str(label)
+                )
+                for label, color in colors.items()
+            ]
+
+            if legend_handles:
+                self.ax.legend(
+                    handles=legend_handles,
+                    title=legend_title,
+                    loc="center left",
+                    bbox_to_anchor=(1.02, 0.5),
+                    frameon=True,
+                    framealpha=0.9,
+                    borderaxespad=0.0,
+                    fontsize=9,
+                    title_fontsize=10
+                )
 
         if self.plot_settings["show_grid"]:
             self.ax.grid(True, linestyle="--", linewidth=0.5)
         else:
             self.ax.grid(False)
 
-        self.ax.set_xlabel(y_column.upper())
-        self.ax.set_ylabel(x_column.upper())
+        custom_x_label = self.plot_settings.get("custom_x_label", "").strip()
+        custom_y_label = self.plot_settings.get("custom_y_label", "").strip()
+
+        visible_x_label = (
+            custom_x_label
+            if custom_x_label
+            else self.pretty_axis_label(y_column)
+        )
+
+        visible_y_label = (
+            custom_y_label
+            if custom_y_label
+            else self.pretty_axis_label(x_column)
+        )
+
+        self.ax.set_xlabel(visible_x_label)
+        self.ax.set_ylabel(visible_y_label)
 
         self.ax.yaxis.tick_right()
         self.ax.xaxis.tick_top()
@@ -842,6 +889,70 @@ class VowelSpaceVisualizer(QWidget):
         self.ax.xaxis.set_ticks_position("top")
         self.ax.yaxis.set_label_position("left")
         self.ax.yaxis.set_ticks_position("right")
+
+    def pretty_axis_label(self, column_name):
+        label_map = {
+            "f0": "F0",
+            "f1": "F1",
+            "f2": "F2",
+            "f3": "F3",
+            "f4": "F4",
+            "f5": "F5",
+
+            "bark_f0": "F0 (Bark)",
+            "bark_f1": "F1 (Bark)",
+            "bark_f2": "F2 (Bark)",
+            "bark_f3": "F3 (Bark)",
+            "bark_f4": "F4 (Bark)",
+            "bark_f5": "F5 (Bark)",
+
+            "log_f0": "log F0",
+            "log_f1": "log F1",
+            "log_f2": "log F2",
+            "log_f3": "log F3",
+            "log_f4": "log F4",
+            "log_f5": "log F5",
+
+            "mel_f0": "F0 (mel)",
+            "mel_f1": "F1 (mel)",
+            "mel_f2": "F2 (mel)",
+            "mel_f3": "F3 (mel)",
+            "mel_f4": "F4 (mel)",
+            "mel_f5": "F5 (mel)",
+
+            "erb_f0": "F0 (ERB)",
+            "erb_f1": "F1 (ERB)",
+            "erb_f2": "F2 (ERB)",
+            "erb_f3": "F3 (ERB)",
+            "erb_f4": "F4 (ERB)",
+            "erb_f5": "F5 (ERB)",
+
+            "zsc_f0": "F0 (Lobanov z-score)",
+            "zsc_f1": "F1 (Lobanov z-score)",
+            "zsc_f2": "F2 (Lobanov z-score)",
+            "zsc_f3": "F3 (Lobanov z-score)",
+            "zsc_f4": "F4 (Lobanov z-score)",
+            "zsc_f5": "F5 (Lobanov z-score)",
+
+            "logmean_f0": "F0 (Nearey 1)",
+            "logmean_f1": "F1 (Nearey 1)",
+            "logmean_f2": "F2 (Nearey 1)",
+            "logmean_f3": "F3 (Nearey 1)",
+            "logmean_f4": "F4 (Nearey 1)",
+            "logmean_f5": "F5 (Nearey 1)",
+
+            "slogmean_f0": "F0 (Nearey 2)",
+            "slogmean_f1": "F1 (Nearey 2)",
+            "slogmean_f2": "F2 (Nearey 2)",
+            "slogmean_f3": "F3 (Nearey 2)",
+            "slogmean_f4": "F4 (Nearey 2)",
+            "slogmean_f5": "F5 (Nearey 2)",
+
+            "Z3_minus_Z2": "Z3 − Z2",
+            "Z3_minus_Z1": "Z3 − Z1",
+        }
+
+        return label_map.get(column_name, column_name.upper())
 
     # Takes delay event into account when resizing the app to avoid lag
     def custom_resize_event(self, event):
@@ -873,6 +984,34 @@ class VowelSpaceVisualizer(QWidget):
         file_name = f"{custom_title}.{file_format}"
 
         self.export_figure(file_name)
+
+    # Infers export format from the export class
+    def infer_export_format(self, file_name, selected_filter):
+        lower = file_name.lower()
+
+        if lower.endswith(".png"):
+            return "png"
+        if lower.endswith((".jpg", ".jpeg")):
+            return "jpeg"
+        if lower.endswith(".pdf"):
+            return "pdf"
+        if lower.endswith(".svg"):
+            return "svg"
+        if lower.endswith((".tif", ".tiff")):
+            return "tiff"
+
+        if "PNG" in selected_filter:
+            return "png"
+        if "JPEG" in selected_filter:
+            return "jpeg"
+        if "PDF" in selected_filter:
+            return "pdf"
+        if "SVG" in selected_filter:
+            return "svg"
+        if "TIFF" in selected_filter:
+            return "tiff"
+
+        return self.export_settings["format"]
 
     # Saving reimagined
     def save_plot(self):
@@ -1063,7 +1202,8 @@ class VisualizationSettingsDialog(QDialog):
         self.visualizer = visualizer
 
         self.setWindowTitle("Visualization / Normalization Settings")
-        self.setMinimumWidth(360)
+        self.setMinimumSize(460, 520)
+        self.resize(460, 620)
 
         self.create_widgets()
         self.set_layout()
@@ -1082,6 +1222,17 @@ class VisualizationSettingsDialog(QDialog):
             "Nearey1 Normalization",
             "Nearey2 Normalization"
         ])
+
+        self.custom_x_label_input = QLineEdit()
+        self.custom_y_label_input = QLineEdit()
+
+        self.custom_x_label_input.setPlaceholderText(
+            "Leave empty for automatic label"
+        )
+        self.custom_y_label_input.setPlaceholderText(
+            "Leave empty for automatic label"
+        )
+
         self.group_by_vowel_checkbox = QCheckBox("Group by vowel")
         self.show_legend_checkbox = QCheckBox("Show legend")
         self.show_grid_checkbox = QCheckBox("Show grid")
@@ -1093,14 +1244,28 @@ class VisualizationSettingsDialog(QDialog):
         self.connect_ellipse_checkbox = QCheckBox("Connect with ellipse(s)")
         self.ellipse_outline_checkbox = QCheckBox("Ellipse outline only")
         self.circular_boundary_checkbox = QCheckBox("Use circular boundary")
+
+        self.ellipse_confidence_input = QLineEdit()
+        self.ellipse_confidence_input.setText("67")
+        self.ellipse_confidence_input.setPlaceholderText(
+            "e.g. 67, 67%, 0.67, 95"
+        )
+
         self.connect_qhull_checkbox = QCheckBox("Connect with Qhull(s)")
         self.qhull_outline_checkbox = QCheckBox("Qhull outline only")
+
         self.show_center_labels_checkbox = QCheckBox("Show center labels")
 
         self.palette_dropdown = QComboBox()
         self.palette_dropdown.addItems([
-            "viridis", "plasma", "inferno", "magma",
-            "cividis", "tab10", "Set2", "Dark2"
+            "viridis",
+            "plasma",
+            "inferno",
+            "magma",
+            "cividis",
+            "tab10",
+            "Set2",
+            "Dark2"
         ])
 
         self.point_size_dropdown = QComboBox()
@@ -1118,7 +1283,13 @@ class VisualizationSettingsDialog(QDialog):
         self.close_button.clicked.connect(self.close)
 
     def set_layout(self):
-        main_layout = QVBoxLayout()
+        outer_layout = QVBoxLayout()
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        scroll_content = QWidget()
+        main_layout = QVBoxLayout(scroll_content)
 
         normalization_group = QGroupBox("Normalization")
         normalization_layout = QVBoxLayout()
@@ -1126,7 +1297,13 @@ class VisualizationSettingsDialog(QDialog):
         normalization_layout.addWidget(self.normalization_dropdown)
         normalization_group.setLayout(normalization_layout)
 
-        main_layout.addWidget(normalization_group)
+        axis_label_group = QGroupBox("Axis Labels")
+        axis_label_layout = QGridLayout()
+        axis_label_layout.addWidget(QLabel("Visible X-axis label:"), 0, 0)
+        axis_label_layout.addWidget(self.custom_x_label_input, 0, 1)
+        axis_label_layout.addWidget(QLabel("Visible Y-axis label:"), 1, 0)
+        axis_label_layout.addWidget(self.custom_y_label_input, 1, 1)
+        axis_label_group.setLayout(axis_label_layout)
 
         general_group = QGroupBox("General")
         general_layout = QVBoxLayout()
@@ -1160,6 +1337,12 @@ class VisualizationSettingsDialog(QDialog):
         ellipse_layout.addWidget(self.connect_ellipse_checkbox)
         ellipse_layout.addWidget(self.ellipse_outline_checkbox)
         ellipse_layout.addWidget(self.circular_boundary_checkbox)
+
+        ellipse_confidence_layout = QHBoxLayout()
+        ellipse_confidence_layout.addWidget(QLabel("Coverage (%):"))
+        ellipse_confidence_layout.addWidget(self.ellipse_confidence_input)
+        ellipse_layout.addLayout(ellipse_confidence_layout)
+
         ellipse_group.setLayout(ellipse_layout)
 
         qhull_group = QGroupBox("Qhulls")
@@ -1176,75 +1359,213 @@ class VisualizationSettingsDialog(QDialog):
         boundary_layout.addWidget(ellipse_group)
         boundary_layout.addWidget(qhull_group)
         boundary_layout.addWidget(shared_boundary_group)
-
         boundary_group.setLayout(boundary_layout)
+
+        main_layout.addWidget(normalization_group)
+        main_layout.addWidget(axis_label_group)
+        main_layout.addWidget(general_group)
+        main_layout.addWidget(labels_group)
+        main_layout.addWidget(points_group)
+        main_layout.addWidget(boundary_group)
+        main_layout.addStretch()
+
+        scroll_area.setWidget(scroll_content)
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.apply_button)
         button_layout.addWidget(self.reset_button)
         button_layout.addWidget(self.close_button)
 
-        main_layout.addWidget(general_group)
-        main_layout.addWidget(labels_group)
-        main_layout.addWidget(points_group)
-        main_layout.addWidget(boundary_group)
-        main_layout.addLayout(button_layout)
+        outer_layout.addWidget(scroll_area)
+        outer_layout.addLayout(button_layout)
 
-        self.setLayout(main_layout)
+        self.setLayout(outer_layout)
 
     def load_current_settings(self):
         v = self.visualizer
 
-        self.normalization_dropdown.setCurrentText(
-            self.visualizer.current_normalization
+        self.normalization_dropdown.setCurrentText(v.current_normalization)
+
+        self.custom_x_label_input.setText(
+            v.plot_settings.get("custom_x_label", "")
+        )
+        self.custom_y_label_input.setText(
+            v.plot_settings.get("custom_y_label", "")
         )
 
-        self.group_by_vowel_checkbox.setChecked(v.plot_settings["group_by_vowel"])
-        self.show_legend_checkbox.setChecked(v.plot_settings["show_legend"])
-        self.show_grid_checkbox.setChecked(v.plot_settings["show_grid"])
+        self.group_by_vowel_checkbox.setChecked(
+            v.plot_settings["group_by_vowel"]
+        )
+        self.show_legend_checkbox.setChecked(
+            v.plot_settings["show_legend"]
+        )
+        self.show_grid_checkbox.setChecked(
+            v.plot_settings["show_grid"]
+        )
 
-        self.show_f_labels_checkbox.setChecked(v.plot_settings["labels_f"])
-        self.show_vowel_labels_checkbox.setChecked(v.plot_settings["labels_vowel"])
-        self.show_speaker_labels_checkbox.setChecked(v.plot_settings["labels_speaker"])
+        self.show_f_labels_checkbox.setChecked(
+            v.plot_settings["labels_f"]
+        )
+        self.show_vowel_labels_checkbox.setChecked(
+            v.plot_settings["labels_vowel"]
+        )
+        self.show_speaker_labels_checkbox.setChecked(
+            v.plot_settings["labels_speaker"]
+        )
 
-        self.connect_ellipse_checkbox.setChecked(v.plot_settings["ellipse"])
-        self.ellipse_outline_checkbox.setChecked(v.plot_settings["ellipse_outline"])
-        self.circular_boundary_checkbox.setChecked(v.plot_settings["circular"])
-        self.connect_qhull_checkbox.setChecked(v.plot_settings["qhull"])
-        self.qhull_outline_checkbox.setChecked(v.plot_settings["qhull_outline"])
-        self.show_center_labels_checkbox.setChecked(v.plot_settings["show_center"])
+        self.connect_ellipse_checkbox.setChecked(
+            v.plot_settings["ellipse"]
+        )
+        self.ellipse_outline_checkbox.setChecked(
+            v.plot_settings["ellipse_outline"]
+        )
+        self.circular_boundary_checkbox.setChecked(
+            v.plot_settings["circular"]
+        )
 
-        self.palette_dropdown.setCurrentText(v.dropdown_palette.currentText())
-        self.point_size_dropdown.setCurrentText(v.dropdown_point_size.currentText())
-        self.point_alpha_dropdown.setCurrentText(v.dropdown_point_alpha.currentText())
+        ellipse_confidence = v.plot_settings.get("ellipse_confidence", 0.67)
+        self.ellipse_confidence_input.setText(
+            str(int(round(ellipse_confidence * 100)))
+        )
+
+        self.connect_qhull_checkbox.setChecked(
+            v.plot_settings["qhull"]
+        )
+        self.qhull_outline_checkbox.setChecked(
+            v.plot_settings["qhull_outline"]
+        )
+
+        self.show_center_labels_checkbox.setChecked(
+            v.plot_settings["show_center"]
+        )
+
+        self.palette_dropdown.setCurrentText(
+            v.dropdown_palette.currentText()
+        )
+        self.point_size_dropdown.setCurrentText(
+            v.dropdown_point_size.currentText()
+        )
+        self.point_alpha_dropdown.setCurrentText(
+            v.dropdown_point_alpha.currentText()
+        )
+
+    def parse_ellipse_confidence(self):
+        text = self.ellipse_confidence_input.text().strip()
+
+        if not text:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Ellipse coverage cannot be empty."
+            )
+            return None
+
+        text = text.replace("%", "").strip()
+
+        try:
+            value = float(text)
+        except ValueError:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Ellipse coverage must be a number, such as 67, 67%, 0.67, or 95."
+            )
+            return None
+
+        # Accept both percentage-style and proportion-style input.
+        # Examples:
+        # 67   -> 0.67
+        # 67%  -> 0.67
+        # 0.67 -> 0.67
+        if value > 1:
+            value = value / 100
+
+        if not 0 < value < 1:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Ellipse coverage must be greater than 0 and less than 100%."
+            )
+            return None
+
+        return value
 
     def apply_settings(self):
         v = self.visualizer
 
+        ellipse_confidence = self.parse_ellipse_confidence()
+        if ellipse_confidence is None:
+            return
+
         v.current_normalization = self.normalization_dropdown.currentText()
 
-        v.plot_settings["group_by_vowel"] = self.group_by_vowel_checkbox.isChecked()
-        v.plot_settings["show_legend"] = self.show_legend_checkbox.isChecked()
-        v.plot_settings["show_grid"] = self.show_grid_checkbox.isChecked()
+        v.plot_settings["custom_x_label"] = (
+            self.custom_x_label_input.text().strip()
+        )
+        v.plot_settings["custom_y_label"] = (
+            self.custom_y_label_input.text().strip()
+        )
 
-        v.plot_settings["labels_f"] = self.show_f_labels_checkbox.isChecked()
-        v.plot_settings["labels_vowel"] = self.show_vowel_labels_checkbox.isChecked()
-        v.plot_settings["labels_speaker"] = self.show_speaker_labels_checkbox.isChecked()
+        v.plot_settings["group_by_vowel"] = (
+            self.group_by_vowel_checkbox.isChecked()
+        )
+        v.plot_settings["show_legend"] = (
+            self.show_legend_checkbox.isChecked()
+        )
+        v.plot_settings["show_grid"] = (
+            self.show_grid_checkbox.isChecked()
+        )
 
-        v.plot_settings["ellipse"] = self.connect_ellipse_checkbox.isChecked()
-        v.plot_settings["ellipse_outline"] = self.ellipse_outline_checkbox.isChecked()
-        v.plot_settings["circular"] = self.circular_boundary_checkbox.isChecked()
-        v.plot_settings["qhull"] = self.connect_qhull_checkbox.isChecked()
-        v.plot_settings["qhull_outline"] = self.qhull_outline_checkbox.isChecked()
-        v.plot_settings["show_center"] = self.show_center_labels_checkbox.isChecked()
+        v.plot_settings["labels_f"] = (
+            self.show_f_labels_checkbox.isChecked()
+        )
+        v.plot_settings["labels_vowel"] = (
+            self.show_vowel_labels_checkbox.isChecked()
+        )
+        v.plot_settings["labels_speaker"] = (
+            self.show_speaker_labels_checkbox.isChecked()
+        )
 
-        v.dropdown_palette.setCurrentText(self.palette_dropdown.currentText())
-        v.dropdown_point_size.setCurrentText(self.point_size_dropdown.currentText())
-        v.dropdown_point_alpha.setCurrentText(self.point_alpha_dropdown.currentText())
+        v.plot_settings["ellipse"] = (
+            self.connect_ellipse_checkbox.isChecked()
+        )
+        v.plot_settings["ellipse_outline"] = (
+            self.ellipse_outline_checkbox.isChecked()
+        )
+        v.plot_settings["circular"] = (
+            self.circular_boundary_checkbox.isChecked()
+        )
+        v.plot_settings["ellipse_confidence"] = ellipse_confidence
+
+        v.plot_settings["qhull"] = (
+            self.connect_qhull_checkbox.isChecked()
+        )
+        v.plot_settings["qhull_outline"] = (
+            self.qhull_outline_checkbox.isChecked()
+        )
+
+        v.plot_settings["show_center"] = (
+            self.show_center_labels_checkbox.isChecked()
+        )
+
+        v.dropdown_palette.setCurrentText(
+            self.palette_dropdown.currentText()
+        )
+        v.dropdown_point_size.setCurrentText(
+            self.point_size_dropdown.currentText()
+        )
+        v.dropdown_point_alpha.setCurrentText(
+            self.point_alpha_dropdown.currentText()
+        )
 
         v.update_plot()
 
     def reset_to_defaults(self):
+        self.normalization_dropdown.setCurrentText("None")
+
+        self.custom_x_label_input.clear()
+        self.custom_y_label_input.clear()
+
         self.group_by_vowel_checkbox.setChecked(False)
         self.show_legend_checkbox.setChecked(False)
         self.show_grid_checkbox.setChecked(False)
@@ -1256,8 +1577,11 @@ class VisualizationSettingsDialog(QDialog):
         self.connect_ellipse_checkbox.setChecked(False)
         self.ellipse_outline_checkbox.setChecked(False)
         self.circular_boundary_checkbox.setChecked(False)
+        self.ellipse_confidence_input.setText("67")
+
         self.connect_qhull_checkbox.setChecked(False)
         self.qhull_outline_checkbox.setChecked(False)
+
         self.show_center_labels_checkbox.setChecked(False)
 
         self.palette_dropdown.setCurrentText("viridis")
@@ -1268,6 +1592,25 @@ class VisualizationSettingsDialog(QDialog):
 
 # A better way to save plots for publication
 class ExportSettingsDialog(QDialog):
+    RASTER_FORMATS = {"png", "jpeg", "tiff"}
+    VECTOR_FORMATS = {"pdf", "svg"}
+
+    EXTENSION_MAP = {
+        "png": "png",
+        "jpeg": "jpg",
+        "pdf": "pdf",
+        "svg": "svg",
+        "tiff": "tiff",
+    }
+
+    FILTER_MAP = {
+        "png": "PNG Files (*.png)",
+        "jpeg": "JPEG Files (*.jpg *.jpeg)",
+        "pdf": "PDF Files (*.pdf)",
+        "svg": "SVG Files (*.svg)",
+        "tiff": "TIFF Files (*.tif *.tiff)",
+    }
+
     def __init__(self, visualizer):
         super().__init__(visualizer)
         self.visualizer = visualizer
@@ -1280,18 +1623,30 @@ class ExportSettingsDialog(QDialog):
         self.create_widgets()
         self.set_layout()
         self.load_current_settings()
+        self.update_dimension_labels()
         self.update_preview()
 
     def create_widgets(self):
         self.format_dropdown = QComboBox()
         self.format_dropdown.addItems(["png", "jpeg", "pdf", "svg", "tiff"])
+        self.format_dropdown.currentTextChanged.connect(self.handle_format_change)
 
-        self.dpi_dropdown = QComboBox()
-        self.dpi_dropdown.addItems(["150", "300", "600"])
-        self.dpi_dropdown.setCurrentText("300")
+        self.dpi_input = QLineEdit()
+        self.dpi_input.setText("300")
+        self.dpi_input.setPlaceholderText("e.g. 300")
+
+        self.dpi_guide_label = QLabel(
+            "Suggested range: 72–1200 DPI. "
+            "Use 300 for most papers, 600+ for high-resolution raster export."
+        )
+        self.dpi_guide_label.setWordWrap(True)
 
         self.width_input = QLineEdit()
         self.height_input = QLineEdit()
+
+        self.width_label = QLabel()
+        self.height_label = QLabel()
+        self.dpi_label = QLabel("DPI:")
 
         self.transparent_checkbox = QCheckBox("Transparent background")
         self.tight_checkbox = QCheckBox("Tight layout")
@@ -1323,17 +1678,18 @@ class ExportSettingsDialog(QDialog):
         export_layout.addWidget(QLabel("Format:"), 0, 0)
         export_layout.addWidget(self.format_dropdown, 0, 1)
 
-        export_layout.addWidget(QLabel("DPI:"), 1, 0)
-        export_layout.addWidget(self.dpi_dropdown, 1, 1)
+        export_layout.addWidget(self.dpi_label, 1, 0)
+        export_layout.addWidget(self.dpi_input, 1, 1)
+        export_layout.addWidget(self.dpi_guide_label, 2, 0, 1, 2)
 
-        export_layout.addWidget(QLabel("Width (px):"), 2, 0)
-        export_layout.addWidget(self.width_input, 2, 1)
+        export_layout.addWidget(self.width_label, 3, 0)
+        export_layout.addWidget(self.width_input, 3, 1)
 
-        export_layout.addWidget(QLabel("Height (px):"), 3, 0)
-        export_layout.addWidget(self.height_input, 3, 1)
+        export_layout.addWidget(self.height_label, 4, 0)
+        export_layout.addWidget(self.height_input, 4, 1)
 
-        export_layout.addWidget(self.transparent_checkbox, 4, 0, 1, 2)
-        export_layout.addWidget(self.tight_checkbox, 5, 0, 1, 2)
+        export_layout.addWidget(self.transparent_checkbox, 5, 0, 1, 2)
+        export_layout.addWidget(self.tight_checkbox, 6, 0, 1, 2)
 
         export_group.setLayout(export_layout)
 
@@ -1359,42 +1715,128 @@ class ExportSettingsDialog(QDialog):
         settings = self.visualizer.export_settings
 
         self.format_dropdown.setCurrentText(settings["format"])
-        self.dpi_dropdown.setCurrentText(str(settings["dpi"]))
-        self.width_input.setText(str(settings["width"]))
-        self.height_input.setText(str(settings["height"]))
+        self.dpi_input.setText(str(settings["dpi"]))
+
+        file_format = settings["format"]
+
+        if file_format in self.VECTOR_FORMATS:
+            width_in = settings["width"] / settings["dpi"]
+            height_in = settings["height"] / settings["dpi"]
+
+            self.width_input.setText(f"{width_in:.2f}")
+            self.height_input.setText(f"{height_in:.2f}")
+        else:
+            self.width_input.setText(str(settings["width"]))
+            self.height_input.setText(str(settings["height"]))
+
         self.transparent_checkbox.setChecked(settings["transparent"])
         self.tight_checkbox.setChecked(settings["tight"])
 
+    def update_dimension_labels(self):
+        file_format = self.format_dropdown.currentText()
+
+        if file_format in self.VECTOR_FORMATS:
+            self.width_label.setText("Width (in):")
+            self.height_label.setText("Height (in):")
+            self.dpi_label.setText("Preview DPI:")
+        else:
+            self.width_label.setText("Width (px):")
+            self.height_label.setText("Height (px):")
+            self.dpi_label.setText("DPI:")
+
+    def handle_format_change(self):
+        file_format = self.format_dropdown.currentText()
+
+        self.update_dimension_labels()
+
+        if file_format in self.VECTOR_FORMATS:
+            self.width_input.setText("8")
+            self.height_input.setText("8")
+        else:
+            self.width_input.setText("1800")
+            self.height_input.setText("1800")
+
     def validate_export_values(self):
+        file_format = self.format_dropdown.currentText()
+
         try:
+            dpi = int(self.dpi_input.text().strip())
+
+            if dpi <= 0:
+                raise ValueError
+
+            if dpi < 72 or dpi > 1200:
+                reply = QMessageBox.question(
+                    self,
+                    "Unusual DPI",
+                    "The DPI value is outside the suggested range of 72–1200.\n\n"
+                    "Do you still want to use it?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+
+                if reply != QMessageBox.Yes:
+                    return None
+
+            if file_format in self.VECTOR_FORMATS:
+                width_in = float(self.width_input.text())
+                height_in = float(self.height_input.text())
+
+                if width_in <= 0 or height_in <= 0:
+                    raise ValueError
+
+                width_px = int(round(width_in * dpi))
+                height_px = int(round(height_in * dpi))
+
+                return {
+                    "format": file_format,
+                    "dpi": dpi,
+                    "width_px": width_px,
+                    "height_px": height_px,
+                    "width_in": width_in,
+                    "height_in": height_in,
+                }
+
             width_px = int(self.width_input.text())
             height_px = int(self.height_input.text())
-            dpi = int(self.dpi_dropdown.currentText())
 
             if width_px <= 0 or height_px <= 0:
                 raise ValueError
 
+            width_in = width_px / dpi
+            height_in = height_px / dpi
+
+            return {
+                "format": file_format,
+                "dpi": dpi,
+                "width_px": width_px,
+                "height_px": height_px,
+                "width_in": width_in,
+                "height_in": height_in,
+            }
+
         except ValueError:
+            if file_format in self.VECTOR_FORMATS:
+                message = "Width and height must be positive numbers in inches."
+            else:
+                message = "Width and height must be positive whole numbers in pixels."
+
             QMessageBox.critical(
                 self,
                 "Error",
-                "Width and height must be positive whole numbers in pixels."
+                message
             )
             return None
-
-        return width_px, height_px, dpi
 
     def apply_settings(self):
         values = self.validate_export_values()
         if values is None:
             return False
 
-        width_px, height_px, dpi = values
-
-        self.visualizer.export_settings["format"] = self.format_dropdown.currentText()
-        self.visualizer.export_settings["dpi"] = dpi
-        self.visualizer.export_settings["width"] = width_px
-        self.visualizer.export_settings["height"] = height_px
+        self.visualizer.export_settings["format"] = values["format"]
+        self.visualizer.export_settings["dpi"] = values["dpi"]
+        self.visualizer.export_settings["width"] = values["width_px"]
+        self.visualizer.export_settings["height"] = values["height_px"]
         self.visualizer.export_settings["transparent"] = self.transparent_checkbox.isChecked()
         self.visualizer.export_settings["tight"] = self.tight_checkbox.isChecked()
 
@@ -1405,15 +1847,13 @@ class ExportSettingsDialog(QDialog):
         if values is None:
             return
 
-        width_px, height_px, dpi = values
-
         old_size = self.visualizer.figure.get_size_inches()
 
         try:
-            width_in = width_px / dpi
-            height_in = height_px / dpi
-
-            self.visualizer.figure.set_size_inches(width_in, height_in)
+            self.visualizer.figure.set_size_inches(
+                values["width_in"],
+                values["height_in"]
+            )
 
             if self.tight_checkbox.isChecked():
                 self.visualizer.figure.tight_layout()
@@ -1427,7 +1867,7 @@ class ExportSettingsDialog(QDialog):
             self.visualizer.figure.savefig(
                 temp_file.name,
                 format="png",
-                dpi=dpi,
+                dpi=values["dpi"],
                 transparent=self.transparent_checkbox.isChecked(),
                 bbox_inches="tight" if self.tight_checkbox.isChecked() else None
             )
@@ -1453,45 +1893,44 @@ class ExportSettingsDialog(QDialog):
             return
 
         file_format = self.visualizer.export_settings["format"]
-
-        filters = (
-            "PNG Files (*.png);;"
-            "JPEG Files (*.jpg *.jpeg);;"
-            "PDF Files (*.pdf);;"
-            "SVG Files (*.svg);;"
-            "TIFF Files (*.tif *.tiff);;"
-            "All Files (*)"
-        )
+        extension = self.EXTENSION_MAP[file_format]
+        file_filter = self.FILTER_MAP[file_format]
 
         default_name = self.visualizer.edit_title.text() or "Vowel Space"
-        default_name = f"{default_name}.{file_format}"
+        default_name = f"{default_name}.{extension}"
 
         file_name, _ = QFileDialog.getSaveFileName(
             self,
             "Export Plot",
             default_name,
-            filters
+            file_filter
         )
 
         if not file_name:
             return
 
+        file_name = self.force_extension(file_name, extension)
+
+        self.visualizer.export_figure(file_name, file_format)
+
+    def force_extension(self, file_name, extension):
         if "." in file_name:
             base_name = file_name.rsplit(".", 1)[0]
         else:
             base_name = file_name
 
-        file_name = f"{base_name}.{file_format}"
-
-        self.visualizer.export_figure(file_name, file_format)
+        return f"{base_name}.{extension}"
 
     def reset_to_defaults(self):
         self.format_dropdown.setCurrentText("png")
-        self.dpi_dropdown.setCurrentText("300")
-        self.width_input.setText("2400")
-        self.height_input.setText("2400")
+        self.dpi_input.setText("300")
+
+        self.width_input.setText("1800")
+        self.height_input.setText("1800")
+
         self.transparent_checkbox.setChecked(False)
         self.tight_checkbox.setChecked(True)
 
+        self.update_dimension_labels()
         self.apply_settings()
         self.update_preview()
