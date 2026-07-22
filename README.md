@@ -1,372 +1,333 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml) [![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml) [![DOI](https://joss.theoj.org/papers/10.21105/joss.10189/status.svg)](https://doi.org/10.21105/joss.10189)
+# VowSpace: A vowel formant analysis application for phonetic research
 
-![VowSpace Icon](vowspace/assets/vowspace.ico)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Tests](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/tests.yml)
+[![Build](https://github.com/alicagank/VowSpace/actions/workflows/build.yml/badge.svg)](https://github.com/alicagank/VowSpace/actions/workflows/build.yml)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.10189/status.svg)](https://doi.org/10.21105/joss.10189)
+
+![VowSpace icon](vowspace/assets/vowspace.ico)
+
+VowSpace is an open-source desktop application for extracting, visualising, normalising, comparing, and analysing vowel formant data from audio recordings and tabular datasets.
+
+It provides an accessible graphical interface for common phonetic and sociophonetic workflows that might otherwise require custom scripts or several separate applications.
+
+**Quick links:** [Download VowSpace](https://github.com/alicagank/VowSpace/releases) · [Tutorials](tutorial/instructions.md) · [Software paper](https://doi.org/10.21105/joss.10189) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Report an issue](https://github.com/alicagank/VowSpace/issues)
+
+![VowSpace main interface](https://alicagankaya.com/wp-content/uploads/2026/05/vowspace-main.png)
+
+## Key features
+
+- Interactive vowel-space plotting using F1, F2, and other selected measurements
+- Acoustic analysis of audio files using Parselmouth and Praat
+- Lobanov, Nearey1, Nearey2, and Bark Difference normalisation
+- Bark, Mel, ERB, and logarithmic frequency-scale transformations
+- Speaker- and vowel-based grouping
+- Ellipses, convex hulls, labels, colour palettes, and other plot customisation options
+- Built-in DataFrame editor
+- CSV and Excel import and export
+- Publication-quality PNG, JPG, TIFF, SVG, and PDF plot export
+- Built-in IPA keyboard
+
+New to VowSpace? Follow the [step-by-step tutorials](tutorial/instructions.md).
 
 ## Software paper
 
-I'm very happy to share that VowSpace has been published in the *Journal of Open Source Software*. The paper gives an overview of the motivation behind the project, its main features, and its intended use in phonetic research:
+VowSpace has been published in the *Journal of Open Source Software*. The paper describes the motivation behind the project, its main features, and its intended use in phonetic research.
 
-> Kaya, A. Ç., (2026). VowSpace: A vowel formant analysis application for phonetic research. Journal of Open Source Software, 11(120), 10189, https://doi.org/10.21105/joss.10189
+> Kaya, A. Ç. (2026). VowSpace: A vowel formant analysis application for phonetic research. *Journal of Open Source Software, 11*(120), 10189. https://doi.org/10.21105/joss.10189
 
-You can read the paper here: https://joss.theoj.org/papers/10.21105/joss.10189
+[Read the software paper](https://joss.theoj.org/papers/10.21105/joss.10189).
 
-## Feedback form
+## Installation
 
-I have been receiving helpful emails from users of VowSpace. Your feedback, bug reports, feature requests, and usage notes directly help improve the application. If you ask me for something, I will most likely add it at my earliest convenience.
+VowSpace is available as a portable desktop application. Distributable builds are produced with Nuitka through the repository's build workflow.
 
-If you have tried or used VowSpace, I would really appreciate it if you could fill out this anonymous feedback form, too. :)
+### macOS
 
-https://forms.gle/D9P6TYfAhiiY4swx8
+1. Download the latest `.dmg` file from [GitHub Releases](https://github.com/alicagank/VowSpace/releases).
+2. Open the downloaded file.
+3. Drag **VowSpace** into the **Applications** folder.
+4. Launch VowSpace from **Applications**.
 
-# VowSpace: A vowel formant analysis application for phonetic research
+If macOS displays a security warning on first launch:
 
-VowSpace is an open-source desktop application developed with the aim of acquiring, visualizing, normalizing, comparing, and linguistically analyzing vowel formant frequencies from audio files and/or datasets.
+1. Right-click or Control-click the VowSpace application.
+2. Select **Open**.
+3. Confirm the macOS Gatekeeper prompt.
 
-In phonetic and sociophonetic research, analyzing vowel formants is essential for understanding language variation, speaker physiology, and vowel space. Researchers often use general-purpose software like R or Praat, which require advanced skills and time for custom visualizations. VowSpace was created as an open-source tool for vowel space plotting, combining raw and normalized data. While R packages like phonR and vowelPlot, and Praat offer similar functions, they either assume programming expertise or lack accessible GUI features for normalization and visualization. 
+### Windows
 
-YOU MAY HAVE A LOOK AT THE TUTORIALS I PROVIDED AT [TUTORIAL INSTRUCTIONS](tutorial/instructions.md)! :)
+1. Download the latest `.exe` file from [GitHub Releases](https://github.com/alicagank/VowSpace/releases).
+2. Open the downloaded file to launch VowSpace.
 
-![VowSpace UI](https://alicagankaya.com/wp-content/uploads/2026/05/vowspace-main.png)
+### Linux
 
+1. Download the latest Linux executable from [GitHub Releases](https://github.com/alicagank/VowSpace/releases).
+2. If necessary, make the file executable:
 
-## Version Log
+```bash
+chmod +x VowSpace
+```
 
-### VowSpace v1.4.5 Release Notes *(the Visualization Update)*
-This version focuses on on giving users more control over plot customization, improving saving options, and making the UI cleaner and easier to use!
+3. Launch it from your file manager or terminal.
 
-**New features:**
-- Added a dedicated Export Plot dialog with:
-- Live preview of export settings
-- Support for PNG, JPG, TIFF, SVG, and PDF formats, pixel-based dimension control with DPI scaling
-- Introduced new visualization customization options, including:
-  - Color palette selection
-  - Point size and transparency controls
-  - Ellipse and convex hull styling options (filled/outline/circular)
-- Added centralized Visualization Settings dialog for improved workflow
+The current Linux build has primarily been tested on minimal Debian and Fedora. Support for additional distributions and a more polished Linux experience are under active development. The application icon may not display correctly on some systems.
 
-**Improvements:**
-- Refactored visualization system:
-  - Replaced scattered UI controls with a unified settings interface, now visualization settings and normalization settings are under one window
-  - Improved organization of visualization options (ellipses, qhulls, labels, etc.)
-- Reworked normalization pipeline:
-  - Switched to dropdown-based selection (single normalization at a time)
-  - Prevented cumulative transformations by preserving original data
-- Improved export workflow:
-  - Unified saving process into export dialog
-  - Added quick-save option using current export settings
+### Run from source
 
-**Bug fixes:**
-  - Fixed normalization stacking issue that caused incorrect results across updates
-  - Resolved UI inconsistencies in visualization toggles
-
-# Installation
-
-VowSpace is currently available as a portable application. The distributions are handled by Nuitka with the build.yml workflow.
-
-## macOS
-
-1. Download the latest `.dmg` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
-2. Open the downloaded `.dmg` file.
-3. Drag the **VowSpace** app icon into the **Applications** folder.
-4. Launch **VowSpace** from your **Applications** folder.
-
-If macOS shows a security warning on first launch:
-
-- Right-click or Ctrl-click the **VowSpace** app.
-- Select **Open**.
-- Confirm the prompt from macOS Gatekeeper.
-
-
-## Windows
-
-1. Download the latest `.exe` file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
-2. Once downloaded, you can launch **VowSpace**.
-   
-## Linux
-
-1. Download the latest executable file from the [GitHub Releases](https://github.com/alicagank/VowSpace/releases) page.
-2. Once downloaded, you can launch **VowSpace**.
-
-(Some info on the Linux version: I will be working on developing a better version of VowSpace for other Linux distros, for now, I could only test it on minimal Debian. The app icon does not seem to work, and I am currently working on a better experience for Linux users!)
-
-## Run the Python application directly
-
-Alternatively (and I highly encourage you to do so!), you may also clone this repository and run the application directly from source. This is ideal for developers or researchers who wish to experiment with or contribute to the code.
+You can also clone the repository and run VowSpace directly from source. This is recommended for developers and researchers who want to inspect or contribute to the code.
 
 ```bash
 git clone https://github.com/alicagank/VowSpace.git
 cd VowSpace
 ```
 
-You’ll need Python 3.10 or higher. Dependencies are declared in `pyproject.toml` and can be installed in two ways:
+VowSpace requires Python 3.10 or later. Its dependencies are declared in `pyproject.toml`.
 
-**Using [uv](https://docs.astral.sh/uv/) (recommended):**
+#### Using uv
+
+[uv](https://docs.astral.sh/uv/) automatically creates a virtual environment and installs the required dependencies on first run:
 
 ```bash
 uv run vowspace
 ```
 
-uv will automatically create a virtual environment and install all dependencies on first run.
-
-**Using pip:**
+#### Using pip on macOS or Linux
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install .
 vowspace
 ```
 
+#### Using pip on Windows
 
-## About VowSpace
-
-Vowel plotting and normalization are of utmost importance when dealing with data for many subfields of linguistics, and the absence of a user-friendly application for these specific purposes has led to the emergence of VowSpace as a solution to this gap.
-
-## Vowel Plotting in VowSpace
-
-VowSpace uses the Matplotlib (3.8.2) (Hunter, 2007) library to draw a canvas and visualize the data. When plotting vowel formants, VowSpace utilizes a rectangular template with F1 value on the rightmost side and f2 value on the bottommost side of the screen with rulers on the opposite sides of the values. The vowels that belong to different sources are represented with points with different colors.
-
-## Vowel Normalization in VowSpace
-
-VowSpace provides options for normalizing vowel formants under the “Normalization Settings” menu. In its current version, several normalization and frequency scale conversion methods have been implemented to facilitate cross-speaker comparison and perceptual modeling.
-
-![norm](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
-
-![norm1](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
-
-![norm2](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
-
-### **Lobanov (Z-score Normalization)**
-An implementation of the Lobanov normalization method originally proposed by Lobanov (1971) and later adopted by Nearey (1977) and Adank et al. (2004). This method removes speaker-dependent anatomical differences by z-scoring the formants.
-
-```
-F_n[V] = (F_n[V] – MEAN_n) / S_n
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install .
+vowspace
 ```
 
-### **Bark Difference Metric**
-Proposed by Traunmüller (1997), this method transforms formant values to the Bark scale and computes perceptual distance metrics such as Z3–Z1 and Z2–Z1.
+## Input data
 
-```
-Z_i = 26.81 / (1 + (1960 / F_i)) – 0.53
+The minimum dataset must contain the following columns:
+
+| vowel | f1 | f2 | speaker |
+|---|---:|---:|---|
+| /æ/ | 123 | 1234 | Özlem |
+
+The required columns are:
+
+- `vowel`
+- `f1`
+- `f2`
+- `speaker`
+
+Additional measurements and derived columns, such as `f0`, `f3`, `f4`, `f5`, `bark_f1`, `log_f1`, and `zsc_f1`, are also supported where needed.
+
+VowSpace can read and write:
+
+- CSV files (`.csv`)
+- Excel files (`.xlsx`, `.xls`)
+
+Tabular data are handled with pandas, with Excel support provided through openpyxl.
+
+## Feature overview
+
+### Vowel-space plotting
+
+VowSpace produces conventional vowel-space plots with reversed F2 values on the horizontal axis and reversed F1 values on the vertical axis. However, all of this can be modified. Data from different speakers, sources, or groups can be distinguished using points, labels, colours, ellipses, and convex hulls.
+
+Visualisation settings allow users to customise:
+
+- Colour palettes
+- Point size and transparency
+- Labels
+- Ellipses
+- Convex hulls
+- Filled, outlined, and circular styles
+- Plot titles and other layout options
+
+### Normalisation and scale conversion
+
+Normalisation options are available through the **Normalization Settings** interface. VowSpace preserves the original data and applies one selected method at a time to prevent cumulative transformations.
+
+#### Lobanov normalisation
+
+Lobanov normalisation reduces speaker-dependent anatomical variation by z-scoring each formant:
+
+```text
+F_n[V] = (F_n[V] - MEAN_n) / S_n
 ```
 
-### **Nearey1 (Log-Mean Normalization)**
-This vowel-intrinsic, vowel-extrinsic method normalizes each formant by subtracting the log of the speaker-specific mean of all vowels, as described in Nearey (1977).
+#### Bark Difference Metric
 
-```
-F_n[V] = log(F_n[V]) – log(mean(F_n_all_vowels))
-```
+The Bark Difference Metric transforms formant values to the Bark scale and calculates perceptual distances such as Z3–Z1 and Z2–Z1:
 
-### **Nearey2 (Shared Log-Mean Normalization)**
-A variation of the Nearey1 method, this approach subtracts a *shared* log-mean across all formants from each log-transformed formant, minimizing intra-speaker variation while maintaining cross-formant coherence.
-
-```
-F_n[V] = log(F_n[V]) – mean(log(F_1, F_2, ..., F_n))
+```text
+Z_i = 26.81 / (1 + (1960 / F_i)) - 0.53
 ```
 
-### **Log-Scale Transformation**
-Applies a base-10 logarithmic transformation to raw formant values to account for the logarithmic nature of human auditory perception.
+#### Nearey1
 
+Nearey1 subtracts the logarithm of a speaker-specific formant mean from each log-transformed value:
+
+```text
+F_n[V] = log(F_n[V]) - log(mean(F_n_all_vowels))
 ```
+
+#### Nearey2
+
+Nearey2 uses a shared log mean across formants:
+
+```text
+F_n[V] = log(F_n[V]) - mean(log(F_1, F_2, ..., F_n))
+```
+
+#### Frequency-scale transformations
+
+VowSpace also supports the following transformations:
+
+**Log**
+
+```text
 F_log = log10(F)
 ```
 
-### **Mel-Scale Transformation**
-Converts formants to the Mel scale, commonly used in speech processing and auditory modeling.
+**Mel**
 
-```
+```text
 F_mel = 2595 × log10(1 + F / 700)
 ```
 
-### **Bark-Scale Transformation**
-Also based on human auditory resolution, the Bark transform maps frequencies to critical bands.
+**Bark**
 
-```
-Z = 26.81 / (1 + 1960 / F) – 0.53
+```text
+Z = 26.81 / (1 + 1960 / F) - 0.53
 ```
 
-### **ERB-Scale Transformation**
-Transforms frequencies to the Equivalent Rectangular Bandwidth (ERB) scale, used in auditory models to simulate cochlear filtering.
+**ERB**
 
-```
+```text
 F_erb = 21.4 × log10(1 + 0.00437 × F)
 ```
 
-All normalization methods are implemented in Python based on the work of Remirez (2022), and adapted using resources such as phonR (Drammock, 2022).
+The implementations draw on established methods in vowel normalisation and on open resources such as Remirez (2022) and the `phonR` package.
 
-## Audio Analysis Tools
+![Raw vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
 
-Audio Analysis Tools is a separate window that the user can access through the VowSpace’s main user interface. Then the user can read an audio file and get useful information about it such as intensity, pitch and vowel formant frequencies (F1-F5). All of this is achieved by the Parselmouth library, an awesome interface of Praat for Python!
+![Bark-transformed vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
 
-Note on F5: Higher formants can be somewhat unstable in certain recordings. Depending on the recording quality and environment, F5 values may appear as `NaN`. These values can be reviewed and edited in the DataFrame Editor manually or you may try to get a second measurement to make sure.
+![Lobanov-normalised vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
 
-In the most current stage of development, the user is able to add the formant frequencies to the main visualizer window on any given t to the VowSpace interface by right-clicking on the plot on the audio analysis window.
+### Audio Analysis Tools
 
-The Audio Analysis Tools support the following lossless and lossy audio formats to be read:
+**Audio Analysis Tools** is a separate window accessible from the main interface. It uses [Parselmouth](https://parselmouth.readthedocs.io/), a Python interface to Praat, to display and measure:
 
-- **WAV (.wav)**
-- **FLAC (.flac)**
-- **AIFF / AIFC (.aiff, .aif, .aifc)** 
-- **MP3 (.mp3)**
-- **OGG (.ogg)**
+- Intensity
+- Pitch
+- Vowel formant frequencies from F1 to F5
 
-These formats are supported via Parselmouth/Praat integration.
+Users can add measured formant frequencies directly to the main visualiser by right-clicking the plot in the Audio Analysis Tools window.
 
-![aat](https://alicagankaya.com/wp-content/uploads/2024/07/a3-2048x943.jpg)
-Intensity
+Higher formants can be unstable in some recordings. Depending on recording quality and environment, F5 may be returned as `NaN`. Measurements can be reviewed and edited in the DataFrame Editor, or repeated when necessary.
 
-![aat1](https://alicagankaya.com/wp-content/uploads/2024/07/a2-2048x943.jpg)
-Pitch
+Supported audio formats include:
 
-![aat2](https://alicagankaya.com/wp-content/uploads/2024/07/a4-2048x943.jpg)
-Vowel Formant Frequencies
+- WAV (`.wav`)
+- FLAC (`.flac`)
+- AIFF and AIFC (`.aiff`, `.aif`, `.aifc`)
+- MP3 (`.mp3`)
+- OGG (`.ogg`)
 
-## DataFrame Editor
+![Intensity display in Audio Analysis Tools](https://alicagankaya.com/wp-content/uploads/2024/07/a3-2048x943.jpg)
 
-DataFrame Editor is a separate window to make small adjustments on the data that you’re working on without relying on any other application. When you use the ‘Save Changes’ function, the scatterplot automatically updates with the latest data. The altered data can also be saved as a separate spreadsheet through the ‘Save Data As…’ action.
+*Intensity*
 
-![dfeditor](https://alicagankaya.com/wp-content/uploads/2024/07/Screenshot-2024-07-30-at-17.41.33.png)
-DataFrame Editor UI
+![Pitch display in Audio Analysis Tools](https://alicagankaya.com/wp-content/uploads/2024/07/a2-2048x943.jpg)
 
-### Data Table Format
+*Pitch*
 
-The minimum data table for any data to be read by VowSpace is as follows:
+![Formant display in Audio Analysis Tools](https://alicagankaya.com/wp-content/uploads/2024/07/a4-2048x943.jpg)
 
+*Vowel formant frequencies*
+
+### DataFrame Editor
+
+The **DataFrame Editor** allows users to make small adjustments to the current dataset without opening another application. Saving changes automatically updates the plot. Edited data can also be exported as a separate spreadsheet using **Save Data As…**.
+
+![DataFrame Editor interface](https://alicagankaya.com/wp-content/uploads/2024/07/Screenshot-2024-07-30-at-17.41.33.png)
+
+### Export Plot
+
+The **Export Plot** dialog supports PNG, JPG, TIFF, SVG, and PDF output. Its live preview shows how changes to DPI, pixel dimensions, and layout settings affect the exported figure.
+
+![Export Plot dialog](https://alicagankaya.com/wp-content/uploads/2026/05/export.png)
+
+### IPA keyboard
+
+VowSpace includes a dedicated IPA keyboard for entering vowel symbols directly within the application.
+
+![IPA keyboard](https://alicagankaya.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-02.55.42.png)
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
+
+## Feedback and support
+
+Feedback, bug reports, feature requests, and descriptions of research workflows directly help improve VowSpace.
+
+If you have used the application, you are welcome to complete the [anonymous feedback form](https://forms.gle/D9P6TYfAhiiY4swx8).
+
+For support:
+
+- Read the [tutorials](tutorial/instructions.md).
+- Visit the [VowSpace project page](https://alicagankaya.com/vowspace/).
+- [Open an issue](https://github.com/alicagank/VowSpace/issues) and include your operating system, Python version, error messages, screenshots, and the expected behaviour where possible.
+
+## Contributing
+
+Contributions, bug fixes, documentation improvements, and feature proposals are welcome. :)
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
+
+VowSpace is independently developed and maintained, so thoughtful issue reports and contributions are especially valuable.
+
+## Validation and disclaimer
+
+VowSpace is actively developed and tested, but users should independently verify its outputs before relying on them in research or publications.
+
+This application is provided **as is**, without warranty of any kind, express or implied. The developer assumes no responsibility for errors, inaccuracies, or consequences arising from the use of the software or its outputs.
+
+## Citation
+
+Please cite VowSpace as:
+
+> Kaya, A. Ç. (2026). VowSpace: A vowel formant analysis application for phonetic research. *Journal of Open Source Software, 11*(120), 10189. https://doi.org/10.21105/joss.10189
+
+BibTeX:
+
+```bibtex
+@article{kaya2026vowspace,
+  author  = {Kaya, Ali Çağan},
+  title   = {VowSpace: A vowel formant analysis application for phonetic research},
+  journal = {Journal of Open Source Software},
+  year    = {2026},
+  volume  = {11},
+  number  = {120},
+  pages   = {10189},
+  doi     = {10.21105/joss.10189}
+}
 ```
-vowel   f1   f2   speaker
-/æ/     123  1234 Markus
-```
 
-The only necessary rows are ‘vowel’, ‘f1’, ‘f2’, and ‘speaker’. When any data is inputted through the user interface, a dataframe is created with this information. Columns like ‘bark_f1’ for the Bark metric, logarithmic values like ‘log_f1’ and z-scores like ‘zsc_f1’ are also supported.
+## Scientific background
 
-VowSpace supports the following tabular data formats for both reading and writing:
+The methodological background and full reference list are available in the [JOSS software paper](https://joss.theoj.org/papers/10.21105/joss.10189). The implementation also draws on established work in vowel plotting, normalisation, auditory scales, Matplotlib, pandas, NumPy, SciPy, Parselmouth, and Praat.
 
-- **Comma-separated values (.csv)**
-- **Excel (.xlsx, .xls)**
+## Licence
 
-These formats are handled using the pandas library, with Excel support provided via openpyxl.
+VowSpace is distributed under the [GNU General Public License v3.0](LICENSE).
 
-## Export Plot
-
-The app also includes a nifty export tool that allows you to save your plot in PNG, JPG, TIFF, SVG, or PDF format. It features a preview screen where you can see how changes to DPI, pixel dimensions, and layout settings affect the final output.
-
-![Export Plot](https://alicagankaya.com/wp-content/uploads/2026/05/export.png)
-
-
-
-## IPA Keyboard
-
-As phoneticians, we love the IPA (International Phonetic Alphabet)! There is a dedicated window to input some vowels on the IPA as well!
-
-![IPAKeyboard](https://alicagankaya.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-02.55.42.png)
-
----
-
-## Acknowledgement
-
-I am not formally trained as a programmer and am the sole developer of this application, so there may be bugs, and parts of the code might appear amateurish. VowSpace is still in development, and I am continuously adding new features as I learn new methods and techniques. I am doing my best to keep VowSpace updated and actively invite researchers to try it out and provide feedback.
-
-However, please double-check the outputs before using them in research or publications.
-
-I initially developed VowSpace for a research project I worked on as part of a university assignment — specifically to create a vowel plot. Instead of learning R for that purpose, I decided to build something reusable and extensible.
-
-### Disclaimer:
-
-This application is provided "AS IS", without warranty of any kind, express or implied. The developer assumes no responsibility for any errors or inaccuracies in the software or its output. Use at your own risk and play with the code! If you encounter any errors, please open an issue, and I would gladly help you out! :)
-
-### Community Guidelines:
-
-VowSpace is an open-source project developed and maintained by a single researcher. I welcome feedback, suggestions, and contributions from the community to help improve the tool and ensure its usefulness to linguists, phoneticians, forensic scientists and language researchers.
-
-#### 1. Contributing
-
-If you would like to contribute to the development of VowSpace by improving code, fixing bugs, adding features, or enhancing documentation — please follow these steps:
-
-- Fork the repository on GitHub.
-- Create a new branch for your feature or fix.
-- Commit your changes with clear messages.
-- Submit a Pull Request (PR) with a short description of your contribution.
-
-Before contributing, please make sure that your code is readable (the more comments, the better) and follows general Python best practices. If you're unsure whether an idea fits the scope of the project, feel free to open an issue first to discuss it. You can also always write me an email!
-
-#### 2. Reporting Issues or Bugs
-
-If you encounter any bugs or unexpected behavior please:
-
-- Open an [Issue on GitHub](https://github.com/alicagank/VowSpace/issues).
-- Include as much detail as possible (e.g., OS, Python version, error messages, screenshots).
-- Clearly describe what you expected to happen and what actually occurred.
-
-This helps me understand and resolve the issue more efficiently.
-
-#### 3. Seeking Support
-
-If you need help using VowSpace or have questions about specific features:
-
-- Check the [README](./README.md) and the examples on the dedicated page on my website [VowSpace page](https://alicagankaya.com/vowspace/) for usage instructions and examples.
-- Open a GitHub issue with your question or request.
-- You may also reach out to me directly via email.
-
-Please note that I am a solo developer and a full-time student/researcher. I may not respond immediately, but I will do my best to help as soon as possible.
-
----
-
-## References
-
-- Aydın, Ö., & Uzun, İ. P. (2020). Ünlü formant normalizasyonu: R programlama dilinde bir uygulama. In İ. P. Uzun (Ed.), *Kuramsal ve uygulamalı sesbilim* (pp. 297–322). Seçkin Yayıncılık.
-
-- Bladon, R. A. W., Henton, C. G., & Pickering, J. B. (1984). Towards an auditory theory of speaker normalization. *Language & Communication, 4*(1), 59–69. [https://doi.org/10.1016/0271-5309(84)90019-3](https://doi.org/10.1016/0271-5309(84)90019-3)
-
-- Boersma, P. (2001). Praat, a system for doing phonetics by computer. *Glot International, 5*(9/10), 341–345.
-
-- Clopper, C. G. (2009). Computational methods for normalizing acoustic vowel data for talker differences. *Language and Linguistics Compass, 3*(6), 1430–1442. [https://doi.org/10.1111/j.1749-818X.2009.00165.x](https://doi.org/10.1111/j.1749-818X.2009.00165.x)
-
-- Fant, G. (1975). Non-uniform vowel normalization. *Speech Transmission Laboratory Quarterly Progress and Status Report, 16*, 1–19.
-
-- Gelfer, M. P., & Bennett, Q. E. (2013). Speaking Fundamental Frequency and Vowel Formant Frequencies: Effects on Perception of Gender. *Journal of Voice, 27*(5), 556–566. [https://doi.org/10.1016/j.jvoice.2012.11.008](https://doi.org/10.1016/j.jvoice.2012.11.008)
-
-- Harris, C. R., et al. (2020). Array programming with NumPy. *Nature, 585*(7825), 357–362. [https://doi.org/10.1038/s41586-020-2649-2](https://doi.org/10.1038/s41586-020-2649-2)
-
-- Heeringa, W., & Van de Velde, H. (2018). Visible Vowels: a Tool for the Visualization of Vowel Variation. In *Proceedings CLARIN Annual Conference 2018*, Pisa, Italy. CLARIN ERIC.
-
-- Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering, 9*(3), 90–95. [https://doi.org/10.1109/MCSE.2007.55](https://doi.org/10.1109/MCSE.2007.55)
-
-- Jadoul, Y., Thompson, B., & de Boer, B. (2018). Introducing Parselmouth: A Python interface to Praat. *Journal of Phonetics, 71*, 1–15. [https://doi.org/10.1016/j.wocn.2018.07.001](https://doi.org/10.1016/j.wocn.2018.07.001)
-
-- Jones, D. (1917). Speech sounds: Cardinal vowels. *The Gramophone*.
-
-- Joos, M. (1948). Acoustic phonetics. *Language, 23*, 5–136.
-
-- Klatt, D. H. (1989). Review of selected models of speech perception. In W. Marlsen-Wilson (Ed.), *Lexical representation and process* (pp. 169–226). MIT Press.
-
-- Ladefoged, P., & Broadbent, D. E. (1957). Information conveyed by vowels. *The Journal of the Acoustical Society of America, 29*(1), 98–104. [https://doi.org/10.1121/1.1908694](https://doi.org/10.1121/1.1908694)
-
-- Pfitzinger, H. R., & Niebuhr, O. (2011). Historical development of phonetic vowel systems: The last 400 years. *ICPhS XVII*, 160–163.
-
-- R Core Team. (2021). *R: A language and environment for statistical computing* [Software]. R Foundation for Statistical Computing, Vienna, Austria.
-
-- Remirez, E. (2022, October 20). Vowel plotting in Python. In *Linguistics Methods Hub*. Zenodo. [https://doi.org/10.5281/zenodo.7232005](https://doi.org/10.5281/zenodo.7232005)
-
-- Studdert-Kennedy, M. (1964). The perception of speech. In T. A. Sebeok (Ed.), *Current trends in linguistics* (pp. 2349–2385). Mouton.
-
-- Thomas, E. R., & Kendall, T. (2007). NORM: The vowel normalization and plotting suite. [Online Resource](http://ncslaap.lib.ncsu.edu/tools/norm/)
-
-- The pandas development team. (2024). *pandas-dev/pandas: Pandas (v2.2.2)*. Zenodo. [https://doi.org/10.5281/zenodo.10957263](https://doi.org/10.5281/zenodo.10957263)
-
-- Van Rossum, G., & Drake Jr., F. L. (1995). *Python reference manual*. Centrum voor Wiskunde en Informatica Amsterdam.
-
-- Virtanen, P., et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3), 261–272. [https://doi.org/10.1038/s41592-019-0686-2](https://doi.org/10.1038/s41592-019-0686-2)
-
-- Watt, D., Fabricius, A. H., & Kendall, T. (2010). More on vowels: Plotting and normalization. In *Sociophonetics: A Student’s Guide* (pp. 107–118). Routledge.
-
----
-
-## Attribution
-
-You can cite VowSpace as:
-
-Kaya, A. Ç., (2026). VowSpace: A vowel formant analysis application for phonetic research. Journal of Open Source Software, 11(120), 10189, https://doi.org/10.21105/joss.10189
-
----
-
-For more information, examples, and to download the application, you may visit the [VowSpace page](https://alicagankaya.com/vowspace/) or use the [Releases](https://github.com/alicagank/VowSpace/releases) feature on GitHub.
+For downloads, examples, and further information, visit the [VowSpace project page](https://alicagankaya.com/vowspace/) or the repository's [Releases](https://github.com/alicagank/VowSpace/releases) page.
