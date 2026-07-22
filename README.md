@@ -7,7 +7,7 @@
 
 ![VowSpace icon](vowspace/assets/vowspace.ico)
 
-VowSpace is an open-source desktop application for extracting, visualising, normalising, comparing, and analysing vowel formant data from audio recordings and tabular datasets.
+VowSpace is an open-source desktop application for extracting, visualizing, normalizing, comparing, and analyzing vowel formant data from audio recordings and tabular datasets.
 
 It provides an accessible graphical interface for common phonetic and sociophonetic workflows that might otherwise require custom scripts or several separate applications.
 
@@ -17,12 +17,12 @@ It provides an accessible graphical interface for common phonetic and sociophone
 
 ## Key features
 
-- Interactive vowel-space plotting using F1, F2, and other selected measurements
+- Interactive vowel space plotting using F1, F2, and other selected measurements
 - Acoustic analysis of audio files using Parselmouth and Praat
-- Lobanov, Nearey1, Nearey2, and Bark Difference normalisation
+- Lobanov, Nearey1, Nearey2, and Bark Difference normalization
 - Bark, Mel, ERB, and logarithmic frequency-scale transformations
 - Speaker- and vowel-based grouping
-- Ellipses, convex hulls, labels, colour palettes, and other plot customisation options
+- Ellipses, convex hulls, labels, color palettes, and other plot customization options
 - Built-in DataFrame editor
 - CSV and Excel import and export
 - Publication-quality PNG, JPG, TIFF, SVG, and PDF plot export
@@ -136,13 +136,13 @@ Tabular data are handled with pandas, with Excel support provided through openpy
 
 ## Feature overview
 
-### Vowel-space plotting
+### Vowel space plotting
 
-VowSpace produces conventional vowel-space plots with reversed F2 values on the horizontal axis and reversed F1 values on the vertical axis. However, all of this can be modified. Data from different speakers, sources, or groups can be distinguished using points, labels, colours, ellipses, and convex hulls.
+VowSpace produces conventional vowel space plots with reversed F2 values on the horizontal axis and reversed F1 values on the vertical axis. However, all of this can be modified. Data from different speakers, sources, or groups can be distinguished using points, labels, colors, ellipses, and convex hulls.
 
-Visualisation settings allow users to customise:
+Visualization settings allow users to customise:
 
-- Colour palettes
+- Color palettes
 - Point size and transparency
 - Labels
 - Ellipses
@@ -150,13 +150,13 @@ Visualisation settings allow users to customise:
 - Filled, outlined, and circular styles
 - Plot titles and other layout options
 
-### Normalisation and scale conversion
+### Normalization and scale conversion
 
-Normalisation options are available through the **Normalization Settings** interface. VowSpace preserves the original data and applies one selected method at a time to prevent cumulative transformations.
+Normalization options are available through the **Normalization Settings** interface. VowSpace preserves the original data and applies one selected method at a time to prevent cumulative transformations.
 
-#### Lobanov normalisation
+#### Lobanov normalization
 
-Lobanov normalisation reduces speaker-dependent anatomical variation by z-scoring each formant:
+Lobanov normalization reduces speaker-dependent anatomical variation by z-scoring each formant:
 
 ```text
 F_n[V] = (F_n[V] - MEAN_n) / S_n
@@ -214,13 +214,13 @@ Z = 26.81 / (1 + 1960 / F) - 0.53
 F_erb = 21.4 × log10(1 + 0.00437 × F)
 ```
 
-The implementations draw on established methods in vowel normalisation and on open resources such as Remirez (2022) and the `phonR` package.
+The implementations draw on established methods in vowel normalization and on open resources such as Remirez (2022) and the `phonR` package.
 
-![Raw vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
+![Raw vowel space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-scaled.jpg)
 
-![Bark-transformed vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
+![Bark-transformed vowel space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Bark.png)
 
-![Lobanov-normalised vowel-space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
+![Lobanov-normalized vowel space plot](https://alicagankaya.com/wp-content/uploads/2024/03/Gelfer-Bennett-Lobanov-Normalized-scaled.jpg)
 
 ### Audio Analysis Tools
 
@@ -230,7 +230,7 @@ The implementations draw on established methods in vowel normalisation and on op
 - Pitch
 - Vowel formant frequencies from F1 to F5
 
-Users can add measured formant frequencies directly to the main visualiser by right-clicking the plot in the Audio Analysis Tools window.
+Users can add measured formant frequencies directly to the main visualizer by right-clicking the plot in the Audio Analysis Tools window.
 
 Higher formants can be unstable in some recordings. Depending on recording quality and environment, F5 may be returned as `NaN`. Measurements can be reviewed and edited in the DataFrame Editor, or repeated when necessary.
 
@@ -286,7 +286,7 @@ For support:
 
 - Read the [tutorials](tutorial/instructions.md).
 - Visit the [VowSpace project page](https://alicagankaya.com/vowspace/).
-- [Open an issue](https://github.com/alicagank/VowSpace/issues) and include your operating system, Python version, error messages, screenshots, and the expected behaviour where possible.
+- [Open an issue](https://github.com/alicagank/VowSpace/issues) and include your operating system, Python version, error messages, screenshots, and the expected behavior where possible.
 
 ## Contributing
 
@@ -324,9 +324,9 @@ BibTeX:
 
 ## Scientific background
 
-The methodological background and full reference list are available in the [JOSS software paper](https://joss.theoj.org/papers/10.21105/joss.10189). The implementation also draws on established work in vowel plotting, normalisation, auditory scales, Matplotlib, pandas, NumPy, SciPy, Parselmouth, and Praat.
+The methodological background and full reference list are available in the [JOSS software paper](https://joss.theoj.org/papers/10.21105/joss.10189). The implementation also draws on established work in vowel plotting, normalization, auditory scales, Matplotlib, pandas, NumPy, SciPy, Parselmouth, and Praat.
 
-## Licence
+## License
 
 VowSpace is distributed under the [GNU General Public License v3.0](LICENSE).
 
